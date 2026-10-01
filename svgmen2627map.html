@@ -566,7 +566,7 @@ const G={
   band:new THREE.CylinderGeometry(0.648,0.648,0.09,32,1,true),
   pad:new THREE.CylinderGeometry(0.15,0.15,0.13,14),
   shoe:new THREE.SphereGeometry(0.16,16,10),
-  ball:new THREE.SphereGeometry(0.2,24,16),
+  ball:new THREE.SphereGeometry(0.4,28,20),
   shadow:new THREE.CircleGeometry(0.55,24),
 };
 const ballMat=(()=>{ const cv=document.createElement('canvas'); cv.width=256; cv.height=128; const x=cv.getContext('2d');
@@ -592,6 +592,23 @@ function makeChibi(key){
   const hb=add(G.band,m.solid,0,0.22,0,head); hb.rotation.x=-0.2;
   root.userData={body,armL,armR,legL,legR,head};
   return root;
+}
+const DRILL=[ // side -1 = home (A), +1 = away (B); x,y = contact point in court units
+  {side:-1,act:'spike',x:0.72,y:3.35,dur:0.55,arc:0.12},
+  {side: 1,act:'dig',  x:0.82,y:0.95,dur:1.05,arc:1.5},
+  {side:-1,act:'set',  x:0.78,y:3.0, dur:1.1, arc:1.6},
+  {side: 1,act:'spike',x:0.72,y:3.35,dur:0.55,arc:0.12},
+  {side:-1,act:'dig',  x:0.82,y:0.95,dur:1.05,arc:1.5},
+  {side: 1,act:'set',  x:0.78,y:3.0, dur:1.1, arc:1.6}];
+const DRILL_START=[]; let DRILL_T=0; DRILL.forEach(d=>{ DRILL_START.push(DRILL_T); DRILL_T+=d.dur; });
+function poseDrill(ud,act,w,pre,idle){
+  let by=idle, lean=0, aLx=-0.3, aRx=-0.3, aLz=-0.25, aRz=0.25, lL=0, lR=0, hx=0;
+  if(act==='spike'){ by+=0.62*w; aRx=-0.3-(pre?2.75:0.7)*w; aLx=-0.3-(pre?1.9:0.4)*w; aLz=-0.25-0.1*w; lL=0.45*w; lR=-0.15*w; hx=-0.25*w; lean=(pre?-0.18:0.22)*w; }
+  else if(act==='dig'){ by-=0.22*w; lean=0.38*w; aLx=aRx=-0.3-0.8*w; aLz=-0.25+0.42*w; aRz=0.25-0.42*w; lL=-0.35*w; lR=0.35*w; hx=0.12*w; }
+  else if(act==='set'){ by+=0.14*w; aLx=aRx=-0.3-2.65*w; aLz=-0.25-0.18*w; aRz=0.25+0.18*w; hx=-0.38*w; }
+  ud.body.position.y=by; ud.body.rotation.x=lean;
+  ud.armL.rotation.x=aLx; ud.armR.rotation.x=aRx; ud.armL.rotation.z=aLz; ud.armR.rotation.z=aRz;
+  ud.legL.rotation.x=lL; ud.legR.rotation.x=lR; ud.head.rotation.x=hx; ud.head.rotation.z=0;
 }
 function pose(ud,{bob=0,run=0,phase=0,hit=0,lean=0,sway=0}){
   const sw=Math.sin(phase)*run;
@@ -973,10 +990,11 @@ function setWeek(i){ const ni=Math.max(0,Math.min(WEEKS.length-1,i)); if(ni===we
   // without a team filter, keep the camera on the match being shown: jump to the first match of the new week
   if(!focusTeam&&showing&&curSer.length){ const s0=curSer[0]; selKey=venueKey(s0); flyTo(venuePos(s0),zd(15)); }
 }
-range.addEventListener('input',()=>{ const v=+range.value; if(mode!=='week'){ weekIdx=v; setMode('week'); } else setWeek(v); });
-$('prev').onclick=()=>{ if(mode!=='week') setMode('week'); setWeek(weekIdx-1); };
-$('next').onclick=()=>{ if(mode!=='week') setMode('week'); setWeek(weekIdx+1); };
-let playing=false, playT0=0, speedI=0; const SPEEDS=[[1,4200],[2,2700],[4,1600]];
+range.addEventListener('input',()=>{ userAct(); const v=+range.value; if(mode!=='week'){ weekIdx=v; setMode('week'); } else setWeek(v); });
+$('prev').onclick=()=>{ userAct(); if(mode!=='week') setMode('week'); setWeek(weekIdx-1); };
+$('next').onclick=()=>{ userAct(); if(mode!=='week') setMode('week'); setWeek(weekIdx+1); };
+let playing=false, playT0=0, speedI=0;
+const userAct=()=>{ if(playing) setPlay(false); }; const SPEEDS=[[1,4200],[2,2700],[4,1600]];
 const RING=169.65;
 function setPlay(p){ playing=p; playT0=performance.now();
   $('playIco').innerHTML=p?'<path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>':'<path d="M4 2.5v11l9-5.5z"/>';
@@ -993,6 +1011,9 @@ function tickPlay(){
 }
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&playing) playT0=performance.now(); });
 $('play').onclick=()=>setPlay(!playing);
+// taps on cards, buttons, the rail, the panel or the map stop playback (play / speed excepted)
+document.addEventListener('pointerdown',e=>{ if(!playing) return; if(e.target.closest('#play,#speed,.playwrap')) return; userAct(); },true);
+document.addEventListener('wheel',()=>userAct(),{capture:true,passive:true});
 $('speed').onclick=()=>{ speedI=(speedI+1)%SPEEDS.length; $('speed').textContent=SPEEDS[speedI][0]+'×'; if(playing) playT0=performance.now(); };
 addEventListener('keydown',e=>{
   if(e.key==='Escape'){ $('about').style.display='none'; return; }
@@ -1026,7 +1047,7 @@ function flyTo(target,dist,pol=0.82,az=null){
   if(reduce){ controls.target.copy(t); camera.position.copy(endPos); return; }
   fly={t0:performance.now(),dur:1400,fromT:controls.target.clone(),toT:t,fromP:camera.position.clone(),toP:endPos};
 }
-controls.addEventListener('start',()=>{ fly=null; follow=false; document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed','false')); });
+controls.addEventListener('start',()=>{ userAct(); fly=null; follow=false; document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed','false')); });
 
 function applyTheme(n){
   night=n; document.documentElement.setAttribute('data-theme',n?'dark':'light');
@@ -1161,12 +1182,20 @@ function animate(){
     const ready=c=>c.state==='idle'&&c.atSlot&&c.venue===p.key&&!c.tw;
     if(!ready(ch)||!ready(ca)) return;
     p.ball.visible=true;
-    const cyc=(T*0.62+p.t0)%2, dir=cyc<1?1:-1, u=cyc<1?cyc:cyc-1, from=dir>0?-0.95:0.95;
-    p.ball.position.set(THREE.MathUtils.lerp(from,-from,u)*0.78,2.0+Math.sin(u*Math.PI)*1.9,0.75);
-    p.ball.rotation.x+=dt*6*mo; p.ball.rotation.z+=dt*3*mo;
-    [[ch,dir>0?1-u:u],[ca,dir>0?u:1-u]].forEach(([c,near],j)=>{
-      const hit=Math.max(0,1-Math.abs(near-1)*5)*mo;
-      pose(c.obj.userData,{bob:Math.abs(Math.sin((T+p.t0+j)*3.2))*0.06*mo,hit,sway:Math.sin(T*1.3+j)*0.06*mo});
+    const tc=((T*(reduce?0.5:1)+p.t0*3)%DRILL_T+DRILL_T)%DRILL_T;
+    let i=0; while(i<5&&tc>=DRILL_START[i+1]) i++;
+    const u=(tc-DRILL_START[i])/DRILL[i].dur, a=DRILL[i], b=DRILL[(i+1)%6];
+    const ax=a.side*a.x, bx=b.side*b.x;
+    const uu=a.act==='spike'?u*u*0.35+u*0.65:u;          // spikes leave fast
+    p.ball.position.set(THREE.MathUtils.lerp(ax,bx,uu), THREE.MathUtils.lerp(a.y,b.y,uu)+Math.sin(uu*Math.PI)*a.arc, 0.75);
+    const spin=a.act==='spike'?14:a.act==='dig'?5:3;
+    p.ball.rotation.z+=dt*spin*mo*(a.side<0?-1:1); p.ball.rotation.x+=dt*2*mo;
+    [[ch,-1],[ca,1]].forEach(([c,side])=>{
+      // the player's contact nearest in time decides its pose
+      let best=null;
+      DRILL.forEach((d,k)=>{ if(d.side!==side) return; let dtc=DRILL_START[k]-tc; if(dtc>DRILL_T/2) dtc-=DRILL_T; if(dtc<-DRILL_T/2) dtc+=DRILL_T; if(!best||Math.abs(dtc)<Math.abs(best.dtc)) best={dtc,act:d.act}; });
+      const w=Math.exp(-Math.pow(best.dtc/(best.act==='spike'?0.3:0.38),2))*mo;
+      poseDrill(c.obj.userData,best.act,w,best.dtc>0,Math.abs(Math.sin((T+p.t0+side)*2.4))*0.04*mo);
     });
   });
 
