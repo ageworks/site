@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>【非公式】26-27 SVG MEN 週ごとの試合会場マップ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --sky-top:#b7c7d8; --sky-bot:#7d94ad;
+  --ink:#14263b; --ink-soft:#4c6077; --ink-faint:#8596a9;
+  --glass:rgba(255,255,255,.78); --glass-line:rgba(20,38,59,.10);
+  --court:#e8891c; --court-soft:rgba(232,137,28,.14);
+  --chip:rgba(20,38,59,.06);
+  --halo:rgba(255,255,255,.85);
+  --shadow:0 18px 50px -20px rgba(20,38,59,.35);
+  --jp:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",system-ui,sans-serif;
+  --num:"Barlow Condensed","Arial Narrow","Roboto Condensed",var(--jp);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sky-top:#1b3553; --sky-bot:#0a1626;
+    --ink:#eef3f9; --ink-soft:#a9b9cc; --ink-faint:#6f8399;
+    --glass:rgba(13,27,45,.70); --glass-line:rgba(190,215,240,.12);
+    --court:#f5a524; --court-soft:rgba(245,165,36,.16);
+    --chip:rgba(190,215,240,.08); --halo:rgba(8,20,36,.9);
+    --shadow:0 18px 50px -18px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --sky-top:#1b3553; --sky-bot:#0a1626;
+  --ink:#eef3f9; --ink-soft:#a9b9cc; --ink-faint:#6f8399;
+  --glass:rgba(13,27,45,.70); --glass-line:rgba(190,215,240,.12);
+  --court:#f5a524; --court-soft:rgba(245,165,36,.16);
+  --chip:rgba(190,215,240,.08); --halo:rgba(8,20,36,.9);
+  --shadow:0 18px 50px -18px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0;overflow:hidden}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{font-family:var(--jp);color:var(--ink);background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));
+  -webkit-font-smoothing:antialiased;font-feature-settings:"palt"}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--court);outline-offset:2px}
+.glass{background:var(--glass);border:1px solid var(--glass-line);backdrop-filter:blur(16px) saturate(1.3);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);box-shadow:var(--shadow)}
+
+#mast{position:fixed;left:24px;top:calc(env(safe-area-inset-top,0px) + 20px);z-index:5;pointer-events:none;max-width:min(520px,52vw)}
+#mast .league{font-family:var(--num);font-weight:600;font-size:15px;letter-spacing:.04em;color:var(--ink-soft)}
+#mast{text-shadow:0 1px 14px var(--halo),0 0 3px var(--halo)}
+#mast h1{margin:2px 0 0;font-weight:900;font-size:clamp(26px,3.2vw,42px);line-height:1.08;letter-spacing:-.01em}
+#mast h1 span{display:block;font-family:var(--num);font-weight:800;font-size:.6em;letter-spacing:.02em;color:var(--court);margin-top:6px}
+#mast .count{margin-top:10px;font-size:13px;color:var(--ink-soft)}
+#mast .count b{font-family:var(--num);font-size:24px;color:var(--ink);font-weight:700;margin:0 3px}
+
+#tools{position:fixed;right:20px;top:calc(env(safe-area-inset-top,0px) + 20px);z-index:6;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:46vw}
+.seg{display:flex;border-radius:12px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:9px;font-size:13px;font-weight:500;color:var(--ink-soft);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sky-bot)}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]:hover{color:var(--sky-bot)}
+
+#rail{position:fixed;left:20px;top:50%;transform:translateY(-42%);z-index:5;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:18px}
+#rail button{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:5px 10px 5px 5px;border-radius:12px;width:100%;text-align:left}
+#rail button:hover{background:var(--chip)}
+#rail button[aria-pressed="true"]{background:var(--court-soft);box-shadow:inset 0 0 0 1px var(--court)}
+#rail img{width:32px;height:38px;flex:none}
+#rail .tn{font-size:12.5px;font-weight:700;line-height:1.2;white-space:nowrap}
+#rail .tc{font-size:11px;color:var(--ink-faint)}
+#rail .rt{font-size:11px;color:var(--ink-faint);padding:2px 8px 4px}
+
+#panel{position:fixed;right:20px;top:calc(env(safe-area-inset-top,0px) + 76px);bottom:calc(env(safe-area-inset-bottom,0px) + 158px);width:340px;z-index:5;border-radius:20px;display:flex;flex-direction:column;overflow:hidden}
+#panel header{padding:16px 18px 10px;border-bottom:1px solid var(--glass-line)}
+#panel h2{margin:0;font-size:16px;font-weight:700}
+.sub{font-size:12px;color:var(--ink-soft);margin-top:3px;line-height:1.5}
+#list{overflow-y:auto;padding:10px 10px 14px;flex:1}
+.card{display:block;width:100%;text-align:left;border:1px solid transparent;background:var(--chip);border-radius:14px;padding:12px;margin-bottom:8px;transition:border-color .2s,background .2s}
+.card:hover,.card.on{border-color:var(--court);background:var(--court-soft)}
+.card .vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.card .side{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border:0;background:transparent;padding:4px 2px;border-radius:10px;font:inherit;color:inherit;cursor:pointer;width:100%}
+.card .side:hover{background:var(--chip)}
+.card .side:hover img{transform:translateY(-2px) scale(1.06)}
+.card .side img{transition:transform .2s}
+.card.clickable{cursor:pointer}
+.card.off{display:flex;flex-direction:column;gap:10px;align-items:flex-start;cursor:default;border-color:var(--glass-line)}
+.card.off .offh{display:flex;align-items:center;gap:10px}
+.card.off .offh img{width:40px;height:47px;flex:none}
+.card.off .offh b{display:block;font-size:13px;line-height:1.35}
+.card.off .offh em{display:inline-block;margin-top:4px;font-style:normal;font-size:11px;font-weight:700;color:var(--court);background:var(--court-soft);border-radius:999px;padding:2px 9px}
+.card.off .t{font-size:11.5px;color:var(--ink-soft)}
+.card .vfoot{display:flex;justify-content:flex-end;margin-top:8px}
+.vbtn{display:inline-flex;align-items:center;gap:6px}
+.vbtn svg{width:13px;height:13px}
+.venue .art{border-radius:14px;overflow:hidden;background:var(--chip);line-height:0}
+.venue .art svg{width:100%;height:auto;display:block}
+.venue h3{margin:12px 2px 2px;font-size:16px;line-height:1.35}
+.venue .city{font-size:12px;color:var(--ink-soft);margin:0 2px}
+.venue .vstats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.venue .vstats div{background:var(--chip);border-radius:10px;padding:8px;text-align:center}
+.venue .vstats b{display:block;font-family:var(--num);font-size:22px;line-height:1.05}
+.venue .vstats small{font-size:10.5px;color:var(--ink-soft)}
+.venue .hosts{display:flex;gap:6px;justify-content:center;margin-top:4px}
+.venue .hosts img{width:22px;height:26px}
+.venue .links{display:grid;gap:6px;margin-bottom:12px}
+.venue .links a{display:flex;align-items:center;justify-content:space-between;gap:8px;text-decoration:none;color:var(--ink);background:var(--chip);border:1px solid var(--glass-line);border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:500}
+.venue .links a:hover{border-color:var(--court)}
+.venue .links a span{color:var(--ink-faint);font-size:11px}
+.venue .links a.main{background:var(--court);color:#1b1206;border-color:var(--court)}
+.venue .links a.main span{color:rgba(27,18,6,.7)}
+.venue h4{font-size:12px;color:var(--ink-soft);font-weight:700;margin:4px 2px 6px}
+.grow{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;width:100%;text-align:left;border:0;background:var(--chip);border-radius:10px;padding:8px 10px;margin-bottom:5px;font-size:11.5px}
+.grow:hover{background:var(--court-soft)}
+.grow.past{opacity:.55}
+.grow .d{font-family:var(--num);font-weight:700;font-size:14px}
+.grow .m{display:flex;align-items:center;gap:5px;font-weight:500}
+.grow .m img{width:16px;height:19px}
+.grow .t{grid-column:2;color:var(--ink-faint);font-size:10.5px}
+.venue .note{font-size:10.5px;color:var(--ink-faint);line-height:1.6;margin:10px 2px 0}
+.card .side img{width:40px;height:47px}
+.card .side span{font-size:11.5px;font-weight:700;line-height:1.25}
+.card .side em{font-style:normal;font-size:11px;color:var(--ink-faint);font-family:var(--num);letter-spacing:.04em}
+.card .x{font-family:var(--num);font-weight:800;font-size:19px;color:var(--court)}
+.card .meta{margin-top:10px;font-size:12px;color:var(--ink-soft);display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
+.card .meta b{color:var(--ink);font-weight:500}
+.card .tbd{color:var(--court);font-weight:700}
+.empty{padding:22px 12px;text-align:center;color:var(--ink-soft);font-size:12.5px;line-height:1.7}
+.tsum{padding:14px;border-radius:14px;background:var(--chip);margin-bottom:10px}
+.tsum .hd{display:flex;gap:12px;align-items:center}
+.tsum .hd img{width:46px;height:54px}
+.tsum h3{margin:0;font-size:15px}
+.tsum .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tsum .stats div{background:var(--glass);border-radius:10px;padding:8px 4px;text-align:center}
+.tsum .stats b{display:block;font-family:var(--num);font-size:24px;font-weight:700;line-height:1}
+.tsum .stats small{font-size:10.5px;color:var(--ink-soft)}
+.tsum .actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.pill{border:1px solid var(--glass-line);background:var(--glass);border-radius:999px;padding:6px 12px;font-size:12px}
+.pill:hover{border-color:var(--court)}
+.pill[aria-pressed="true"]{background:var(--court);color:#1b1206;border-color:var(--court)}
+.vrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--chip);margin-bottom:6px;font-size:12.5px;width:100%;border:0;text-align:left}
+.vrow:hover{background:var(--court-soft)}
+.vrow b{font-family:var(--num);font-size:22px;color:var(--court)}
+.vrow small{display:block;color:var(--ink-faint);font-size:11px}
+
+#timeline{position:fixed;left:20px;right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);z-index:6;border-radius:22px;padding:14px 20px 12px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+#now{min-width:250px;display:flex;gap:14px;align-items:center}
+#now .wk{font-family:var(--num);font-weight:800;font-size:48px;line-height:.9;letter-spacing:-.01em}
+#now .wk small{font-size:15px;font-weight:600;color:var(--ink-faint);margin-left:2px}
+#now .rng{font-family:var(--num);font-weight:600;font-size:21px;line-height:1.05}
+#now .rd{font-size:12px;color:var(--court);font-weight:700;margin-top:4px}
+.ctrls{display:flex;gap:6px;align-items:center}
+.ic{width:38px;height:38px;border-radius:50%;border:1px solid var(--glass-line);background:var(--chip);display:grid;place-items:center;flex:none;padding:0}
+.ic:hover{border-color:var(--court)}
+.ic.play{width:46px;height:46px;background:var(--court);border-color:var(--court);color:#1b1206}
+.ic svg{width:16px;height:16px}
+#trackwrap{position:relative;padding-top:2px}
+#ticks{position:relative;height:18px;margin:0 10px}
+#ticks span{position:absolute;transform:translateX(-50%);font-family:var(--num);font-size:13px;font-weight:600;color:var(--ink-soft);white-space:nowrap}
+#dots{position:relative;height:8px;margin:0 10px 0}
+#dots i{position:absolute;top:1px;width:6px;height:6px;border-radius:50%;background:var(--ink-faint);transform:translateX(-50%);opacity:.45}
+#dots i.g{background:var(--court);opacity:.95}
+#dots i.e{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink-faint);opacity:.7}
+#dots i.cur{width:10px;height:10px;top:-1px;opacity:1;background:var(--court);box-shadow:0 0 0 4px var(--court-soft)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--court) var(--p,0%),var(--glass-line) var(--p,0%))}
+input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:var(--glass-line)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:4px;background:var(--court)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:4px solid var(--court);margin-top:-8px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--ink);border:4px solid var(--court)}
+input[type=range]:disabled{opacity:.4}
+#tlrow{display:flex;gap:14px;align-items:center}
+.playwrap{position:relative;display:grid;place-items:center;width:58px;height:58px;flex:none}
+.playwrap .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);pointer-events:none}
+.ring circle{fill:none;stroke-width:3}
+.ring .trk{stroke:var(--glass-line);opacity:0}
+.ring .prg{stroke:var(--court);stroke-linecap:round;stroke-dasharray:169.65;stroke-dashoffset:169.65;opacity:0}
+.playwrap.on .trk,.playwrap.on .prg{opacity:1}
+.disc{grid-column:1/-1;margin:-4px 0 0;text-align:right;font-size:10px;line-height:1.5;color:var(--ink-faint)}
+.disc button{border:0;background:none;padding:0;font:inherit;color:var(--ink-soft);text-decoration:underline;text-underline-offset:2px}
+#tlrow #trackwrap{flex:1}
+.speed{font-family:var(--num);font-weight:700;font-size:14px;border:1px solid var(--glass-line);background:var(--chip);border-radius:999px;padding:6px 11px;flex:none}
+
+#tip{position:fixed;z-index:8;pointer-events:none;padding:8px 12px;border-radius:10px;font-size:12px;opacity:0;transition:opacity .15s;white-space:nowrap}
+#hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 172px);z-index:4;font-size:12px;color:var(--ink-soft);padding:6px 14px;border-radius:999px;transition:opacity .6s;pointer-events:none}
+#loader{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));transition:opacity .8s}
+#loader div{font-family:var(--num);font-weight:700;font-size:15px;letter-spacing:.06em;color:var(--ink-soft)}
+#err{display:none;position:fixed;inset:0;z-index:30;place-items:center;padding:24px;text-align:center;background:var(--sky-bot);color:var(--ink)}
+#about{position:fixed;z-index:9;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,92vw);max-height:80vh;overflow:auto;border-radius:20px;padding:22px 24px;display:none;font-size:13px;line-height:1.75}
+#about h3{margin:0 0 8px;font-size:17px}
+#about p{margin:0 0 10px;color:var(--ink-soft)}
+#about .close{position:absolute;right:14px;top:12px}
+.sheetbtn{display:none}
+
+@media (max-width:900px){
+  #rail{flex-direction:row;top:auto;transform:none;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 174px);overflow-x:auto;padding:6px;gap:2px;justify-content:space-between}
+  #rail button{width:auto;padding:4px}
+  #rail .tx,#rail .rt{display:none}
+  #rail img{width:30px;height:35px}
+  #panel{left:auto;right:10px;width:min(56vw,240px);top:calc(env(safe-area-inset-top,0px) + 200px);bottom:calc(env(safe-area-inset-bottom,0px) + 230px);height:auto;border-radius:16px;transform:translateX(calc(100% + 24px));transition:transform .35s}
+  #panel.open{transform:none}
+  #panel header{padding:10px 12px 8px}
+  #panel h2{font-size:13.5px}
+  #panel .sub{font-size:10.5px}
+  #list{padding:8px 6px 10px}
+  .card{padding:9px 7px;border-radius:12px}
+  .card .side img{width:28px;height:33px}
+  .card .side span{font-size:10px}
+  .card .side em{font-size:9.5px}
+  .card .x{font-size:15px}
+  .card .meta{font-size:10.5px;gap:2px 6px;margin-top:7px}
+  .tsum{padding:9px;border-radius:12px;margin-bottom:8px}
+  .tsum .hd{gap:8px}
+  .tsum .hd img{width:30px;height:35px}
+  .tsum h3{font-size:12px}
+  .tsum .sub{display:none}
+  .tsum h3{line-height:1.25}
+  .tsum .stats{gap:4px;margin-top:8px}
+  .tsum .stats b{font-size:17px}
+  .tsum .stats small{font-size:9px}
+  .tsum .actions{gap:4px;margin-top:8px}
+  .pill{font-size:10.5px;padding:5px 9px}
+  .dhead{margin-bottom:6px}
+  .empty{padding:14px 6px;font-size:11.5px}
+  .venue .links a span{display:none}
+  .venue .links a{padding:9px 10px;font-size:11.5px}
+  .venue h3{font-size:14px}
+  .sheetbtn{display:inline-block}
+  #timeline{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);grid-template-columns:1fr;gap:6px;padding:10px 14px}
+  #now{min-width:0}
+  #now .wk{font-size:34px}
+  .playwrap{width:54px;height:54px}
+  .disc{text-align:left;font-size:9.5px;margin-top:0}
+  #tools{right:12px;max-width:none;left:12px;top:calc(env(safe-area-inset-top,0px) + 98px);justify-content:flex-start}
+  #mast{left:14px;max-width:none;top:calc(env(safe-area-inset-top,0px) + 12px)}
+  #mast h1{font-size:23px}
+  #mast .league{font-size:12px}
+  #ticks span{font-size:11px}
+  #mast .count{display:none}
+  .seg button{padding:6px 9px;font-size:12px}
+  #hint{display:none}
+  .speed{display:none}
+}
+.dhead{display:flex;align-items:center;gap:6px;margin:0 2px 8px}
+.dcount{font-family:var(--num);font-weight:700;font-size:15px;color:var(--ink-soft);margin-right:auto;padding-left:2px}
+.ic.sm{width:30px;height:30px}
+.ic.sm svg{width:12px;height:12px}
+.swipe{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border-radius:14px}
+.swipe::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;padding:0 1px}
+.slide .card{margin:0;border-color:var(--court);background:var(--court-soft);cursor:default}
+.sdots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.sdots i{width:6px;height:6px;border-radius:50%;background:var(--ink-faint);opacity:.5;transition:all .25s}
+.sdots i.on{width:18px;border-radius:3px;background:var(--court);opacity:1}
+.card .hint{display:block;margin-top:8px;font-size:10.5px;color:var(--ink-faint)}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div id="stage" aria-label="日本地図と試合会場の3D表示"></div>
+
+<div id="loader"><div>地図を準備しています</div></div>
+<div id="err"><div><h2>3D表示を開始できませんでした</h2><p>このブラウザでWebGLが使えないか、表示用ライブラリを読み込めませんでした。別のブラウザで開くか、ページを再読み込みしてください。</p></div></div>
+
+<header id="mast">
+  <div class="league">【非公式】26-27 SVG MEN</div>
+  <h1>週ごとの試合会場マップ<span>Regular season 128 matches</span></h1>
+  <div class="count" id="countdown"></div>
+</header>
+
+<div id="tools">
+  <div class="seg glass" role="group" aria-label="表示">
+    <button id="mWeek" aria-pressed="true">週ごと</button>
+    <button id="mAll" aria-pressed="false">全会場</button>
+  </div>
+  <div class="seg glass" role="group" aria-label="エリア">
+    <button data-view="all" aria-pressed="true">全国</button>
+    <button data-view="kanto" aria-pressed="false">関東</button>
+    <button data-view="tokai" aria-pressed="false">東海</button>
+    <button data-view="kansai" aria-pressed="false">関西</button>
+  </div>
+  <div class="seg glass" role="group" aria-label="その他">
+    <button id="aboutBtn" aria-pressed="false">データについて</button>
+    <button id="sheetBtn" class="sheetbtn" aria-pressed="false">試合一覧</button>
+  </div>
+</div>
+
+<nav id="rail" class="glass" aria-label="チームで絞り込み"></nav>
+
+<aside id="panel" class="glass" aria-live="polite">
+  <header><h2 id="pTitle">この週の試合</h2><div class="sub" id="pSub"></div></header>
+  <div id="list"></div>
+</aside>
+
+<section id="timeline" class="glass" aria-label="日程タイムライン">
+  <div id="now"><div class="wk" id="wkNum">01<small>/18</small></div><div><div class="rng" id="wkRange"></div><div class="rd" id="wkRound"></div></div></div>
+  <div id="tlrow">
+    <div class="ctrls">
+      <button class="ic" id="prev" aria-label="前の週"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M10.5 2.5 4.5 8l6 5.5z"/></svg></button>
+      <span class="playwrap"><svg class="ring" viewBox="0 0 60 60" aria-hidden="true"><circle class="trk" cx="30" cy="30" r="27"/><circle class="prg" id="ringPrg" cx="30" cy="30" r="27"/></svg><button class="ic play" id="play" aria-label="自動再生"><svg viewBox="0 0 16 16" fill="currentColor" id="playIco"><path d="M4 2.5v11l9-5.5z"/></svg></button></span>
+      <button class="ic" id="next" aria-label="次の週"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 2.5 11.5 8l-6 5.5z"/></svg></button>
+    </div>
+    <div id="trackwrap">
+      <div id="ticks"></div>
+      <div id="dots"></div>
+      <input type="range" id="week" min="0" max="17" value="0" step="1" aria-label="週を選ぶ">
+    </div>
+    <button class="speed" id="speed" aria-label="再生速度を切り替え">1×</button>
+  </div>
+  <p class="disc">当サイトは非公式のファンサイトです。掲載情報の正確性・最新性を保証するものではありません。詳しくは<button type="button" id="discLink">データについて</button>をご覧ください。</p>
+</section>
+
+<div id="tip" class="glass"></div>
+<div id="hint" class="glass">ドラッグで回転、ホイールやピンチで拡大、ピンを選ぶと会場へ移動</div>
+
+<div id="about" class="glass" role="dialog" aria-modal="true" aria-labelledby="aboutH">
+  <button class="ic close" id="aboutClose" aria-label="閉じる"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 2.4 8 6.9l4.5-4.5 1.1 1.1L9.1 8l4.5 4.5-1.1 1.1L8 9.1l-4.5 4.5-1.1-1.1L6.9 8 2.4 3.5z"/></svg></button>
+  <h3 id="aboutH">データについて</h3>
+  <p>日程・対戦カード・会場は、SV.LEAGUE公式のレギュラーシーズン日程（2026年7月1日時点のPDF）をもとに、公式サイトの最新表示と9月28日の日程変更発表を反映したものです。開始時間は確認できた試合のみ表示しています。</p>
+  <p>会場の位置は市区町村レベルの目安です。「会場調整中」の試合は開催県内の目安の位置に表示しています。第2節 レーヴィス栃木 vs きんでんトリニティーブリッツは延期となり、代替日程が未発表のため地図には表示していません。</p>
+  <p>チームカラーや略称、エンブレム、ユニフォーム等は正式なものではなく、当マップ用のオリジナルデザインで、各クラブの公式ではありません。遠征距離は本拠地（目安）と会場の直線距離の往復から算出した参考値です。</p>
+  <p>最新の日程は公式サイト（svleague.jp）で確認してください。</p>
+  <h3 style="margin-top:16px">このサイトについて</h3>
+  <p>当サイトは個人が制作した非公式のファンサイトで、SV.LEAGUE（一般社団法人ジャパンバレーボールリーグ）、大同生命保険株式会社、各クラブおよびその運営会社とは関係ありません。リーグ名・大会名・クラブ名は各権利者の名称・商標です。掲載情報の正確性・最新性・完全性は保証しておらず、当サイトの利用によって生じたいかなる損害についても責任を負いかねます。観戦の際は必ず公式情報をご確認ください。</p>
+  <p>地図データ：地球地図日本（国土地理院）を加工して作成。3D表示：three.js（MIT License）。フォント：Zen Kaku Gothic New、Barlow Condensed（SIL Open Font License）。</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const DATA = {"games":[{"d":"2026-10-24","t":"14:05","r":1,"g":1,"h":"RTC","a":"FKR","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2026-10-24","t":"14:05","r":1,"g":1,"h":"KTB","a":"KSO","v":"東淀川体育館","city":"大阪市東淀川区","lat":34.745,"lon":135.53,"tbd":false},{"d":"2026-10-25","t":"","r":1,"g":2,"h":"RTC","a":"FKR","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2026-10-25","t":"","r":1,"g":2,"h":"KTB","a":"KSO","v":"東淀川体育館","city":"大阪市東淀川区","lat":34.745,"lon":135.53,"tbd":false},{"d":"2026-10-31","t":"","r":2,"g":1,"h":"TSG","a":"CBD","v":"かなくぼ総合体育館","city":"茨城県","lat":36.03,"lon":140.09,"tbd":false},{"d":"2026-10-31","t":"13:35","r":2,"g":1,"h":"ATH","a":"KSO","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-10-31","t":"","r":2,"g":1,"h":"VYK","a":"FKR","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2026-11-01","t":"13:05","r":2,"g":2,"h":"TSG","a":"CBD","v":"かなくぼ総合体育館","city":"茨城県","lat":36.03,"lon":140.09,"tbd":false},{"d":"2026-11-01","t":"13:35","r":2,"g":2,"h":"ATH","a":"KSO","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-11-01","t":"","r":2,"g":2,"h":"VYK","a":"FKR","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2026-11-07","t":"","r":3,"g":1,"h":"RTC","a":"KSO","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2026-11-07","t":"","r":3,"g":1,"h":"CBD","a":"ATH","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-11-07","t":"","r":3,"g":1,"h":"VYK","a":"TSG","v":"調整中","city":"三重県内","lat":34.75,"lon":136.4,"tbd":true},{"d":"2026-11-08","t":"","r":3,"g":2,"h":"RTC","a":"KSO","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2026-11-08","t":"","r":3,"g":2,"h":"CBD","a":"ATH","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-11-08","t":"","r":3,"g":2,"h":"VYK","a":"TSG","v":"調整中","city":"三重県内","lat":34.75,"lon":136.4,"tbd":true},{"d":"2026-11-14","t":"","r":1,"g":1,"h":"VYK","a":"ATH","v":"調整中","city":"三重県内","lat":34.75,"lon":136.4,"tbd":true},{"d":"2026-11-14","t":"","r":9,"g":1,"h":"FKR","a":"CBD","v":"カルッツかわさき","city":"川崎市川崎区","lat":35.535,"lon":139.705,"tbd":false},{"d":"2026-11-15","t":"","r":1,"g":2,"h":"VYK","a":"ATH","v":"調整中","city":"三重県内","lat":34.75,"lon":136.4,"tbd":true},{"d":"2026-11-15","t":"","r":9,"g":2,"h":"FKR","a":"CBD","v":"カルッツかわさき","city":"川崎市川崎区","lat":35.535,"lon":139.705,"tbd":false},{"d":"2026-11-21","t":"","r":4,"g":1,"h":"TSG","a":"KTB","v":"霞ヶ浦文化体育会館","city":"茨城県土浦市","lat":36.08,"lon":140.205,"tbd":false},{"d":"2026-11-21","t":"","r":4,"g":1,"h":"CBD","a":"RTC","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-11-21","t":"13:35","r":4,"g":1,"h":"ATH","a":"FKR","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-11-21","t":"","r":4,"g":1,"h":"KSO","a":"VYK","v":"守口市民体育館","city":"大阪府守口市","lat":34.738,"lon":135.565,"tbd":false},{"d":"2026-11-22","t":"","r":4,"g":2,"h":"TSG","a":"KTB","v":"霞ヶ浦文化体育会館","city":"茨城県土浦市","lat":36.08,"lon":140.205,"tbd":false},{"d":"2026-11-22","t":"","r":4,"g":2,"h":"CBD","a":"RTC","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-11-22","t":"13:35","r":4,"g":2,"h":"ATH","a":"FKR","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-11-22","t":"","r":4,"g":2,"h":"KSO","a":"VYK","v":"守口市民体育館","city":"大阪府守口市","lat":34.738,"lon":135.565,"tbd":false},{"d":"2026-11-28","t":"","r":5,"g":1,"h":"RTC","a":"FKR","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2026-11-28","t":"","r":5,"g":1,"h":"CBD","a":"TSG","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-11-28","t":"","r":5,"g":1,"h":"VYK","a":"KTB","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2026-11-29","t":"","r":5,"g":2,"h":"RTC","a":"FKR","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2026-11-29","t":"","r":5,"g":2,"h":"CBD","a":"TSG","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-11-29","t":"","r":5,"g":2,"h":"VYK","a":"KTB","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2026-12-05","t":"14:05","r":6,"g":1,"h":"TSG","a":"VYK","v":"茨城トヨタ スポーツパークうしく体育館","city":"茨城県牛久市","lat":35.975,"lon":140.15,"tbd":false},{"d":"2026-12-05","t":"15:05","r":6,"g":1,"h":"FKR","a":"KSO","v":"カルッツかわさき","city":"川崎市川崎区","lat":35.535,"lon":139.705,"tbd":false},{"d":"2026-12-05","t":"13:35","r":6,"g":1,"h":"ATH","a":"CBD","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-12-05","t":"14:05","r":6,"g":1,"h":"KTB","a":"RTC","v":"貝塚市総合体育館","city":"大阪府貝塚市","lat":34.437,"lon":135.36,"tbd":false},{"d":"2026-12-06","t":"","r":6,"g":2,"h":"TSG","a":"VYK","v":"茨城トヨタ スポーツパークうしく体育館","city":"茨城県牛久市","lat":35.975,"lon":140.15,"tbd":false},{"d":"2026-12-06","t":"","r":6,"g":2,"h":"FKR","a":"KSO","v":"カルッツかわさき","city":"川崎市川崎区","lat":35.535,"lon":139.705,"tbd":false},{"d":"2026-12-06","t":"13:35","r":6,"g":2,"h":"ATH","a":"CBD","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-12-06","t":"","r":6,"g":2,"h":"KTB","a":"RTC","v":"貝塚市総合体育館","city":"大阪府貝塚市","lat":34.437,"lon":135.36,"tbd":false},{"d":"2026-12-19","t":"","r":7,"g":1,"h":"TSG","a":"KSO","v":"つくばカピオ","city":"茨城県つくば市","lat":36.085,"lon":140.11,"tbd":false},{"d":"2026-12-19","t":"","r":7,"g":1,"h":"CBD","a":"FKR","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-12-19","t":"","r":7,"g":1,"h":"VYK","a":"RTC","v":"AGF鈴鹿体育館","city":"三重県鈴鹿市","lat":34.88,"lon":136.585,"tbd":false},{"d":"2026-12-19","t":"","r":7,"g":1,"h":"KTB","a":"ATH","v":"タケダハムはびきのコロセアム","city":"大阪府羽曳野市","lat":34.555,"lon":135.605,"tbd":false},{"d":"2026-12-20","t":"","r":7,"g":2,"h":"TSG","a":"KSO","v":"つくばカピオ","city":"茨城県つくば市","lat":36.085,"lon":140.11,"tbd":false},{"d":"2026-12-20","t":"","r":7,"g":2,"h":"CBD","a":"FKR","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-12-20","t":"","r":7,"g":2,"h":"VYK","a":"RTC","v":"AGF鈴鹿体育館","city":"三重県鈴鹿市","lat":34.88,"lon":136.585,"tbd":false},{"d":"2026-12-20","t":"","r":7,"g":2,"h":"KTB","a":"ATH","v":"タケダハムはびきのコロセアム","city":"大阪府羽曳野市","lat":34.555,"lon":135.605,"tbd":false},{"d":"2026-12-26","t":"","r":8,"g":1,"h":"CBD","a":"KTB","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-12-26","t":"","r":8,"g":1,"h":"FKR","a":"VYK","v":"小田原アリーナ","city":"神奈川県小田原市","lat":35.27,"lon":139.15,"tbd":false},{"d":"2026-12-26","t":"13:35","r":8,"g":1,"h":"ATH","a":"TSG","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-12-26","t":"","r":8,"g":1,"h":"KSO","a":"RTC","v":"東淀川体育館","city":"大阪市東淀川区","lat":34.745,"lon":135.53,"tbd":false},{"d":"2026-12-27","t":"","r":8,"g":2,"h":"CBD","a":"KTB","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2026-12-27","t":"","r":8,"g":2,"h":"FKR","a":"VYK","v":"小田原アリーナ","city":"神奈川県小田原市","lat":35.27,"lon":139.15,"tbd":false},{"d":"2026-12-27","t":"13:35","r":8,"g":2,"h":"ATH","a":"TSG","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2026-12-27","t":"","r":8,"g":2,"h":"KSO","a":"RTC","v":"東淀川体育館","city":"大阪市東淀川区","lat":34.745,"lon":135.53,"tbd":false},{"d":"2027-01-09","t":"14:05","r":9,"g":1,"h":"RTC","a":"TSG","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2027-01-09","t":"13:35","r":9,"g":1,"h":"ATH","a":"KTB","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-01-09","t":"14:05","r":9,"g":1,"h":"VYK","a":"KSO","v":"亀山市西野公園体育館","city":"三重県亀山市","lat":34.858,"lon":136.452,"tbd":false},{"d":"2027-01-10","t":"","r":9,"g":2,"h":"RTC","a":"TSG","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2027-01-10","t":"13:35","r":9,"g":2,"h":"ATH","a":"KTB","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-01-10","t":"","r":9,"g":2,"h":"VYK","a":"KSO","v":"亀山市西野公園体育館","city":"三重県亀山市","lat":34.858,"lon":136.452,"tbd":false},{"d":"2027-01-16","t":"","r":1,"g":1,"h":"TSG","a":"CBD","v":"霞ヶ浦文化体育会館","city":"茨城県土浦市","lat":36.08,"lon":140.205,"tbd":false},{"d":"2027-01-16","t":"","r":3,"g":1,"h":"KTB","a":"FKR","v":"すまいるズひまわりドーム","city":"大阪府","lat":34.712,"lon":135.622,"tbd":false},{"d":"2027-01-16","t":"","r":5,"g":1,"h":"KSO","a":"ATH","v":"KTM河本工業総合体育館","city":"大阪府","lat":34.64,"lon":135.52,"tbd":false},{"d":"2027-01-16","t":"","r":11,"g":1,"h":"VYK","a":"RTC","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2027-01-17","t":"","r":1,"g":2,"h":"TSG","a":"CBD","v":"霞ヶ浦文化体育会館","city":"茨城県土浦市","lat":36.08,"lon":140.205,"tbd":false},{"d":"2027-01-17","t":"","r":3,"g":2,"h":"KTB","a":"FKR","v":"すまいるズひまわりドーム","city":"大阪府","lat":34.712,"lon":135.622,"tbd":false},{"d":"2027-01-17","t":"","r":5,"g":2,"h":"KSO","a":"ATH","v":"KTM河本工業総合体育館","city":"大阪府","lat":34.64,"lon":135.52,"tbd":false},{"d":"2027-01-17","t":"","r":11,"g":2,"h":"VYK","a":"RTC","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2027-01-23","t":"","r":10,"g":1,"h":"CBD","a":"VYK","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2027-01-23","t":"","r":10,"g":1,"h":"FKR","a":"TSG","v":"三機MIRAIスポーツセンター大和","city":"神奈川県大和市","lat":35.475,"lon":139.46,"tbd":false},{"d":"2027-01-23","t":"13:35","r":10,"g":1,"h":"ATH","a":"RTC","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-01-23","t":"","r":10,"g":1,"h":"KSO","a":"KTB","v":"HOS住吉スポーツセンター","city":"大阪市住吉区","lat":34.605,"lon":135.495,"tbd":false},{"d":"2027-01-24","t":"","r":10,"g":2,"h":"CBD","a":"VYK","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2027-01-24","t":"","r":10,"g":2,"h":"FKR","a":"TSG","v":"三機MIRAIスポーツセンター大和","city":"神奈川県大和市","lat":35.475,"lon":139.46,"tbd":false},{"d":"2027-01-24","t":"13:35","r":10,"g":2,"h":"ATH","a":"RTC","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-01-24","t":"","r":10,"g":2,"h":"KSO","a":"KTB","v":"HOS住吉スポーツセンター","city":"大阪市住吉区","lat":34.605,"lon":135.495,"tbd":false},{"d":"2027-02-05","t":"","r":11,"g":1,"h":"FKR","a":"KSO","v":"東急ドレッセとどろきアリーナ","city":"川崎市中原区","lat":35.585,"lon":139.65,"tbd":false},{"d":"2027-02-06","t":"","r":11,"g":2,"h":"FKR","a":"KSO","v":"東急ドレッセとどろきアリーナ","city":"川崎市中原区","lat":35.585,"lon":139.65,"tbd":false},{"d":"2027-02-06","t":"","r":11,"g":1,"h":"TSG","a":"ATH","v":"つくばカピオ","city":"茨城県つくば市","lat":36.085,"lon":140.11,"tbd":false},{"d":"2027-02-06","t":"","r":11,"g":1,"h":"KTB","a":"CBD","v":"こうふくホーム和歌山アリーナ","city":"和歌山市","lat":34.23,"lon":135.18,"tbd":false},{"d":"2027-02-07","t":"","r":11,"g":2,"h":"TSG","a":"ATH","v":"つくばカピオ","city":"茨城県つくば市","lat":36.085,"lon":140.11,"tbd":false},{"d":"2027-02-07","t":"","r":11,"g":2,"h":"KTB","a":"CBD","v":"こうふくホーム和歌山アリーナ","city":"和歌山市","lat":34.23,"lon":135.18,"tbd":false},{"d":"2027-02-13","t":"","r":12,"g":1,"h":"CBD","a":"ATH","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2027-02-13","t":"","r":12,"g":1,"h":"FKR","a":"RTC","v":"小田原アリーナ","city":"神奈川県小田原市","lat":35.27,"lon":139.15,"tbd":false},{"d":"2027-02-13","t":"","r":12,"g":1,"h":"KSO","a":"VYK","v":"ベイコム総合体育館","city":"兵庫県尼崎市","lat":34.735,"lon":135.415,"tbd":false},{"d":"2027-02-13","t":"","r":12,"g":1,"h":"KTB","a":"TSG","v":"こうふくホーム和歌山アリーナ","city":"和歌山市","lat":34.23,"lon":135.18,"tbd":false},{"d":"2027-02-14","t":"","r":12,"g":2,"h":"CBD","a":"ATH","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2027-02-14","t":"","r":12,"g":2,"h":"FKR","a":"RTC","v":"小田原アリーナ","city":"神奈川県小田原市","lat":35.27,"lon":139.15,"tbd":false},{"d":"2027-02-14","t":"","r":12,"g":2,"h":"KSO","a":"VYK","v":"ベイコム総合体育館","city":"兵庫県尼崎市","lat":34.735,"lon":135.415,"tbd":false},{"d":"2027-02-14","t":"","r":12,"g":2,"h":"KTB","a":"TSG","v":"こうふくホーム和歌山アリーナ","city":"和歌山市","lat":34.23,"lon":135.18,"tbd":false},{"d":"2027-02-20","t":"","r":13,"g":1,"h":"TSG","a":"FKR","v":"霞ヶ浦文化体育会館","city":"茨城県土浦市","lat":36.08,"lon":140.205,"tbd":false},{"d":"2027-02-20","t":"","r":13,"g":1,"h":"RTC","a":"VYK","v":"ブレックスアリーナ宇都宮","city":"栃木県宇都宮市","lat":36.555,"lon":139.88,"tbd":false},{"d":"2027-02-20","t":"","r":13,"g":1,"h":"ATH","a":"KTB","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-02-20","t":"","r":13,"g":1,"h":"KSO","a":"CBD","v":"タケダハムはびきのコロセアム","city":"大阪府羽曳野市","lat":34.555,"lon":135.605,"tbd":false},{"d":"2027-02-21","t":"","r":13,"g":2,"h":"TSG","a":"FKR","v":"霞ヶ浦文化体育会館","city":"茨城県土浦市","lat":36.08,"lon":140.205,"tbd":false},{"d":"2027-02-21","t":"","r":13,"g":2,"h":"RTC","a":"VYK","v":"ブレックスアリーナ宇都宮","city":"栃木県宇都宮市","lat":36.555,"lon":139.88,"tbd":false},{"d":"2027-02-21","t":"","r":13,"g":2,"h":"ATH","a":"KTB","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-02-21","t":"","r":13,"g":2,"h":"KSO","a":"CBD","v":"タケダハムはびきのコロセアム","city":"大阪府羽曳野市","lat":34.555,"lon":135.605,"tbd":false},{"d":"2027-02-27","t":"","r":14,"g":1,"h":"RTC","a":"ATH","v":"ブレックスアリーナ宇都宮","city":"栃木県宇都宮市","lat":36.555,"lon":139.88,"tbd":false},{"d":"2027-02-27","t":"","r":14,"g":1,"h":"FKR","a":"KTB","v":"東急ドレッセとどろきアリーナ","city":"川崎市中原区","lat":35.585,"lon":139.65,"tbd":false},{"d":"2027-02-27","t":"","r":14,"g":1,"h":"VYK","a":"CBD","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2027-02-27","t":"","r":14,"g":1,"h":"KSO","a":"TSG","v":"おおきにアリーナ舞洲","city":"大阪市此花区","lat":34.66,"lon":135.395,"tbd":false},{"d":"2027-02-28","t":"","r":14,"g":2,"h":"RTC","a":"ATH","v":"ブレックスアリーナ宇都宮","city":"栃木県宇都宮市","lat":36.555,"lon":139.88,"tbd":false},{"d":"2027-02-28","t":"","r":14,"g":2,"h":"FKR","a":"KTB","v":"東急ドレッセとどろきアリーナ","city":"川崎市中原区","lat":35.585,"lon":139.65,"tbd":false},{"d":"2027-02-28","t":"","r":14,"g":2,"h":"VYK","a":"CBD","v":"相好アリーナ四日市","city":"三重県四日市市","lat":34.975,"lon":136.615,"tbd":false},{"d":"2027-02-28","t":"","r":14,"g":2,"h":"KSO","a":"TSG","v":"おおきにアリーナ舞洲","city":"大阪市此花区","lat":34.66,"lon":135.395,"tbd":false},{"d":"2027-03-13","t":"","r":15,"g":1,"h":"RTC","a":"CBD","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2027-03-13","t":"","r":15,"g":1,"h":"ATH","a":"VYK","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-03-13","t":"","r":15,"g":1,"h":"KSO","a":"FKR","v":"東大阪アリーナ","city":"大阪府東大阪市","lat":34.68,"lon":135.6,"tbd":false},{"d":"2027-03-13","t":"","r":15,"g":1,"h":"KTB","a":"TSG","v":"Asueアリーナ大阪（サブアリーナ）","city":"大阪市浪速区","lat":34.668,"lon":135.47,"tbd":false},{"d":"2027-03-14","t":"","r":15,"g":2,"h":"RTC","a":"CBD","v":"FUKAI SQUARE GARDEN足利","city":"栃木県足利市","lat":36.335,"lon":139.452,"tbd":false},{"d":"2027-03-14","t":"","r":15,"g":2,"h":"ATH","a":"VYK","v":"碧南市臨海体育館","city":"愛知県碧南市","lat":34.86,"lon":136.96,"tbd":false},{"d":"2027-03-14","t":"","r":15,"g":2,"h":"KSO","a":"FKR","v":"東大阪アリーナ","city":"大阪府東大阪市","lat":34.68,"lon":135.6,"tbd":false},{"d":"2027-03-14","t":"","r":15,"g":2,"h":"KTB","a":"TSG","v":"Asueアリーナ大阪（サブアリーナ）","city":"大阪市浪速区","lat":34.668,"lon":135.47,"tbd":false},{"d":"2027-03-20","t":"","r":16,"g":1,"h":"TSG","a":"RTC","v":"茨城トヨタ スポーツパークうしく体育館","city":"茨城県牛久市","lat":35.975,"lon":140.15,"tbd":false},{"d":"2027-03-20","t":"","r":16,"g":1,"h":"CBD","a":"KSO","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2027-03-20","t":"","r":16,"g":1,"h":"FKR","a":"ATH","v":"カルッツかわさき","city":"川崎市川崎区","lat":35.535,"lon":139.705,"tbd":false},{"d":"2027-03-20","t":"","r":16,"g":1,"h":"KTB","a":"VYK","v":"東淀川体育館","city":"大阪市東淀川区","lat":34.745,"lon":135.53,"tbd":false},{"d":"2027-03-21","t":"","r":16,"g":2,"h":"TSG","a":"RTC","v":"茨城トヨタ スポーツパークうしく体育館","city":"茨城県牛久市","lat":35.975,"lon":140.15,"tbd":false},{"d":"2027-03-21","t":"","r":16,"g":2,"h":"CBD","a":"KSO","v":"YohaSアリーナ～本能に、感動を。～","city":"千葉市中央区","lat":35.6,"lon":140.11,"tbd":false},{"d":"2027-03-21","t":"","r":16,"g":2,"h":"FKR","a":"ATH","v":"カルッツかわさき","city":"川崎市川崎区","lat":35.535,"lon":139.705,"tbd":false},{"d":"2027-03-21","t":"","r":16,"g":2,"h":"KTB","a":"VYK","v":"東淀川体育館","city":"大阪市東淀川区","lat":34.745,"lon":135.53,"tbd":false},{"d":null,"t":"","r":2,"g":1,"h":"RTC","a":"KTB","v":"調整中","city":"","lat":null,"lon":null,"tbd":true},{"d":null,"t":"","r":2,"g":2,"h":"RTC","a":"KTB","v":"調整中","city":"","lat":null,"lon":null,"tbd":true}]};
+const GEO = [{"n":"京都府","p":[[[13487,3566,13487,3562,13485,3559,13491,3554,13493,3551,13495,3552,13500,3554,13504,3554,13504,3551,13504,3547,13505,3544,13505,3541,13503,3541,13500,3539,13494,3541,13492,3539,13492,3532,13501,3528,13501,3527,13506,3526,13507,3524,13511,3527,13516,3526,13516,3523,13520,3520,13519,3519,13521,3516,13523,3518,13527,3518,13529,3514,13534,3515,13539,3511,13540,3508,13537,3505,13538,3501,13544,3501,13549,3499,13548,3495,13555,3492,13557,3497,13561,3497,13561,3494,13564,3493,13567,3490,13569,3486,13570,3485,13574,3480,13573,3478,13573,3475,13575,3473,13582,3471,13589,3471,13592,3475,13593,3474,13596,3475,13598,3473,13599,3472,13601,3471,13606,3474,13603,3476,13602,3479,13603,3482,13600,3484,13597,3484,13594,3486,13594,3489,13590,3487,13586,3490,13588,3493,13585,3497,13585,3499,13582,3505,13583,3507,13585,3513,13585,3516,13583,3522,13584,3526,13577,3536,13572,3536,13570,3534,13564,3537,13553,3538,13553,3542,13546,3547,13547,3551,13545,3552,13546,3555,13549,3556,13545,3557,13545,3559,13540,3556,13537,3556,13534,3553,13533,3551,13529,3552,13524,3555,13525,3557,13519,3556,13521,3560,13524,3562,13527,3567,13530,3568,13529,3573,13522,3577,13514,3575,13509,3574,13508,3572,13502,3569,13498,3569,13497,3567,13492,3565,13487,3566]]]},{"n":"佐賀県","p":[[[13004,3347,13004,3346,13000,3345,12996,3346,12994,3349,12997,3351,12990,3355,12986,3354,12984,3349,12979,3347,12978,3345,12983,3341,12986,3341,12987,3339,12985,3336,12983,3330,12979,3334,12978,3333,12976,3329,12981,3324,12981,3321,12982,3318,12985,3318,12989,3316,12994,3317,12995,3311,12992,3311,12994,3307,12998,3306,13001,3302,13004,3300,13009,3297,13020,3296,13022,3298,13019,3300,13017,3305,13014,3307,13013,3311,13015,3311,13022,3317,13025,3319,13029,3316,13029,3315,13035,3314,13035,3318,13034,3320,13038,3322,13039,3325,13044,3326,13046,3330,13048,3330,13052,3334,13054,3337,13054,3342,13051,3345,13048,3344,13043,3340,13040,3343,13036,3343,13032,3346,13028,3348,13025,3347,13020,3348,13018,3347,13004,3347]]]},{"n":"熊本県","p":[[[13133,3283,13131,3285,13126,3288,13125,3294,13126,3298,13123,3302,13121,3306,13117,3308,13116,3314,13111,3318,13104,3319,13101,3318,13099,3318,13098,3314,13102,3309,13101,3304,13097,3302,13095,3305,13092,3305,13089,3309,13084,3310,13077,3312,13072,3315,13067,3316,13066,3312,13061,3311,13058,3312,13057,3309,13054,3308,13049,3305,13052,3301,13050,3300,13041,3300,13043,3299,13044,3293,13053,3288,13052,3285,13056,3284,13060,3281,13060,3277,13061,3271,13057,3270,13054,3266,13050,3265,13045,3262,13049,3261,13062,3263,13063,3260,13061,3259,13056,3254,13056,3251,13054,3250,13057,3243,13055,3242,13051,3239,13048,3234,13047,3228,13043,3227,13037,3220,13036,3217,13040,3212,13043,3211,13047,3212,13050,3214,13058,3215,13061,3219,13062,3216,13072,3210,13086,3210,13088,3212,13091,3213,13093,3212,13097,3212,13100,3217,13104,3217,13106,3216,13110,3215,13110,3220,13108,3221,13107,3224,13105,3224,13105,3229,13107,3228,13111,3233,13107,3236,13107,3241,13105,3241,13102,3244,13101,3249,13102,3252,13102,3255,13104,3256,13105,3259,13110,3258,13112,3261,13111,3264,13115,3268,13117,3269,13118,3271,13123,3274,13125,3280,13126,3283,13133,3283]],[[13042,3255,13045,3256,13044,3259,13046,3261,13044,3263,13041,3261,13042,3258,13040,3255,13042,3255]],[[13035,3240,13038,3239,13041,3242,13046,3252,13039,3251,13036,3252,13032,3252,13029,3249,13020,3245,13020,3248,13018,3255,13012,3255,13006,3252,13004,3251,13004,3246,13001,3243,12999,3238,12997,3235,12998,3233,12999,3231,12998,3225,13001,3223,13000,3222,13002,3219,13004,3221,13007,3221,13010,3224,13014,3231,13018,3231,13021,3234,13022,3237,13022,3239,13020,3241,13022,3242,13028,3240,13031,3240,13035,3240]]]},{"n":"香川県","p":[[[13433,3456,13430,3455,13426,3455,13424,3453,13418,3452,13414,3448,13415,3446,13419,3448,13423,3448,13424,3446,13430,3448,13433,3445,13435,3446,13434,3448,13436,3453,13433,3456]],[[13368,3401,13372,3402,13372,3404,13378,3408,13382,3407,13382,3409,13385,3410,13392,3411,13395,3409,13400,3407,13403,3409,13405,3412,13412,3412,13414,3413,13415,3416,13417,3418,13420,3417,13426,3418,13430,3417,13434,3417,13436,3418,13438,3417,13442,3416,13443,3417,13444,3421,13441,3422,13439,3425,13434,3426,13431,3428,13426,3428,13425,3431,13427,3432,13426,3435,13415,3434,13416,3438,13413,3440,13410,3438,13408,3435,13400,3435,13398,3437,13392,3438,13389,3437,13389,3435,13382,3434,13382,3433,13377,3429,13373,3428,13374,3426,13370,3423,13362,3424,13365,3419,13364,3412,13364,3408,13363,3405,13360,3404,13368,3401]]]},{"n":"愛知県","p":[[[13756,3529,13752,3527,13744,3523,13739,3524,13737,3526,13730,3529,13722,3526,13718,3526,13717,3528,13713,3529,13710,3529,13705,3534,13705,3536,13696,3542,13696,3540,13692,3538,13689,3538,13683,3536,13677,3537,13673,3530,13668,3524,13668,3520,13667,3519,13667,3513,13670,3512,13675,3508,13677,3502,13679,3501,13687,3504,13683,3496,13682,3488,13686,3486,13687,3484,13684,3476,13687,3473,13695,3470,13697,3471,13696,3473,13691,3477,13693,3485,13696,3485,13696,3482,13700,3482,13703,3478,13712,3479,13715,3478,13719,3479,13722,3482,13725,3481,13731,3480,13732,3477,13732,3473,13728,3473,13726,3472,13726,3470,13714,3465,13712,3463,13706,3465,13702,3459,13704,3458,13710,3459,13714,3459,13719,3461,13734,3465,13748,3467,13749,3470,13748,3475,13749,3481,13750,3483,13755,3485,13759,3485,13760,3487,13764,3489,13765,3493,13769,3496,13771,3500,13772,3503,13777,3508,13780,3513,13783,3515,13781,3518,13784,3521,13778,3520,13776,3522,13772,3522,13771,3523,13766,3523,13765,3522,13758,3520,13758,3522,13755,3524,13756,3529]]]},{"n":"栃木県","p":[[[14026,3693,14024,3694,14025,3697,14024,3700,14025,3703,14020,3702,14019,3706,14017,3707,14014,3711,14010,3712,14006,3713,14002,3714,13995,3715,13990,3715,13983,3713,13982,3712,13982,3709,13977,3709,13975,3707,13972,3707,13967,3706,13967,3704,13963,3703,13962,3702,13955,3699,13949,3697,13946,3697,13943,3692,13939,3691,13936,3688,13937,3684,13940,3683,13935,3677,13937,3673,13934,3669,13933,3666,13933,3663,13935,3661,13947,3660,13948,3658,13942,3650,13944,3646,13941,3645,13936,3638,13937,3637,13942,3634,13942,3632,13946,3629,13946,3627,13953,3628,13956,3627,13963,3627,13966,3621,13969,3620,13973,3621,13982,3624,13984,3628,13985,3631,13988,3631,13991,3630,13991,3634,13996,3635,13998,3637,14004,3638,14011,3641,14014,3641,14016,3640,14019,3640,14020,3642,14021,3647,14023,3650,14026,3652,14025,3653,14025,3660,14024,3665,14022,3667,14023,3670,14027,3670,14029,3672,14026,3676,14027,3682,14025,3685,14025,3692,14026,3693]]]},{"n":"山梨県","p":[[[13873,3591,13869,3589,13868,3587,13861,3587,13861,3591,13851,3592,13849,3590,13845,3590,13844,3595,13837,3597,13834,3593,13829,3587,13828,3586,13825,3589,13819,3579,13824,3576,13818,3571,13819,3567,13822,3564,13824,3560,13825,3556,13826,3555,13826,3541,13823,3537,13825,3536,13826,3532,13829,3530,13833,3533,13836,3532,13837,3530,13837,3527,13839,3525,13840,3520,13843,3518,13848,3518,13849,3517,13853,3522,13851,3526,13851,3531,13853,3533,13853,3535,13853,3541,13858,3544,13860,3543,13861,3539,13866,3540,13868,3536,13879,3537,13882,3538,13885,3539,13887,3538,13892,3540,13893,3544,13895,3546,13903,3548,13906,3551,13909,3551,13913,3556,13913,3562,13912,3565,13913,3567,13911,3569,13907,3570,13903,3572,13898,3577,13896,3583,13894,3585,13889,3584,13885,3587,13879,3588,13878,3590,13873,3591]]]},{"n":"滋賀県","p":[[[13628,3566,13626,3567,13620,3569,13619,3570,13615,3570,13613,3567,13615,3565,13618,3560,13616,3557,13611,3558,13611,3553,13603,3553,13601,3549,13598,3549,13594,3552,13591,3545,13591,3543,13589,3540,13586,3540,13585,3541,13581,3541,13581,3539,13577,3536,13584,3526,13583,3522,13585,3516,13585,3513,13583,3507,13582,3505,13585,3499,13585,3497,13588,3493,13586,3490,13590,3487,13594,3489,13594,3486,13597,3484,13600,3484,13603,3482,13602,3479,13609,3481,13611,3485,13609,3489,13611,3490,13613,3488,13617,3489,13619,3487,13625,3486,13628,3487,13636,3490,13637,3494,13640,3495,13641,3498,13642,3505,13644,3507,13644,3513,13645,3516,13641,3519,13641,3522,13638,3524,13639,3525,13639,3529,13641,3531,13642,3535,13642,3537,13644,3539,13641,3542,13643,3545,13639,3550,13640,3553,13632,3555,13632,3559,13632,3562,13629,3562,13628,3566]]]},{"n":"群馬県","p":[[[13870,3674,13854,3670,13852,3669,13853,3667,13853,3665,13846,3663,13845,3661,13843,3660,13843,3656,13840,3652,13840,3649,13840,3643,13846,3642,13849,3640,13850,3641,13853,3640,13856,3642,13859,3642,13865,3641,13865,3630,13860,3628,13860,3625,13863,3621,13864,3617,13859,3616,13860,3614,13863,3613,13865,3611,13863,3609,13864,3605,13863,3603,13869,3599,13871,3599,13875,3601,13876,3603,13879,3603,13883,3604,13885,3607,13890,3609,13893,3609,13896,3611,13902,3613,13904,3613,13906,3618,13911,3625,13914,3628,13916,3628,13924,3625,13927,3625,13932,3623,13935,3625,13938,3624,13944,3620,13947,3619,13953,3619,13959,3621,13963,3619,13966,3621,13963,3627,13956,3627,13953,3628,13946,3627,13946,3629,13942,3632,13942,3634,13937,3637,13936,3638,13941,3645,13944,3646,13942,3650,13948,3658,13947,3660,13935,3661,13933,3663,13933,3666,13934,3669,13937,3673,13935,3677,13940,3683,13937,3684,13936,3688,13939,3691,13930,3693,13927,3694,13923,3694,13918,3696,13918,3699,13913,3703,13912,3705,13910,3706,13909,3702,13905,3699,13897,3698,13897,3693,13898,3689,13893,3689,13892,3685,13893,3683,13888,3683,13885,3681,13882,3682,13883,3677,13877,3675,13873,3676,13870,3674]]]},{"n":"宮城県","p":[[[14163,3897,14157,3900,14152,3899,14149,3900,14149,3891,14145,3888,14145,3881,14144,3881,14142,3878,14135,3881,14131,3882,14130,3879,14127,3880,14126,3876,14122,3875,14120,3877,14114,3879,14114,3881,14110,3883,14115,3886,14114,3888,14109,3889,14099,3888,14094,3892,14092,3892,14084,3895,14083,3896,14077,3896,14075,3896,14072,3893,14068,3892,14064,3889,14055,3888,14055,3889,14054,3886,14059,3884,14061,3878,14065,3877,14061,3872,14062,3870,14062,3867,14059,3863,14055,3865,14054,3863,14058,3857,14056,3854,14057,3850,14060,3849,14061,3845,14058,3844,14058,3839,14052,3835,14053,3832,14049,3830,14050,3828,14047,3827,14047,3823,14048,3818,14047,3816,14043,3813,14042,3809,14037,3806,14030,3805,14028,3804,14029,3801,14028,3798,14035,3795,14039,3797,14048,3795,14047,3792,14049,3790,14056,3791,14063,3790,14066,3790,14069,3786,14068,3783,14069,3780,14072,3779,14078,3778,14078,3781,14081,3780,14085,3780,14085,3785,14086,3789,14090,3790,14093,3790,14092,3798,14093,3809,14097,3818,14103,3828,14106,3828,14108,3832,14105,3831,14106,3837,14109,3838,14113,3838,14116,3837,14121,3839,14130,3841,14136,3841,14137,3839,14141,3840,14144,3837,14142,3834,14146,3834,14147,3831,14151,3830,14154,3832,14151,3839,14148,3842,14150,3844,14150,3848,14149,3851,14155,3852,14152,3854,14147,3856,14153,3861,14153,3864,14146,3865,14144,3867,14148,3867,14155,3871,14154,3874,14152,3877,14152,3879,14159,3882,14158,3885,14161,3888,14166,3890,14163,3897]]]},{"n":"静岡県","p":[[[13822,3564,13819,3558,13816,3558,13815,3556,13816,3555,13814,3552,13816,3549,13816,3546,13812,3545,13812,3543,13815,3540,13814,3537,13807,3535,13797,3528,13793,3528,13791,3525,13788,3525,13787,3522,13784,3521,13781,3518,13783,3515,13780,3513,13777,3508,13772,3503,13771,3500,13769,3496,13765,3493,13764,3489,13760,3487,13759,3485,13755,3485,13750,3483,13749,3481,13748,3475,13749,3470,13748,3467,13759,3468,13768,3467,13780,3464,13791,3467,13796,3467,13803,3466,13808,3464,13819,3460,13822,3461,13819,3464,13820,3467,13822,3472,13825,3474,13829,3477,13834,3483,13833,3487,13836,3492,13841,3494,13847,3496,13851,3498,13853,3501,13849,3502,13853,3506,13856,3510,13857,3511,13864,3511,13870,3514,13875,3513,13883,3511,13887,3507,13889,3505,13888,3502,13885,3501,13879,3502,13876,3498,13877,3495,13879,3491,13876,3488,13878,3486,13875,3482,13875,3480,13878,3476,13874,3472,13876,3469,13879,3466,13877,3465,13879,3462,13884,3460,13885,3461,13890,3463,13894,3466,13898,3465,13897,3469,13901,3475,13906,3478,13908,3483,13908,3484,13910,3487,13913,3488,13915,3493,13915,3495,13913,3497,13910,3498,13910,3505,13907,3505,13907,3509,13911,3514,13903,3515,13903,3517,13899,3520,13898,3526,13900,3529,13902,3533,13900,3540,13892,3540,13887,3538,13885,3539,13882,3538,13879,3537,13868,3536,13866,3540,13861,3539,13860,3543,13858,3544,13853,3541,13853,3535,13853,3533,13851,3531,13851,3526,13853,3522,13849,3517,13848,3518,13843,3518,13840,3520,13839,3525,13837,3527,13837,3530,13836,3532,13833,3533,13829,3530,13826,3532,13825,3536,13823,3537,13826,3541,13826,3555,13825,3556,13824,3560,13822,3564]]]},{"n":"茨城県","p":[[[14079,3686,14074,3688,14071,3687,14070,3689,14062,3690,14059,3693,14057,3691,14059,3688,14058,3687,14054,3686,14052,3683,14046,3679,14044,3682,14038,3684,14036,3689,14033,3689,14029,3693,14026,3693,14025,3692,14025,3685,14027,3682,14026,3676,14029,3672,14027,3670,14023,3670,14022,3667,14024,3665,14025,3660,14025,3653,14026,3652,14023,3650,14021,3647,14020,3642,14019,3640,14016,3640,14014,3641,14011,3641,14004,3638,13998,3637,13996,3635,13991,3634,13991,3630,13988,3631,13985,3631,13984,3628,13982,3624,13973,3621,13969,3620,13970,3615,13973,3611,13973,3609,13978,3609,13980,3609,13981,3607,13988,3601,13990,3598,13993,3597,13994,3594,14000,3591,14002,3591,14008,3588,14009,3588,14013,3587,14015,3585,14021,3586,14024,3586,14028,3587,14031,3586,14034,3587,14036,3589,14040,3591,14042,3591,14046,3593,14048,3591,14051,3596,14057,3592,14061,3589,14063,3586,14068,3585,14071,3584,14073,3580,14082,3574,14085,3574,14083,3575,14077,3582,14071,3592,14068,3597,14066,3600,14061,3609,14057,3618,14056,3625,14056,3629,14059,3632,14060,3634,14062,3636,14061,3643,14061,3648,14063,3650,14064,3655,14067,3659,14069,3662,14069,3664,14072,3666,14072,3669,14075,3678,14077,3682,14081,3683,14079,3686]]]},{"n":"沖縄県","p":[[[12815,2672,12812,2670,12809,2665,12802,2663,12801,2663,12799,2666,12800,2669,12795,2671,12791,2670,12788,2671,12787,2669,12789,2667,12788,2664,12789,2661,12792,2661,12798,2659,12797,2655,12793,2654,12788,2650,12786,2651,12784,2648,12781,2646,12780,2644,12777,2644,12772,2640,12774,2636,12776,2629,12773,2627,12771,2627,12764,2620,12765,2616,12765,2613,12767,2612,12766,2608,12768,2607,12773,2610,12775,2612,12779,2614,12783,2617,12782,2619,12780,2619,12776,2621,12778,2623,12781,2629,12784,2633,12786,2634,12790,2630,12792,2632,12787,2636,12787,2638,12784,2641,12785,2645,12789,2646,12794,2644,12796,2647,12800,2649,12799,2650,12805,2652,12806,2655,12809,2654,12814,2655,12815,2660,12814,2662,12823,2663,12828,2668,12832,2676,12832,2678,12832,2682,12827,2686,12822,2679,12818,2675,12816,2674,12815,2672]],[[12673,2635,12676,2633,12678,2631,12680,2629,12680,2633,12682,2635,12678,2639,12671,2637,12673,2635]],[[13123,2581,13126,2582,13127,2586,13126,2587,13122,2587,13121,2582,13123,2581]],[[12531,2471,12539,2473,12544,2472,12543,2476,12540,2477,12539,2478,12533,2480,12533,2482,12529,2485,12528,2484,12528,2481,12526,2479,12528,2475,12526,2473,12531,2471]],[[12518,2481,12521,2481,12521,2485,12518,2486,12515,2486,12516,2483,12518,2481]],[[12518,2481,12516,2483,12514,2481,12518,2481]],[[12417,2433,12421,2435,12425,2436,12425,2441,12425,2447,12428,2449,12428,2450,12430,2453,12430,2454,12433,2457,12434,2460,12431,2459,12428,2456,12428,2453,12423,2450,12422,2445,12415,2445,12413,2447,12408,2445,12408,2442,12412,2443,12414,2441,12414,2439,12411,2436,12417,2433]],[[12301,2444,12304,2446,12301,2447,12296,2447,12294,2444,12301,2444]],[[12387,2425,12388,2428,12393,2433,12392,2437,12388,2440,12381,2441,12378,2444,12374,2439,12375,2436,12375,2432,12368,2433,12368,2428,12372,2428,12372,2430,12375,2428,12381,2427,12383,2427,12387,2425]]]},{"n":"山形県","p":[[[13987,3912,13988,3910,13984,3899,13982,3894,13978,3884,13975,3878,13971,3875,13970,3873,13967,3872,13965,3869,13963,3869,13960,3865,13956,3860,13955,3855,13960,3852,13963,3852,13965,3851,13969,3851,13972,3850,13971,3847,13972,3839,13975,3836,13979,3835,13982,3836,13988,3832,13990,3828,13988,3826,13986,3823,13976,3819,13971,3821,13968,3817,13969,3812,13967,3808,13969,3806,13966,3804,13964,3799,13963,3789,13968,3785,13970,3785,13971,3786,13972,3785,13974,3782,13978,3783,13981,3780,13986,3783,13988,3781,13996,3781,13996,3780,13999,3776,14005,3777,14009,3776,14010,3774,14014,3774,14017,3776,14024,3775,14030,3781,14026,3784,14027,3787,14026,3791,14028,3794,14028,3798,14029,3801,14028,3804,14030,3805,14037,3806,14042,3809,14043,3813,14047,3816,14048,3818,14047,3823,14047,3827,14050,3828,14049,3830,14053,3832,14052,3835,14058,3839,14058,3844,14061,3845,14060,3849,14057,3850,14056,3854,14058,3857,14054,3863,14055,3865,14059,3863,14062,3867,14062,3870,14061,3872,14065,3877,14061,3878,14059,3884,14054,3886,14055,3889,14050,3890,14046,3892,14045,3898,14043,3899,14038,3899,14035,3902,14032,3903,14031,3901,14026,3904,14023,3903,14020,3904,14020,3906,14015,3905,14010,3908,14008,3909,14006,3913,14001,3912,13999,3911,13995,3912,13987,3912]]]},{"n":"和歌山県","p":[[[13565,3438,13558,3438,13551,3434,13549,3436,13547,3435,13543,3435,13538,3433,13534,3433,13529,3430,13525,3431,13518,3428,13511,3427,13509,3431,13507,3430,13507,3428,13514,3423,13514,3419,13517,3419,13518,3415,13517,3413,13514,3414,13512,3412,13510,3407,13514,3406,13516,3404,13513,3400,13509,3399,13508,3396,13509,3395,13506,3390,13507,3389,13511,3389,13514,3388,13516,3385,13519,3382,13527,3378,13532,3376,13533,3375,13535,3374,13539,3370,13534,3366,13538,3365,13540,3363,13539,3360,13541,3358,13549,3355,13551,3353,13558,3351,13563,3351,13566,3349,13577,3348,13580,3350,13592,3355,13592,3358,13596,3358,13594,3360,13594,3365,13597,3366,13597,3368,13601,3372,13598,3374,13597,3372,13594,3374,13594,3375,13591,3377,13590,3379,13586,3382,13586,3387,13585,3389,13581,3391,13580,3390,13576,3389,13573,3390,13569,3390,13565,3388,13561,3390,13562,3394,13564,3395,13564,3399,13558,3406,13554,3408,13555,3410,13558,3412,13559,3415,13562,3416,13564,3419,13563,3420,13567,3422,13571,3421,13573,3423,13572,3426,13567,3428,13566,3436,13565,3438]],[[13600,3401,13596,3398,13593,3398,13589,3394,13591,3392,13593,3394,13597,3393,13598,3397,13601,3397,13600,3401]],[[13588,3391,13587,3386,13590,3387,13588,3391]]]},{"n":"長崎県","p":[[[12938,3442,12939,3446,12941,3449,12944,3451,12947,3455,12947,3461,12949,3467,12947,3469,12944,3470,12942,3469,12938,3465,12935,3465,12932,3463,12929,3456,12931,3456,12933,3454,12930,3450,12927,3447,12927,3439,12929,3438,12931,3434,12933,3437,12937,3434,12939,3436,12938,3440,12938,3442]],[[12921,3408,12928,3413,12929,3416,12930,3420,12932,3423,12931,3424,12934,3430,12931,3431,12922,3430,12920,3431,12920,3427,12918,3425,12917,3415,12917,3414,12921,3408]],[[12972,3370,12973,3374,12978,3374,12979,3376,12976,3378,12977,3385,12972,3385,12970,3386,12967,3384,12968,3381,12965,3381,12968,3373,12972,3370]],[[12937,3317,12943,3319,12950,3326,12950,3330,12951,3332,12954,3333,12957,3336,12955,3338,12950,3336,12944,3335,12943,3331,12945,3330,12940,3327,12940,3324,12938,3321,12940,3318,12937,3317]],[[12979,3334,12974,3337,12970,3335,12966,3337,12963,3336,12958,3338,12957,3334,12956,3332,12959,3330,12956,3326,12956,3322,12962,3321,12964,3317,12968,3317,12970,3312,12972,3314,12977,3313,12975,3310,12973,3310,12974,3306,12977,3306,12977,3308,12979,3308,12980,3307,12984,3306,12988,3306,12994,3301,12995,3299,12993,3297,12993,3292,12997,3289,12996,3288,12999,3286,12998,3284,12995,3286,12993,3286,12990,3288,12987,3285,12983,3285,12979,3287,12981,3289,12982,3297,12980,3301,12974,3302,12976,3305,12974,3306,12973,3308,12968,3310,12966,3304,12965,3301,12963,3298,12963,3295,12965,3293,12968,3288,12968,3285,12972,3283,12974,3281,12977,3281,12978,3280,12981,3275,12980,3274,12985,3272,12982,3271,12982,3266,12976,3259,12978,3258,12984,3262,12983,3263,12990,3266,12990,3268,12996,3274,12996,3276,13002,3276,13008,3279,13012,3279,13018,3279,13021,3273,13018,3271,13014,3268,13013,3264,13019,3261,13022,3261,13028,3265,13030,3265,13035,3268,13034,3271,13037,3274,13038,3278,13034,3286,13030,3288,13024,3287,13022,3286,13016,3284,13012,3288,13018,3291,13020,3296,13009,3297,13004,3300,13001,3302,12998,3306,12994,3307,12992,3311,12995,3311,12994,3317,12989,3316,12985,3318,12982,3318,12981,3321,12981,3324,12976,3329,12978,3333,12979,3334]],[[12906,3282,12907,3286,12910,3286,12908,3290,12911,3294,12914,3294,12915,3296,12918,3297,12917,3300,12910,3298,12911,3309,12908,3307,12909,3303,12905,3304,12904,3299,12906,3298,12900,3297,12901,3294,12904,3292,12904,3290,12905,3287,12904,3282,12906,3282]],[[12903,3284,12903,3290,12901,3292,12898,3290,12897,3288,12899,3287,12901,3287,12903,3284]],[[12887,3276,12888,3277,12890,3280,12888,3283,12884,3283,12884,3279,12887,3276]],[[12877,3257,12879,3259,12877,3262,12877,3264,12881,3265,12882,3264,12887,3264,12888,3267,12885,3269,12884,3271,12885,3275,12879,3279,12875,3275,12869,3274,12870,3277,12868,3278,12865,3278,12865,3272,12866,3266,12864,3263,12860,3261,12865,3259,12869,3260,12874,3261,12875,3258,12877,3257]]]},{"n":"秋田県","p":[[[14096,4025,14095,4026,14097,4034,14099,4035,14099,4043,14089,4042,14086,4044,14088,4051,14085,4051,14081,4049,14079,4046,14074,4044,14065,4040,14060,4043,14052,4042,14043,4047,14038,4048,14034,4046,14034,4044,14030,4045,14025,4044,14022,4043,14019,4044,14015,4044,14011,4044,14008,4047,14005,4047,13997,4043,13994,4043,13995,4041,14001,4038,14003,4033,14000,4021,13997,4013,13995,4007,13991,4003,13987,3999,13984,3997,13980,3996,13977,3998,13970,3998,13971,3992,13974,3990,13974,3987,13980,3987,13981,3986,13987,3990,13992,3990,13997,3988,14002,3984,14005,3977,14006,3967,14006,3959,14005,3950,14003,3942,14000,3934,13997,3930,13993,3929,13989,3921,13991,3919,13988,3913,13987,3912,13995,3912,13999,3911,14001,3912,14006,3913,14008,3909,14010,3908,14015,3905,14020,3906,14020,3904,14023,3903,14026,3904,14031,3901,14032,3903,14035,3902,14038,3899,14043,3899,14045,3898,14046,3892,14050,3890,14055,3889,14055,3888,14064,3889,14068,3892,14072,3893,14075,3896,14077,3896,14076,3900,14079,3903,14080,3908,14075,3909,14077,3912,14076,3914,14077,3917,14081,3918,14077,3920,14077,3925,14072,3927,14072,3930,14069,3930,14070,3934,14065,3939,14068,3942,14068,3945,14072,3948,14071,3950,14074,3953,14073,3956,14075,3957,14078,3960,14080,3961,14082,3965,14082,3969,14078,3973,14085,3979,14084,3981,14078,3983,14078,3987,14082,3988,14085,3987,14088,3987,14086,3995,14085,3997,14086,4004,14084,4007,14087,4009,14088,4011,14087,4013,14088,4015,14086,4017,14089,4019,14091,4022,14094,4023,14096,4025]]]},{"n":"岡山県","p":[[[13440,3524,13434,3522,13432,3520,13428,3520,13427,3521,13422,3519,13419,3519,13418,3517,13415,3519,13416,3522,13414,3523,13414,3528,13411,3528,13410,3531,13407,3530,13401,3531,13401,3535,13400,3535,13393,3533,13392,3531,13386,3529,13387,3527,13384,3525,13382,3525,13380,3529,13375,3532,13370,3533,13368,3532,13365,3534,13360,3535,13358,3532,13357,3526,13351,3522,13350,3519,13345,3517,13341,3519,13340,3516,13341,3514,13340,3511,13334,3511,13332,3509,13329,3510,13329,3507,13327,3506,13330,3502,13332,3499,13330,3496,13331,3494,13330,3489,13334,3483,13338,3481,13337,3477,13337,3472,13338,3468,13340,3467,13338,3462,13340,3460,13342,3459,13345,3456,13345,3449,13345,3448,13346,3446,13349,3444,13362,3449,13366,3452,13369,3451,13370,3448,13374,3447,13376,3449,13378,3444,13383,3447,13391,3445,13393,3447,13397,3453,13403,3456,13404,3458,13403,3460,13400,3459,13400,3461,13404,3461,13405,3459,13412,3459,13415,3462,13417,3461,13417,3465,13419,3465,13424,3470,13420,3471,13423,3473,13424,3472,13428,3473,13432,3472,13432,3480,13425,3485,13426,3488,13429,3491,13425,3495,13428,3496,13428,3500,13426,3502,13428,3503,13432,3504,13432,3508,13435,3509,13437,3515,13441,3516,13441,3519,13438,3520,13438,3522,13440,3524]]]},{"n":"福岡県","p":[[[13118,3362,13111,3363,13110,3362,13104,3369,13100,3376,13102,3377,13096,3384,13099,3385,13102,3396,13096,3396,13093,3391,13089,3390,13085,3393,13082,3392,13078,3393,13073,3393,13069,3393,13065,3389,13062,3388,13057,3388,13054,3389,13052,3386,13048,3385,13047,3382,13044,3379,13047,3377,13047,3375,13042,3369,13043,3366,13040,3365,13040,3361,13035,3359,13031,3360,13029,3358,13026,3359,13027,3361,13023,3362,13021,3365,13017,3363,13015,3360,13011,3360,13010,3357,13013,3357,13015,3354,13012,3351,13010,3351,13005,3350,13004,3347,13018,3347,13020,3348,13025,3347,13028,3348,13032,3346,13036,3343,13040,3343,13043,3340,13048,3344,13051,3345,13054,3342,13054,3337,13052,3334,13048,3330,13046,3330,13044,3326,13039,3325,13038,3322,13034,3320,13035,3318,13035,3314,13040,3311,13042,3305,13041,3300,13050,3300,13052,3301,13049,3305,13054,3308,13057,3309,13058,3312,13061,3311,13066,3312,13067,3316,13072,3315,13077,3312,13084,3310,13086,3313,13087,3317,13089,3319,13084,3321,13082,3325,13086,3327,13087,3329,13085,3334,13086,3338,13088,3339,13089,3345,13093,3346,13093,3348,13097,3351,13104,3352,13104,3351,13113,3350,13116,3351,13117,3353,13119,3356,13117,3359,13118,3362]]]},{"n":"岐阜県","p":[[[13759,3639,13754,3639,13751,3642,13747,3643,13746,3641,13741,3643,13739,3645,13731,3643,13732,3646,13728,3647,13721,3643,13719,3646,13716,3646,13711,3642,13709,3638,13708,3638,13701,3629,13696,3629,13697,3631,13695,3635,13691,3636,13684,3633,13683,3630,13679,3630,13681,3627,13685,3625,13680,3617,13677,3616,13678,3613,13675,3609,13676,3607,13673,3605,13673,3600,13675,3599,13675,3596,13679,3595,13678,3592,13681,3591,13683,3586,13680,3584,13679,3580,13676,3581,13672,3581,13671,3579,13667,3579,13664,3580,13662,3579,13659,3580,13657,3578,13652,3579,13648,3578,13643,3577,13638,3580,13633,3578,13632,3575,13632,3572,13629,3569,13628,3566,13629,3562,13632,3562,13632,3559,13632,3555,13640,3553,13639,3550,13643,3545,13641,3542,13644,3539,13642,3537,13642,3535,13641,3531,13639,3529,13639,3525,13638,3524,13641,3522,13644,3522,13646,3524,13650,3523,13653,3526,13656,3521,13660,3518,13662,3515,13666,3516,13667,3513,13667,3519,13668,3520,13668,3524,13673,3530,13677,3537,13683,3536,13689,3538,13692,3538,13696,3540,13696,3542,13705,3536,13705,3534,13710,3529,13713,3529,13717,3528,13718,3526,13722,3526,13730,3529,13737,3526,13739,3524,13744,3523,13752,3527,13756,3529,13756,3531,13760,3534,13760,3538,13763,3540,13759,3545,13763,3547,13762,3553,13758,3554,13756,3557,13751,3561,13754,3565,13750,3569,13749,3572,13746,3576,13740,3578,13739,3580,13734,3580,13733,3581,13734,3584,13736,3584,13736,3588,13738,3589,13744,3591,13746,3589,13751,3594,13752,3594,13754,3598,13759,3601,13760,3604,13761,3606,13755,3611,13757,3615,13759,3616,13759,3618,13757,3621,13761,3626,13765,3629,13765,3633,13762,3637,13759,3637,13759,3639]]]},{"n":"青森県","p":[[[14168,4045,14165,4047,14161,4051,14156,4054,14153,4053,14147,4058,14143,4069,14140,4084,14139,4094,14139,4100,14139,4110,14139,4117,14141,4125,14145,4137,14147,4142,14146,4143,14140,4138,14133,4136,14130,4135,14125,4136,14119,4139,14112,4145,14111,4146,14107,4148,14100,4149,14092,4154,14090,4152,14091,4150,14090,4148,14084,4142,14082,4134,14078,4125,14078,4121,14076,4119,14077,4115,14081,4113,14083,4115,14087,4117,14095,4117,14098,4120,14106,4118,14107,4120,14112,4121,14116,4128,14119,4128,14122,4125,14127,4119,14128,4116,14125,4111,14124,4105,14122,4097,14120,4093,14116,4089,14113,4087,14108,4089,14106,4091,14104,4092,14100,4094,14095,4099,14092,4100,14089,4101,14086,4097,14087,4091,14086,4089,14080,4084,14074,4083,14070,4086,14068,4089,14066,4095,14065,4105,14064,4108,14063,4113,14064,4117,14060,4122,14055,4123,14050,4119,14046,4118,14043,4120,14040,4124,14034,4125,14033,4122,14034,4119,14033,4116,14029,4112,14032,4109,14032,4100,14030,4092,14028,4086,14025,4080,14022,4078,14019,4078,14012,4074,14005,4077,13999,4073,13996,4068,13992,4064,13990,4065,13986,4062,13987,4058,13992,4059,13994,4055,13995,4049,13994,4043,13997,4043,14005,4047,14008,4047,14011,4044,14015,4044,14019,4044,14022,4043,14025,4044,14030,4045,14034,4044,14034,4046,14038,4048,14043,4047,14052,4042,14060,4043,14065,4040,14074,4044,14079,4046,14081,4049,14085,4051,14088,4051,14086,4044,14089,4042,14099,4043,14099,4035,14097,4034,14095,4026,14096,4025,14098,4022,14102,4022,14108,4025,14111,4026,14110,4028,14117,4031,14122,4032,14127,4035,14132,4037,14135,4033,14138,4034,14144,4037,14148,4038,14154,4035,14159,4038,14159,4041,14165,4043,14168,4045]]]},{"n":"大阪府","p":[[[13537,3505,13535,3502,13535,3497,13539,3495,13544,3494,13542,3491,13544,3489,13542,3482,13544,3479,13546,3473,13545,3472,13540,3469,13542,3466,13544,3464,13542,3459,13541,3456,13545,3456,13542,3452,13537,3450,13535,3445,13522,3434,13510,3432,13509,3431,13511,3427,13518,3428,13525,3431,13529,3430,13534,3433,13538,3433,13543,3435,13547,3435,13549,3436,13551,3434,13558,3438,13565,3438,13568,3440,13566,3442,13568,3444,13568,3452,13565,3454,13568,3458,13566,3460,13567,3465,13568,3468,13567,3470,13570,3472,13571,3478,13573,3478,13574,3480,13570,3485,13569,3486,13567,3490,13564,3493,13561,3494,13561,3497,13557,3497,13555,3492,13548,3495,13549,3499,13544,3501,13538,3501,13537,3505]]]},{"n":"長野県","p":[[[13870,3674,13867,3677,13870,3681,13868,3682,13869,3685,13868,3687,13863,3688,13861,3691,13858,3693,13859,3699,13857,3702,13852,3703,13846,3702,13839,3700,13834,3692,13830,3691,13830,3686,13821,3687,13817,3684,13812,3685,13809,3684,13807,3680,13800,3683,13803,3689,13799,3691,13792,3692,13787,3690,13788,3687,13782,3680,13776,3677,13775,3670,13776,3667,13774,3662,13775,3660,13769,3656,13769,3654,13765,3648,13766,3646,13763,3643,13761,3642,13759,3639,13759,3637,13762,3637,13765,3633,13765,3629,13761,3626,13757,3621,13759,3618,13759,3616,13757,3615,13755,3611,13761,3606,13760,3604,13759,3601,13754,3598,13752,3594,13751,3594,13746,3589,13744,3591,13738,3589,13736,3588,13736,3584,13734,3584,13733,3581,13734,3580,13739,3580,13740,3578,13746,3576,13749,3572,13750,3569,13754,3565,13751,3561,13756,3557,13758,3554,13762,3553,13763,3547,13759,3545,13763,3540,13760,3538,13760,3534,13756,3531,13756,3529,13755,3524,13758,3522,13758,3520,13765,3522,13766,3523,13771,3523,13772,3522,13776,3522,13778,3520,13784,3521,13787,3522,13788,3525,13791,3525,13793,3528,13797,3528,13807,3535,13814,3537,13815,3540,13812,3543,13812,3545,13816,3546,13816,3549,13814,3552,13816,3555,13815,3556,13816,3558,13819,3558,13822,3564,13819,3567,13818,3571,13824,3576,13819,3579,13825,3589,13828,3586,13829,3587,13834,3593,13837,3597,13844,3595,13845,3590,13849,3590,13851,3592,13861,3591,13861,3587,13868,3587,13869,3589,13873,3591,13874,3594,13871,3597,13871,3599,13869,3599,13863,3603,13864,3605,13863,3609,13865,3611,13863,3613,13860,3614,13859,3616,13864,3617,13863,3621,13860,3625,13860,3628,13865,3630,13865,3641,13859,3642,13856,3642,13853,3640,13850,3641,13849,3640,13846,3642,13840,3643,13840,3649,13840,3652,13843,3656,13843,3660,13845,3661,13846,3663,13853,3665,13853,3667,13852,3669,13854,3670,13870,3674]]]},{"n":"大分県","p":[[[13189,3275,13187,3279,13195,3279,13201,3283,13196,3283,13196,3285,13198,3286,13198,3291,13201,3294,13196,3295,13193,3297,13190,3298,13190,3301,13196,3307,13191,3307,13186,3309,13189,3311,13188,3313,13184,3311,13180,3313,13183,3318,13185,3319,13189,3324,13189,3327,13181,3324,13175,3325,13169,3328,13161,3326,13159,3325,13151,3327,13150,3333,13150,3336,13153,3337,13155,3335,13159,3335,13160,3337,13164,3338,13163,3342,13170,3341,13171,3344,13173,3347,13173,3352,13174,3354,13173,3359,13170,3361,13166,3367,13162,3367,13158,3369,13154,3368,13150,3367,13149,3364,13142,3359,13143,3357,13133,3358,13128,3358,13124,3360,13118,3362,13117,3359,13119,3356,13117,3353,13116,3351,13113,3350,13104,3351,13104,3352,13097,3351,13093,3348,13093,3346,13089,3345,13088,3339,13086,3338,13085,3334,13087,3329,13086,3327,13082,3325,13084,3321,13089,3319,13087,3317,13086,3313,13084,3310,13089,3309,13092,3305,13095,3305,13097,3302,13101,3304,13102,3309,13098,3314,13099,3318,13101,3318,13104,3319,13111,3318,13116,3314,13117,3308,13121,3306,13123,3302,13126,3298,13125,3294,13126,3288,13131,3285,13133,3283,13136,3280,13142,3281,13144,3283,13148,3284,13152,3280,13151,3277,13154,3276,13157,3276,13159,3278,13167,3277,13171,3277,13173,3280,13174,3283,13177,3284,13179,3282,13182,3283,13186,3282,13184,3278,13185,3274,13189,3275]]]},{"n":"三重県","p":[[[13667,3513,13666,3516,13662,3515,13660,3518,13656,3521,13653,3526,13650,3523,13646,3524,13644,3522,13641,3522,13641,3519,13645,3516,13644,3513,13644,3507,13642,3505,13641,3498,13640,3495,13637,3494,13636,3490,13628,3487,13625,3486,13619,3487,13617,3489,13613,3488,13611,3490,13609,3489,13611,3485,13609,3481,13602,3479,13603,3476,13606,3474,13609,3468,13606,3465,13607,3462,13605,3460,13605,3458,13608,3456,13615,3456,13617,3453,13621,3453,13622,3448,13621,3445,13613,3444,13609,3443,13607,3439,13609,3438,13610,3434,13613,3432,13609,3430,13613,3425,13611,3421,13609,3419,13611,3416,13609,3408,13610,3402,13607,3403,13602,3404,13600,3401,13601,3397,13598,3397,13597,3393,13593,3394,13591,3392,13588,3391,13590,3387,13587,3386,13586,3387,13586,3382,13590,3379,13591,3377,13594,3375,13594,3374,13597,3372,13598,3374,13601,3372,13605,3381,13609,3387,13611,3389,13615,3390,13615,3393,13619,3393,13622,3395,13622,3397,13626,3397,13627,3400,13628,3402,13624,3404,13624,3406,13620,3408,13626,3410,13629,3412,13628,3416,13632,3418,13635,3421,13636,3419,13646,3423,13649,3422,13651,3427,13660,3426,13664,3429,13665,3429,13667,3433,13670,3433,13672,3430,13679,3429,13682,3431,13683,3428,13684,3425,13687,3427,13690,3428,13686,3436,13690,3438,13693,3441,13691,3445,13688,3445,13687,3448,13681,3449,13673,3454,13666,3456,13665,3459,13662,3460,13655,3461,13655,3467,13652,3470,13653,3475,13656,3480,13661,3485,13665,3490,13665,3496,13665,3499,13670,3502,13675,3504,13677,3502,13675,3508,13670,3512,13667,3513]]]},{"n":"広島県","p":[[[13314,3507,13312,3508,13306,3508,13303,3507,13299,3510,13295,3508,13291,3509,13289,3511,13286,3510,13283,3506,13279,3500,13272,3495,13268,3495,13265,3492,13266,3489,13270,3488,13271,3485,13268,3485,13265,3484,13262,3484,13257,3481,13254,3479,13252,3480,13248,3480,13243,3482,13240,3478,13237,3480,13234,3479,13232,3480,13230,3478,13226,3481,13223,3477,13222,3475,13214,3472,13213,3470,13216,3468,13212,3461,13213,3460,13212,3457,13208,3454,13205,3453,13204,3450,13206,3449,13207,3447,13208,3444,13207,3442,13208,3436,13214,3428,13213,3427,13216,3423,13220,3422,13221,3420,13224,3421,13223,3424,13223,3426,13227,3428,13232,3432,13232,3434,13237,3436,13241,3436,13245,3435,13248,3436,13250,3434,13249,3431,13252,3428,13252,3425,13255,3423,13253,3422,13254,3421,13254,3419,13257,3420,13260,3423,13264,3420,13266,3421,13269,3423,13275,3424,13277,3425,13280,3431,13282,3432,13285,3429,13289,3433,13294,3434,13299,3434,13302,3433,13308,3435,13309,3439,13313,3438,13321,3441,13323,3441,13324,3444,13327,3443,13327,3441,13329,3438,13337,3437,13338,3438,13338,3442,13343,3442,13344,3445,13345,3448,13345,3449,13345,3456,13342,3459,13340,3460,13338,3462,13340,3467,13338,3468,13337,3472,13337,3477,13338,3481,13334,3483,13330,3489,13331,3494,13330,3496,13332,3499,13330,3502,13327,3506,13325,3508,13314,3507,13314,3507]],[[13319,3428,13320,3432,13318,3436,13315,3436,13313,3433,13316,3430,13319,3428]],[[13308,3426,13315,3429,13314,3432,13308,3431,13307,3427,13308,3426]],[[13227,3423,13230,3424,13235,3428,13233,3431,13229,3429,13226,3425,13227,3423]],[[13243,3413,13249,3415,13247,3420,13249,3420,13250,3427,13248,3429,13243,3429,13248,3424,13244,3422,13242,3425,13239,3426,13238,3423,13245,3418,13244,3415,13243,3413]],[[13288,3421,13292,3422,13292,3423,13294,3428,13289,3426,13284,3423,13286,3421,13288,3421]],[[13255,3408,13257,3412,13255,3412,13256,3418,13255,3419,13253,3419,13254,3420,13250,3418,13249,3416,13250,3413,13245,3411,13246,3408,13252,3409,13255,3408]]]},{"n":"北海道","p":[[[14834,4529,14827,4527,14818,4526,14807,4526,14803,4527,14800,4533,14797,4540,14796,4542,14793,4544,14787,4540,14785,4536,14786,4532,14789,4526,14787,4523,14774,4520,14771,4517,14769,4514,14769,4509,14764,4508,14759,4509,14757,4511,14754,4511,14752,4504,14752,4500,14749,4499,14740,4492,14738,4491,14727,4487,14725,4481,14720,4480,14717,4482,14713,4483,14710,4481,14712,4478,14714,4477,14719,4476,14720,4474,14718,4469,14713,4465,14708,4464,14706,4466,14703,4464,14703,4460,14700,4458,14693,4461,14693,4459,14695,4455,14693,4453,14689,4452,14686,4447,14687,4444,14695,4443,14699,4445,14703,4452,14708,4456,14711,4457,14714,4456,14722,4458,14726,4461,14727,4464,14730,4467,14734,4472,14737,4472,14739,4475,14744,4477,14749,4478,14752,4481,14755,4482,14760,4485,14763,4491,14765,4492,14761,4494,14763,4497,14768,4500,14773,4500,14773,4498,14779,4495,14785,4497,14791,4496,14792,4498,14798,4500,14799,4502,14809,4511,14817,4515,14820,4515,14822,4517,14833,4522,14838,4523,14844,4525,14846,4525,14857,4531,14864,4533,14875,4534,14878,4532,14884,4535,14888,4539,14886,4542,14883,4543,14884,4546,14889,4548,14890,4551,14886,4554,14879,4556,14868,4554,14865,4554,14864,4551,14858,4549,14855,4546,14852,4545,14849,4542,14844,4535,14841,4533,14837,4532,14834,4529]],[[14158,4518,14159,4516,14166,4503,14172,4492,14176,4484,14178,4475,14179,4467,14179,4459,14177,4455,14176,4446,14174,4442,14171,4439,14167,4433,14165,4431,14166,4424,14166,4402,14163,4395,14163,4393,14160,4389,14156,4386,14152,4386,14150,4384,14146,4384,14139,4381,14133,4373,14135,4364,14138,4360,14139,4359,14136,4352,14143,4342,14143,4339,14142,4333,14135,4325,14130,4321,14123,4317,14116,4314,14110,4317,14103,4318,14101,4319,14102,4324,14098,4324,14093,4323,14091,4321,14085,4320,14079,4320,14076,4323,14072,4325,14064,4327,14063,4330,14058,4331,14051,4337,14047,4337,14046,4335,14042,4333,14038,4333,14036,4332,14033,4322,14036,4318,14040,4316,14044,4313,14046,4309,14049,4308,14051,4303,14053,4303,14052,4299,14042,4294,14039,4292,14034,4286,14031,4283,14031,4278,14025,4277,14024,4279,14019,4283,14014,4275,14007,4273,14005,4269,13993,4269,13987,4267,13982,4260,13985,4253,13984,4250,13985,4246,13983,4239,13980,4236,13978,4235,13977,4231,13979,4227,13978,4226,13980,4223,13988,4221,13992,4213,13999,4213,14003,4211,14012,4200,14014,4192,14012,4182,14011,4181,14008,4181,14006,4175,14001,4169,13998,4161,13999,4155,14002,4150,14003,4146,14008,4142,14015,4143,14018,4140,14022,4141,14026,4148,14031,4149,14036,4152,14041,4152,14044,4155,14043,4159,14044,4167,14046,4170,14053,4170,14058,4174,14060,4174,14063,4181,14066,4182,14072,4181,14073,4179,14069,4176,14072,4175,14073,4177,14077,4178,14086,4176,14093,4174,14097,4171,14103,4172,14107,4174,14111,4179,14116,4179,14118,4182,14115,4183,14115,4186,14111,4187,14104,4189,14101,4189,14096,4192,14088,4201,14082,4204,14080,4207,14077,4209,14076,4212,14071,4214,14058,4211,14052,4213,14038,4222,14034,4223,14029,4225,14028,4231,14029,4237,14032,4242,14037,4250,14041,4254,14048,4259,14053,4259,14058,4257,14064,4259,14070,4259,14076,4255,14078,4253,14078,4250,14080,4250,14084,4247,14087,4246,14090,4242,14091,4238,14095,4236,14093,4234,14094,4232,14100,4230,14102,4233,14109,4240,14116,4244,14121,4246,14135,4254,14142,4258,14150,4260,14162,4263,14167,4263,14181,4261,14190,4258,14203,4248,14208,4247,14215,4246,14220,4245,14228,4238,14237,4232,14241,4231,14245,4230,14248,4227,14259,4224,14264,4222,14267,4219,14276,4217,14282,4214,14291,4213,14296,4212,14301,4208,14310,4205,14314,4203,14316,4198,14322,4195,14325,4197,14326,4200,14329,4204,14331,4205,14331,4208,14332,4212,14332,4216,14334,4220,14332,4221,14331,4225,14332,4230,14336,4237,14343,4248,14353,4257,14363,4267,14376,4276,14386,4284,14392,4287,14405,4294,14409,4295,14417,4298,14422,4300,14431,4301,14437,4299,14437,4297,14445,4294,14449,4294,14453,4295,14463,4295,14468,4294,14477,4293,14472,4298,14475,4302,14478,4305,14482,4306,14486,4300,14488,4299,14493,4299,14496,4298,14502,4300,14503,4303,14509,4305,14509,4307,14512,4308,14512,4312,14517,4315,14520,4314,14525,4316,14530,4317,14541,4319,14551,4319,14555,4321,14557,4328,14559,4328,14561,4331,14565,4332,14568,4332,14571,4334,14575,4334,14580,4336,14581,4339,14575,4339,14572,4338,14565,4339,14564,4337,14552,4331,14549,4327,14539,4330,14531,4336,14528,4341,14525,4349,14525,4352,14520,4360,14520,4363,14515,4365,14509,4373,14507,4375,14506,4381,14508,4382,14510,4386,14510,4389,14516,4398,14522,4404,14525,4407,14524,4409,14527,4414,14531,4417,14535,4422,14537,4426,14533,4435,14530,4431,14524,4426,14519,4420,14516,4418,14501,4410,14499,4407,14494,4404,14492,4402,14488,4398,14485,4397,14484,4395,14480,4393,14471,4392,14462,4392,14450,4393,14441,4395,14432,4397,14426,4404,14425,4410,14421,4410,14400,4414,14390,4415,14379,4418,14365,4422,14350,4428,14342,4431,14337,4433,14335,4437,14324,4442,14322,4444,14309,4450,14300,4456,14295,4460,14286,4468,14280,4471,14273,4477,14268,4483,14266,4484,14263,4489,14259,4492,14258,4496,14254,4499,14253,4503,14239,4514,14226,4525,14217,4534,14206,4539,14204,4542,14202,4546,14197,4548,14196,4551,14191,4552,14188,4550,14188,4546,14186,4543,14180,4541,14173,4540,14168,4541,14167,4544,14164,4542,14164,4539,14166,4537,14165,4534,14162,4531,14161,4528,14157,4524,14158,4518]],[[14103,4527,14105,4528,14106,4532,14106,4541,14107,4542,14105,4545,14099,4543,14098,4538,14101,4533,14102,4531,14103,4527]],[[14115,4523,14113,4521,14114,4516,14117,4514,14124,4510,14128,4511,14133,4515,14132,4520,14129,4522,14124,4523,14120,4526,14115,4523]],[[14575,4406,14572,4404,14568,4403,14565,4399,14560,4397,14559,4395,14556,4395,14553,4392,14547,4389,14544,4385,14541,4384,14543,4377,14542,4373,14545,4373,14553,4374,14555,4372,14554,4368,14555,4367,14557,4378,14558,4385,14564,4390,14572,4391,14578,4394,14579,4398,14583,4403,14586,4403,14587,4407,14591,4412,14595,4415,14604,4419,14607,4423,14612,4427,14617,4427,14625,4427,14630,4428,14631,4429,14637,4432,14638,4435,14645,4438,14649,4435,14653,4438,14655,4443,14646,4442,14641,4442,14633,4442,14625,4445,14623,4448,14619,4451,14613,4451,14608,4447,14605,4442,14601,4438,14599,4432,14594,4428,14588,4425,14583,4418,14579,4415,14574,4410,14575,4406]],[[14665,4370,14668,4371,14669,4374,14673,4373,14676,4375,14679,4378,14681,4378,14684,4381,14690,4381,14692,4384,14689,4385,14685,4389,14677,4388,14673,4385,14672,4383,14667,4383,14661,4382,14659,4380,14660,4376,14659,4374,14665,4371,14665,4370]],[[14612,4346,14618,4348,14619,4352,14614,4355,14608,4353,14607,4352,14611,4349,14612,4346]],[[13945,4205,13950,4210,13952,4214,13952,4218,13956,4223,13954,4223,13943,4222,13941,4218,13942,4214,13942,4207,13945,4205]]]},{"n":"兵庫県","p":[[[13487,3566,13484,3564,13481,3566,13471,3565,13466,3567,13463,3564,13460,3566,13456,3565,13454,3567,13449,3566,13445,3563,13440,3562,13437,3561,13441,3559,13443,3554,13444,3544,13448,3543,13447,3538,13451,3535,13450,3534,13451,3528,13443,3523,13440,3524,13438,3522,13438,3520,13441,3519,13441,3516,13437,3515,13435,3509,13432,3508,13432,3504,13428,3503,13426,3502,13428,3500,13428,3496,13425,3495,13429,3491,13426,3488,13425,3485,13432,3480,13432,3472,13436,3474,13438,3473,13441,3473,13443,3475,13443,3477,13448,3477,13453,3478,13457,3476,13458,3477,13467,3477,13471,3478,13475,3477,13483,3471,13484,3472,13490,3469,13498,3464,13502,3464,13506,3463,13511,3464,13518,3465,13519,3468,13523,3470,13529,3470,13534,3472,13538,3469,13540,3469,13545,3472,13546,3473,13544,3479,13542,3482,13544,3489,13542,3491,13544,3494,13539,3495,13535,3497,13535,3502,13537,3505,13540,3508,13539,3511,13534,3515,13529,3514,13527,3518,13523,3518,13521,3516,13519,3519,13520,3520,13516,3523,13516,3526,13511,3527,13507,3524,13506,3526,13501,3527,13501,3528,13492,3532,13492,3539,13494,3541,13500,3539,13503,3541,13505,3541,13505,3544,13504,3547,13504,3551,13504,3554,13500,3554,13495,3552,13493,3551,13491,3554,13485,3559,13487,3562,13487,3566]],[[13479,3443,13476,3439,13473,3433,13468,3432,13466,3430,13467,3425,13470,3425,13470,3422,13473,3421,13473,3419,13480,3420,13484,3423,13490,3425,13495,3427,13494,3430,13492,3431,13491,3434,13489,3435,13489,3440,13491,3444,13498,3450,13499,3455,13503,3458,13500,3461,13498,3460,13493,3455,13489,3453,13484,3447,13482,3447,13479,3443]]]},{"n":"千葉県","p":[[[13978,3609,13979,3606,13982,3603,13981,3600,13985,3594,13989,3590,13990,3587,13989,3585,13989,3578,13988,3577,13990,3574,13990,3573,13992,3570,13989,3568,13987,3564,13990,3562,13994,3564,13992,3566,13997,3568,13999,3566,14001,3566,14008,3560,14010,3555,14006,3554,14001,3548,13997,3547,13994,3544,13991,3543,13991,3539,13988,3536,13985,3537,13982,3534,13982,3530,13985,3528,13987,3522,13982,3520,13982,3515,13984,3514,13982,3511,13984,3509,13982,3507,13982,3504,13986,3501,13986,3499,13975,3496,13981,3494,13982,3491,13989,3490,13994,3491,13996,3494,13996,3497,13998,3501,14004,3505,14007,3506,14010,3508,14011,3511,14014,3512,14017,3512,14020,3511,14028,3513,14030,3515,14033,3514,14035,3518,14038,3518,14041,3524,14040,3527,14041,3531,14040,3534,14039,3538,14040,3542,14043,3550,14050,3558,14056,3563,14063,3567,14069,3570,14074,3569,14081,3571,14086,3570,14087,3574,14085,3574,14082,3574,14073,3580,14071,3584,14068,3585,14063,3586,14061,3589,14057,3592,14051,3596,14048,3591,14046,3593,14042,3591,14040,3591,14036,3589,14034,3587,14031,3586,14028,3587,14024,3586,14021,3586,14015,3585,14013,3587,14009,3588,14008,3588,14002,3591,14000,3591,13994,3594,13993,3597,13990,3598,13988,3601,13981,3607,13980,3609,13978,3609]]]},{"n":"富山県","p":[[[13763,3698,13759,3697,13757,3696,13750,3696,13743,3692,13741,3690,13742,3688,13739,3681,13736,3679,13733,3676,13729,3676,13723,3677,13718,3676,13713,3677,13711,3677,13707,3679,13700,3685,13698,3687,13703,3692,13703,3694,13705,3696,13704,3697,13699,3697,13693,3695,13688,3691,13688,3688,13686,3686,13685,3681,13685,3677,13684,3674,13679,3672,13682,3670,13682,3667,13679,3663,13680,3657,13682,3655,13679,3651,13680,3649,13680,3644,13677,3643,13680,3640,13680,3636,13678,3634,13679,3630,13683,3630,13684,3633,13691,3636,13695,3635,13697,3631,13696,3629,13701,3629,13708,3638,13709,3638,13711,3642,13716,3646,13719,3646,13721,3643,13728,3647,13732,3646,13731,3643,13739,3645,13741,3643,13746,3641,13747,3643,13751,3642,13754,3639,13759,3639,13761,3642,13763,3643,13766,3646,13765,3648,13769,3654,13769,3656,13775,3660,13774,3662,13776,3667,13775,3670,13776,3677,13773,3683,13773,3687,13771,3689,13772,3693,13771,3694,13767,3695,13763,3698]]]},{"n":"東京都","p":[[[13894,3585,13896,3583,13898,3577,13903,3572,13907,3570,13911,3569,13913,3567,13916,3567,13917,3565,13920,3565,13923,3561,13925,3560,13928,3561,13934,3560,13940,3558,13946,3553,13949,3552,13948,3556,13951,3558,13949,3560,13953,3564,13959,3562,13962,3561,13967,3559,13970,3554,13976,3554,13979,3553,13981,3554,13979,3557,13976,3556,13975,3559,13975,3563,13977,3565,13987,3564,13989,3568,13992,3570,13990,3573,13990,3574,13988,3577,13989,3578,13988,3578,13984,3580,13975,3581,13975,3579,13969,3580,13964,3579,13961,3577,13957,3576,13954,3579,13944,3577,13938,3577,13937,3579,13933,3579,13930,3583,13927,3584,13920,3584,13914,3586,13905,3588,13902,3590,13900,3588,13897,3588,13894,3585]],[[13944,3468,13945,3470,13945,3475,13941,3479,13936,3480,13935,3476,13935,3472,13940,3468,13944,3468]],[[13950,3405,13953,3405,13956,3407,13956,3410,13954,3412,13950,3412,13947,3408,13948,3405,13950,3405]],[[13983,3305,13984,3308,13986,3308,13985,3312,13982,3312,13977,3316,13975,3316,13974,3313,13975,3310,13978,3310,13978,3307,13983,3305]]]},{"n":"埼玉県","p":[[[13966,3621,13963,3619,13959,3621,13953,3619,13947,3619,13944,3620,13938,3624,13935,3625,13932,3623,13927,3625,13924,3625,13916,3628,13914,3628,13911,3625,13906,3618,13904,3613,13902,3613,13896,3611,13893,3609,13890,3609,13885,3607,13883,3604,13879,3603,13876,3603,13875,3601,13871,3599,13871,3597,13874,3594,13873,3591,13878,3590,13879,3588,13885,3587,13889,3584,13894,3585,13897,3588,13900,3588,13902,3590,13905,3588,13914,3586,13920,3584,13927,3584,13930,3583,13933,3579,13937,3579,13938,3577,13944,3577,13954,3579,13957,3576,13961,3577,13964,3579,13969,3580,13975,3579,13975,3581,13984,3580,13988,3578,13989,3578,13989,3585,13990,3587,13989,3590,13985,3594,13981,3600,13982,3603,13979,3606,13978,3609,13973,3609,13973,3611,13970,3615,13969,3620,13966,3621]]]},{"n":"山口県","p":[[[13169,3468,13165,3465,13160,3466,13159,3464,13156,3462,13155,3458,13152,3455,13150,3453,13147,3453,13145,3452,13146,3449,13142,3445,13140,3442,13135,3441,13131,3438,13127,3439,13125,3438,13120,3440,13119,3438,13115,3437,13113,3441,13111,3441,13108,3442,13105,3441,13100,3442,13098,3444,13096,3441,13100,3440,13103,3438,13093,3435,13089,3435,13089,3432,13087,3429,13092,3424,13093,3419,13093,3417,13089,3413,13087,3414,13086,3410,13088,3407,13091,3406,13090,3403,13092,3401,13092,3398,13090,3394,13090,3392,13099,3399,13102,3402,13104,3406,13106,3404,13110,3403,13112,3400,13115,3400,13117,3397,13116,3396,13118,3393,13121,3394,13127,3392,13131,3395,13135,3397,13135,3398,13138,3401,13139,3403,13145,3400,13148,3403,13154,3400,13158,3402,13161,3402,13163,3405,13166,3404,13168,3405,13172,3406,13175,3405,13179,3405,13182,3403,13178,3399,13182,3399,13186,3401,13188,3398,13192,3397,13193,3395,13196,3394,13202,3390,13205,3392,13208,3389,13212,3388,13212,3384,13214,3383,13216,3386,13213,3388,13212,3395,13218,3396,13221,3400,13222,3405,13221,3406,13220,3413,13223,3413,13225,3417,13224,3419,13224,3421,13221,3420,13220,3422,13216,3423,13213,3427,13214,3428,13208,3436,13207,3442,13208,3444,13207,3447,13204,3447,13200,3443,13201,3437,13197,3434,13197,3432,13192,3434,13187,3431,13180,3432,13177,3434,13176,3438,13178,3440,13179,3443,13176,3444,13174,3443,13170,3444,13169,3446,13167,3451,13170,3453,13170,3455,13173,3458,13172,3461,13169,3462,13169,3468]],[[13221,3386,13222,3387,13227,3388,13228,3390,13232,3389,13233,3387,13236,3388,13237,3391,13245,3393,13242,3395,13240,3393,13237,3393,13235,3391,13233,3390,13230,3392,13228,3396,13226,3395,13221,3397,13218,3395,13218,3390,13220,3388,13221,3386]]]},{"n":"福島県","p":[[[14028,3798,14028,3794,14026,3791,14027,3787,14026,3784,14030,3781,14024,3775,14017,3776,14014,3774,14010,3774,14009,3776,14005,3777,13999,3776,13996,3780,13996,3781,13988,3781,13986,3783,13981,3780,13978,3783,13974,3782,13972,3785,13971,3786,13970,3785,13968,3785,13970,3785,13971,3785,13972,3784,13974,3782,13968,3778,13965,3773,13962,3771,13959,3767,13955,3763,13957,3758,13957,3755,13959,3751,13950,3751,13946,3752,13941,3751,13940,3746,13936,3747,13929,3745,13923,3744,13921,3743,13921,3739,13924,3738,13923,3734,13921,3729,13916,3724,13919,3720,13922,3721,13925,3716,13924,3712,13926,3706,13924,3701,13926,3699,13925,3696,13923,3694,13927,3694,13930,3693,13939,3691,13943,3692,13946,3697,13949,3697,13955,3699,13962,3702,13963,3703,13967,3704,13967,3706,13972,3707,13975,3707,13977,3709,13982,3709,13982,3712,13983,3713,13990,3715,13995,3715,14002,3714,14006,3713,14010,3712,14014,3711,14017,3707,14019,3706,14020,3702,14025,3703,14024,3700,14025,3697,14024,3694,14026,3693,14029,3693,14033,3689,14036,3689,14038,3684,14044,3682,14046,3679,14052,3683,14054,3686,14058,3687,14059,3688,14057,3691,14059,3693,14062,3690,14070,3689,14071,3687,14074,3688,14079,3686,14079,3688,14082,3691,14084,3691,14090,3694,14092,3693,14097,3697,14098,3700,14097,3704,14098,3707,14100,3711,14100,3718,14102,3723,14101,3725,14104,3736,14104,3747,14104,3748,14103,3755,14102,3765,14101,3769,14101,3774,14099,3777,14099,3782,14096,3783,14093,3790,14090,3790,14086,3789,14085,3785,14085,3780,14081,3780,14078,3781,14078,3778,14072,3779,14069,3780,14068,3783,14069,3786,14066,3790,14063,3790,14056,3791,14049,3790,14047,3792,14048,3795,14039,3797,14035,3795,14028,3798]]]},{"n":"石川県","p":[[[13705,3696,13705,3704,13705,3711,13701,3709,13700,3706,13697,3705,13692,3709,13688,3707,13687,3709,13689,3711,13690,3714,13689,3716,13691,3719,13692,3722,13694,3723,13696,3721,13699,3720,13701,3718,13704,3721,13707,3722,13708,3724,13710,3728,13716,3730,13723,3730,13727,3734,13725,3736,13724,3739,13726,3743,13729,3744,13734,3744,13736,3745,13734,3749,13735,3750,13733,3753,13726,3753,13718,3750,13712,3749,13707,3745,13692,3740,13687,3741,13684,3740,13680,3738,13676,3736,13672,3733,13673,3729,13672,3726,13670,3724,13667,3715,13668,3714,13672,3714,13673,3710,13672,3706,13677,3700,13676,3694,13677,3690,13675,3684,13672,3679,13667,3670,13662,3664,13657,3659,13642,3642,13637,3638,13633,3636,13630,3635,13627,3632,13624,3630,13626,3627,13630,3626,13633,3623,13633,3620,13636,3617,13641,3617,13644,3614,13654,3615,13660,3613,13662,3611,13664,3610,13666,3607,13675,3609,13678,3613,13677,3616,13680,3617,13685,3625,13681,3627,13679,3630,13678,3634,13680,3636,13680,3640,13677,3643,13680,3644,13680,3649,13679,3651,13682,3655,13680,3657,13679,3663,13682,3667,13682,3670,13679,3672,13684,3674,13685,3677,13685,3681,13686,3686,13688,3688,13688,3691,13693,3695,13699,3697,13704,3697,13705,3696]],[[13695,3709,13697,3710,13704,3712,13702,3714,13693,3714,13695,3709]]]},{"n":"福井県","p":[[[13624,3630,13620,3626,13616,3625,13612,3625,13613,3621,13605,3611,13603,3610,13601,3603,13596,3600,13596,3598,13600,3594,13600,3588,13607,3582,13610,3578,13610,3572,13608,3570,13608,3567,13606,3566,13602,3568,13604,3570,13604,3573,13602,3576,13598,3573,13598,3568,13597,3566,13598,3563,13592,3561,13590,3562,13587,3561,13586,3558,13583,3555,13583,3554,13580,3553,13578,3555,13575,3557,13571,3557,13569,3555,13575,3553,13574,3549,13570,3549,13565,3548,13562,3549,13564,3551,13563,3554,13558,3549,13553,3549,13548,3552,13549,3556,13546,3555,13545,3552,13547,3551,13546,3547,13553,3542,13553,3538,13564,3537,13570,3534,13572,3536,13577,3536,13581,3539,13581,3541,13585,3541,13586,3540,13589,3540,13591,3543,13591,3545,13594,3552,13598,3549,13601,3549,13603,3553,13611,3553,13611,3558,13616,3557,13618,3560,13615,3565,13613,3567,13615,3570,13619,3570,13620,3569,13626,3567,13628,3566,13629,3569,13632,3572,13632,3575,13633,3578,13638,3580,13643,3577,13648,3578,13652,3579,13657,3578,13659,3580,13662,3579,13664,3580,13667,3579,13671,3579,13672,3581,13676,3581,13679,3580,13680,3584,13683,3586,13681,3591,13678,3592,13679,3595,13675,3596,13675,3599,13673,3600,13673,3605,13676,3607,13675,3609,13666,3607,13664,3610,13662,3611,13660,3613,13654,3615,13644,3614,13641,3617,13636,3617,13633,3620,13633,3623,13630,3626,13626,3627,13624,3630]]]},{"n":"愛媛県","p":[[[13296,3419,13300,3421,13303,3421,13305,3423,13305,3426,13302,3430,13298,3429,13299,3425,13299,3423,13296,3423,13294,3421,13296,3419]],[[13303,3411,13309,3416,13307,3419,13304,3419,13302,3418,13303,3416,13301,3414,13303,3411]],[[13360,3404,13355,3399,13351,3397,13345,3398,13339,3399,13336,3398,13332,3399,13325,3398,13323,3395,13313,3393,13309,3395,13307,3398,13304,3404,13300,3407,13297,3412,13294,3414,13292,3412,13293,3409,13292,3407,13286,3405,13285,3405,13280,3401,13277,3400,13277,3396,13275,3391,13271,3391,13270,3388,13271,3385,13269,3384,13269,3381,13270,3377,13268,3374,13265,3370,13258,3365,13253,3364,13247,3360,13242,3354,13236,3352,13226,3346,13223,3346,13222,3344,13217,3344,13218,3343,13215,3341,13212,3342,13208,3340,13210,3337,13213,3336,13218,3341,13224,3343,13228,3345,13230,3347,13235,3347,13241,3346,13241,3344,13239,3342,13239,3337,13242,3336,13237,3332,13242,3330,13246,3331,13249,3333,13251,3331,13248,3329,13255,3322,13251,3321,13251,3318,13248,3317,13246,3318,13242,3316,13245,3314,13248,3314,13247,3309,13248,3304,13248,3301,13251,3300,13247,3294,13248,3290,13252,3290,13253,3292,13251,3295,13257,3295,13259,3292,13261,3292,13265,3292,13268,3294,13269,3298,13266,3311,13264,3313,13261,3317,13263,3318,13269,3313,13273,3317,13275,3320,13277,3321,13277,3324,13279,3327,13290,3331,13290,3334,13289,3336,13286,3337,13285,3340,13284,3340,13282,3345,13281,3346,13285,3348,13287,3347,13296,3347,13301,3348,13301,3349,13306,3354,13305,3358,13308,3365,13312,3366,13312,3369,13314,3371,13316,3373,13316,3375,13318,3377,13319,3379,13322,3378,13326,3379,13327,3382,13329,3383,13333,3381,13336,3383,13339,3382,13342,3384,13350,3383,13354,3388,13358,3387,13361,3388,13366,3388,13369,3392,13369,3395,13368,3397,13368,3401,13360,3404]]]},{"n":"奈良県","p":[[[13573,3478,13571,3478,13570,3472,13567,3470,13568,3468,13567,3465,13566,3460,13568,3458,13565,3454,13568,3452,13568,3444,13566,3442,13568,3440,13565,3438,13566,3436,13567,3428,13572,3426,13573,3423,13571,3421,13567,3422,13563,3420,13564,3419,13562,3416,13559,3415,13558,3412,13555,3410,13554,3408,13558,3406,13564,3399,13564,3395,13562,3394,13561,3390,13565,3388,13569,3390,13573,3390,13576,3389,13580,3390,13581,3391,13585,3389,13586,3387,13587,3386,13588,3391,13591,3392,13589,3394,13593,3398,13596,3398,13600,3401,13602,3404,13607,3403,13610,3402,13609,3408,13611,3416,13609,3419,13611,3421,13613,3425,13609,3430,13613,3432,13610,3434,13609,3438,13607,3439,13609,3443,13613,3444,13621,3445,13622,3448,13621,3453,13617,3453,13615,3456,13608,3456,13605,3458,13605,3460,13607,3462,13606,3465,13609,3468,13606,3474,13601,3471,13599,3472,13598,3473,13596,3475,13593,3474,13592,3475,13589,3471,13582,3471,13575,3473,13573,3475,13573,3478]]]},{"n":"島根県","p":[[[13325,3616,13328,3618,13333,3617,13334,3622,13337,3621,13337,3625,13338,3627,13334,3631,13331,3632,13328,3634,13323,3633,13320,3630,13318,3625,13318,3621,13321,3621,13323,3617,13325,3616]],[[13300,3604,13298,3608,13300,3609,13302,3606,13305,3606,13306,3609,13304,3611,13306,3613,13301,3613,13298,3612,13295,3608,13300,3604]],[[13307,3604,13314,3608,13313,3611,13309,3612,13307,3611,13307,3604]],[[13324,3555,13331,3556,13331,3558,13322,3558,13321,3557,13315,3556,13312,3558,13311,3560,13307,3558,13303,3554,13297,3554,13297,3551,13292,3552,13286,3551,13281,3550,13278,3548,13273,3547,13276,3545,13271,3544,13268,3545,13265,3544,13264,3542,13267,3540,13266,3534,13263,3529,13258,3527,13253,3525,13245,3520,13242,3519,13239,3514,13239,3513,13233,3510,13231,3506,13224,3503,13215,3497,13210,3495,13206,3491,13206,3488,13203,3488,13199,3483,13195,3482,13194,3479,13190,3477,13187,3473,13184,3471,13180,3469,13175,3468,13170,3467,13169,3468,13169,3462,13172,3461,13173,3458,13170,3455,13170,3453,13167,3451,13169,3446,13170,3444,13174,3443,13176,3444,13179,3443,13178,3440,13176,3438,13177,3434,13180,3432,13187,3431,13192,3434,13197,3432,13197,3434,13201,3437,13200,3443,13204,3447,13207,3447,13206,3449,13204,3450,13205,3453,13208,3454,13212,3457,13213,3460,13212,3461,13216,3468,13213,3470,13214,3472,13222,3475,13223,3477,13226,3481,13230,3478,13232,3480,13234,3479,13237,3480,13240,3478,13243,3482,13248,3480,13252,3480,13254,3479,13257,3481,13262,3484,13265,3484,13268,3485,13271,3485,13270,3488,13266,3489,13265,3492,13268,3495,13272,3495,13279,3500,13283,3506,13286,3510,13289,3511,13291,3509,13295,3508,13299,3510,13303,3507,13306,3508,13312,3508,13314,3507,13314,3512,13316,3515,13319,3517,13318,3520,13315,3522,13318,3523,13325,3526,13331,3527,13329,3532,13329,3535,13332,3541,13330,3544,13328,3544,13322,3548,13320,3553,13322,3555,13324,3555]]]},{"n":"岩手県","p":[[[14168,4045,14165,4043,14159,4041,14159,4038,14154,4035,14148,4038,14144,4037,14138,4034,14135,4033,14132,4037,14127,4035,14122,4032,14117,4031,14110,4028,14111,4026,14108,4025,14102,4022,14098,4022,14096,4025,14094,4023,14091,4022,14089,4019,14086,4017,14088,4015,14087,4013,14088,4011,14087,4009,14084,4007,14086,4004,14085,3997,14086,3995,14088,3987,14085,3987,14082,3988,14078,3987,14078,3983,14084,3981,14085,3979,14078,3973,14082,3969,14082,3965,14080,3961,14078,3960,14075,3957,14073,3956,14074,3953,14071,3950,14072,3948,14068,3945,14068,3942,14065,3939,14070,3934,14069,3930,14072,3930,14072,3927,14077,3925,14077,3920,14081,3918,14077,3917,14076,3914,14077,3912,14075,3909,14080,3908,14079,3903,14076,3900,14077,3896,14083,3896,14084,3895,14092,3892,14094,3892,14099,3888,14109,3889,14114,3888,14115,3886,14110,3883,14114,3881,14114,3879,14120,3877,14122,3875,14126,3876,14127,3880,14130,3879,14131,3882,14135,3881,14142,3878,14144,3881,14145,3881,14145,3888,14149,3891,14149,3900,14152,3899,14157,3900,14163,3897,14163,3900,14167,3901,14167,3898,14170,3898,14174,3899,14171,3902,14182,3902,14185,3904,14184,3906,14181,3909,14181,3911,14186,3910,14188,3909,14191,3911,14184,3915,14189,3916,14192,3918,14189,3920,14193,3922,14189,3927,14193,3927,14190,3931,14197,3931,14194,3933,14190,3933,14194,3939,14198,3941,14203,3942,14206,3947,14204,3948,14200,3945,14197,3944,14196,3948,14199,3948,14203,3951,14203,3953,14207,3953,14207,3956,14204,3957,14203,3961,14203,3965,14202,3966,14196,3959,14197,3964,14199,3968,14198,3974,14200,3978,14198,3979,14199,3982,14197,3985,14197,3988,14196,3989,14194,3993,14196,3996,14196,3998,14193,4001,14191,4001,14188,4005,14185,4006,14183,4010,14184,4013,14188,4014,14186,4016,14181,4018,14180,4021,14183,4022,14182,4027,14177,4032,14175,4037,14168,4045]]]},{"n":"鳥取県","p":[[[13437,3561,13433,3559,13430,3559,13427,3556,13423,3555,13412,3553,13404,3552,13396,3552,13390,3551,13379,3550,13367,3551,13359,3553,13350,3552,13345,3549,13342,3546,13339,3545,13334,3546,13329,3548,13325,3552,13324,3555,13322,3555,13320,3553,13322,3548,13328,3544,13330,3544,13332,3541,13329,3535,13329,3532,13331,3527,13325,3526,13318,3523,13315,3522,13318,3520,13319,3517,13316,3515,13314,3512,13314,3507,13314,3507,13325,3508,13327,3506,13329,3507,13329,3510,13332,3509,13334,3511,13340,3511,13341,3514,13340,3516,13341,3519,13345,3517,13350,3519,13351,3522,13357,3526,13358,3532,13360,3535,13365,3534,13368,3532,13370,3533,13375,3532,13380,3529,13382,3525,13384,3525,13387,3527,13386,3529,13392,3531,13393,3533,13400,3535,13401,3535,13401,3531,13407,3530,13410,3531,13411,3528,13414,3528,13414,3523,13416,3522,13415,3519,13418,3517,13419,3519,13422,3519,13427,3521,13428,3520,13432,3520,13434,3522,13440,3524,13443,3523,13451,3528,13450,3534,13451,3535,13447,3538,13448,3543,13444,3544,13443,3554,13441,3559,13437,3561]]]},{"n":"徳島県","p":[[[13444,3421,13443,3417,13442,3416,13438,3417,13436,3418,13434,3417,13430,3417,13426,3418,13420,3417,13417,3418,13415,3416,13414,3413,13412,3412,13405,3412,13403,3409,13400,3407,13395,3409,13392,3411,13385,3410,13382,3409,13382,3407,13378,3408,13372,3404,13372,3402,13368,3401,13368,3397,13369,3395,13369,3392,13366,3388,13368,3386,13374,3385,13375,3384,13379,3384,13384,3384,13387,3381,13391,3379,13395,3381,13395,3383,13398,3384,13400,3382,13403,3383,13403,3381,13406,3378,13407,3373,13407,3369,13412,3370,13417,3368,13417,3366,13415,3363,13418,3359,13420,3356,13422,3357,13424,3355,13427,3356,13431,3355,13431,3358,13436,3359,13436,3363,13442,3367,13444,3366,13450,3369,13457,3373,13458,3377,13467,3380,13475,3383,13467,3384,13463,3387,13467,3388,13470,3391,13470,3395,13467,3396,13464,3400,13462,3399,13460,3400,13459,3403,13460,3409,13460,3412,13464,3418,13462,3418,13456,3422,13450,3422,13447,3421,13444,3421]]]},{"n":"鹿児島県","p":[[[13016,3209,13018,3214,13021,3216,13019,3217,13019,3220,13018,3222,13012,3221,13010,3217,13011,3216,13011,3213,13016,3209]],[[13072,3210,13062,3216,13061,3219,13058,3215,13050,3214,13047,3212,13043,3211,13040,3212,13036,3217,13035,3214,13031,3211,13028,3211,13027,3213,13021,3212,13017,3210,13020,3207,13020,3204,13018,3200,13021,3197,13022,3191,13019,3184,13017,3179,13019,3176,13021,3176,13025,3173,13033,3163,13033,3159,13032,3151,13029,3145,13027,3143,13022,3140,13019,3141,13016,3144,13013,3142,13015,3139,13019,3135,13021,3135,13019,3132,13021,3127,13022,3125,13031,3127,13035,3125,13045,3125,13048,3124,13051,3120,13052,3117,13055,3118,13059,3117,13063,3118,13065,3122,13065,3124,13066,3127,13062,3128,13057,3131,13055,3138,13052,3141,13051,3146,13054,3154,13056,3155,13057,3158,13056,3160,13060,3163,13062,3166,13062,3170,13066,3173,13069,3173,13073,3171,13079,3170,13082,3166,13080,3163,13079,3159,13076,3156,13073,3156,13071,3157,13072,3160,13070,3162,13063,3162,13059,3159,13064,3155,13070,3156,13069,3149,13070,3146,13073,3145,13076,3142,13078,3137,13080,3134,13079,3125,13075,3121,13077,3118,13073,3112,13071,3111,13066,3107,13068,3106,13067,3101,13074,3106,13078,3107,13079,3108,13083,3109,13087,3109,13092,3112,13096,3114,13097,3117,13100,3119,13102,3123,13107,3123,13111,3126,13111,3128,13107,3129,13110,3131,13110,3133,13102,3136,13102,3139,13104,3142,13107,3146,13111,3147,13116,3146,13118,3150,13120,3151,13120,3155,13120,3158,13116,3164,13113,3163,13108,3166,13106,3163,13103,3167,13101,3171,13102,3174,13098,3175,13099,3177,13093,3179,13091,3180,13088,3182,13090,3189,13088,3192,13084,3194,13082,3194,13078,3198,13078,3201,13073,3205,13070,3206,13072,3210]],[[12987,3180,12991,3182,12991,3184,12986,3188,12983,3188,12982,3186,12982,3184,12986,3183,12987,3180]],[[12971,3162,12974,3166,12975,3172,12977,3171,12978,3174,12975,3174,12971,3172,12968,3167,12966,3166,12968,3162,12971,3162]],[[13095,3064,13095,3059,13090,3050,13087,3047,13085,3047,13086,3042,13086,3037,13087,3034,13090,3036,13096,3038,13098,3044,13096,3046,13100,3054,13103,3057,13103,3059,13105,3061,13106,3067,13108,3070,13107,3076,13108,3078,13106,3084,13100,3078,13100,3075,13094,3067,13095,3064]],[[13021,3042,13026,3045,13023,3047,13020,3048,13015,3048,13017,3046,13019,3045,13021,3042]],[[13052,3023,13057,3024,13060,3025,13066,3031,13067,3038,13064,3040,13060,3041,13057,3043,13051,3046,13047,3046,13042,3040,13038,3039,13038,3037,13039,3032,13040,3032,13044,3024,13049,3023,13052,3023]],[[12987,2982,12992,2982,12989,2984,12989,2987,12985,2988,12983,2986,12984,2984,12987,2982]],[[12971,2960,12974,2964,12974,2967,12972,2967,12968,2965,12969,2963,12971,2960]],[[12965,2843,12958,2847,12956,2845,12954,2846,12952,2844,12951,2840,12949,2841,12944,2838,12940,2838,12937,2835,12934,2837,12930,2833,12926,2833,12922,2830,12922,2827,12921,2826,12918,2826,12917,2824,12921,2822,12924,2822,12927,2823,12928,2822,12926,2819,12929,2819,12930,2815,12933,2813,12936,2815,12940,2816,12941,2818,12947,2821,12945,2823,12943,2824,12946,2826,12945,2829,12954,2831,12954,2833,12956,2833,12961,2840,12963,2841,12967,2841,12971,2842,12972,2846,12970,2848,12967,2853,12966,2850,12967,2846,12965,2843]],[[12994,2827,12998,2829,13001,2834,13003,2836,13002,2838,12997,2834,12993,2833,12991,2831,12994,2827]],[[12932,2806,12934,2808,12935,2811,12932,2811,12926,2813,12920,2818,12919,2816,12920,2814,12923,2809,12925,2811,12926,2808,12932,2810,12932,2806]],[[12890,2775,12888,2772,12892,2770,12893,2767,12899,2767,12904,2777,12897,2782,12897,2787,12896,2789,12889,2788,12889,2786,12888,2783,12890,2775]],[[12858,2740,12853,2740,12852,2737,12853,2734,12856,2733,12859,2734,12863,2737,12868,2741,12864,2741,12859,2740,12858,2740]]]},{"n":"新潟県","p":[[[13955,3855,13955,3854,13951,3849,13946,3840,13945,3836,13945,3824,13943,3820,13943,3818,13935,3809,13931,3805,13923,3799,13915,3797,13907,3795,13900,3791,13887,3784,13882,3779,13878,3772,13877,3765,13875,3760,13871,3756,13865,3752,13862,3747,13859,3742,13855,3738,13843,3732,13837,3727,13830,3721,13823,3717,13814,3716,13810,3717,13805,3713,13801,3712,13791,3706,13783,3704,13773,3700,13763,3698,13767,3695,13771,3694,13772,3693,13771,3689,13773,3687,13773,3683,13776,3677,13782,3680,13788,3687,13787,3690,13792,3692,13799,3691,13803,3689,13800,3683,13807,3680,13809,3684,13812,3685,13817,3684,13821,3687,13830,3686,13830,3691,13834,3692,13839,3700,13846,3702,13852,3703,13857,3702,13859,3699,13858,3693,13861,3691,13863,3688,13868,3687,13869,3685,13868,3682,13870,3681,13867,3677,13870,3674,13873,3676,13877,3675,13883,3677,13882,3682,13885,3681,13888,3683,13893,3683,13892,3685,13893,3689,13898,3689,13897,3693,13897,3698,13905,3699,13909,3702,13910,3706,13912,3705,13913,3703,13918,3699,13918,3696,13923,3694,13925,3696,13926,3699,13924,3701,13926,3706,13924,3712,13925,3716,13922,3721,13919,3720,13916,3724,13921,3729,13923,3734,13924,3738,13921,3739,13921,3743,13923,3744,13929,3745,13936,3747,13940,3746,13941,3751,13946,3752,13950,3751,13959,3751,13957,3755,13957,3758,13955,3763,13959,3767,13962,3771,13965,3773,13968,3778,13974,3782,13972,3784,13971,3785,13970,3785,13968,3785,13963,3789,13964,3799,13966,3804,13969,3806,13967,3808,13969,3812,13968,3817,13971,3821,13976,3819,13986,3823,13988,3826,13990,3828,13988,3832,13982,3836,13979,3835,13975,3836,13972,3839,13971,3847,13972,3850,13969,3851,13965,3851,13963,3852,13960,3852,13955,3855]],[[13824,3780,13831,3783,13834,3783,13838,3785,13843,3788,13846,3789,13849,3792,13852,3798,13855,3801,13857,3807,13856,3809,13848,3806,13844,3808,13844,3812,13845,3815,13849,3820,13851,3827,13851,3833,13849,3833,13845,3831,13844,3827,13833,3819,13823,3806,13824,3803,13824,3797,13825,3797,13827,3800,13830,3801,13833,3799,13834,3796,13828,3792,13828,3787,13826,3784,13821,3783,13822,3781,13824,3780]]]},{"n":"高知県","p":[[[13366,3388,13361,3388,13358,3387,13354,3388,13350,3383,13342,3384,13339,3382,13336,3383,13333,3381,13329,3383,13327,3382,13326,3379,13322,3378,13319,3379,13318,3377,13316,3375,13316,3373,13314,3371,13312,3369,13312,3366,13308,3365,13305,3358,13306,3354,13301,3349,13301,3348,13296,3347,13287,3347,13285,3348,13281,3346,13282,3345,13284,3340,13285,3340,13286,3337,13289,3336,13290,3334,13290,3331,13279,3327,13277,3324,13277,3321,13275,3320,13273,3317,13269,3313,13263,3318,13261,3317,13264,3313,13266,3311,13269,3298,13268,3294,13265,3292,13270,3292,13271,3290,13266,3286,13264,3282,13265,3278,13268,3278,13271,3280,13274,3277,13279,3275,13281,3275,13285,3279,13289,3279,13292,3278,13297,3275,13297,3273,13302,3273,13302,3276,13300,3279,13297,3280,13295,3286,13299,3287,13301,3288,13301,3292,13299,3293,13300,3298,13301,3302,13304,3304,13309,3304,13310,3307,13314,3310,13317,3315,13326,3323,13324,3330,13326,3331,13326,3333,13328,3338,13333,3337,13335,3340,13339,3340,13346,3343,13344,3344,13356,3350,13356,3351,13368,3353,13373,3354,13377,3352,13382,3352,13384,3351,13393,3349,13396,3344,13403,3341,13404,3337,13410,3333,13411,3329,13414,3330,13416,3326,13418,3326,13419,3329,13421,3339,13424,3346,13429,3353,13431,3355,13427,3356,13424,3355,13422,3357,13420,3356,13418,3359,13415,3363,13417,3366,13417,3368,13412,3370,13407,3369,13407,3373,13406,3378,13403,3381,13403,3383,13400,3382,13398,3384,13395,3383,13395,3381,13391,3379,13387,3381,13384,3384,13379,3384,13375,3384,13374,3385,13368,3386,13366,3388]]]},{"n":"宮崎県","p":[[[13189,3275,13185,3274,13184,3278,13186,3282,13182,3283,13179,3282,13177,3284,13174,3283,13173,3280,13171,3277,13167,3277,13159,3278,13157,3276,13154,3276,13151,3277,13152,3280,13148,3284,13144,3283,13142,3281,13136,3280,13133,3283,13126,3283,13125,3280,13123,3274,13118,3271,13117,3269,13115,3268,13111,3264,13112,3261,13110,3258,13105,3259,13104,3256,13102,3255,13102,3252,13101,3249,13102,3244,13105,3241,13107,3241,13107,3236,13111,3233,13107,3228,13105,3229,13105,3224,13107,3224,13108,3221,13110,3220,13110,3215,13106,3216,13104,3217,13100,3217,13097,3212,13093,3212,13091,3213,13088,3212,13086,3210,13072,3210,13070,3206,13073,3205,13078,3201,13078,3198,13082,3194,13084,3194,13088,3192,13090,3189,13088,3182,13091,3180,13093,3179,13099,3177,13098,3175,13102,3174,13101,3171,13103,3167,13106,3163,13108,3166,13113,3163,13116,3164,13120,3158,13120,3155,13120,3151,13118,3150,13116,3146,13120,3145,13124,3143,13124,3140,13126,3138,13131,3139,13133,3138,13134,3141,13137,3143,13136,3147,13139,3148,13138,3156,13142,3161,13146,3163,13146,3167,13145,3168,13148,3179,13145,3182,13145,3187,13148,3198,13154,3215,13159,3231,13162,3234,13164,3241,13166,3241,13168,3244,13165,3246,13166,3248,13169,3247,13173,3249,13168,3252,13168,3254,13171,3259,13174,3259,13177,3263,13176,3266,13182,3269,13186,3273,13189,3275]]]},{"n":"神奈川県","p":[[[13913,3567,13912,3565,13913,3562,13913,3556,13909,3551,13906,3551,13903,3548,13895,3546,13893,3544,13892,3540,13900,3540,13902,3533,13900,3529,13898,3526,13899,3520,13903,3517,13903,3515,13911,3514,13915,3515,13914,3518,13914,3523,13921,3528,13925,3529,13933,3531,13944,3532,13953,3530,13954,3531,13957,3528,13958,3525,13960,3524,13962,3519,13962,3514,13966,3516,13966,3519,13969,3521,13973,3521,13973,3524,13974,3526,13970,3526,13964,3530,13966,3534,13965,3540,13967,3540,13969,3544,13964,3545,13964,3548,13968,3548,13979,3553,13976,3554,13970,3554,13967,3559,13962,3561,13959,3562,13953,3564,13949,3560,13951,3558,13948,3556,13949,3552,13946,3553,13940,3558,13934,3560,13928,3561,13925,3560,13923,3561,13920,3565,13917,3565,13916,3567,13913,3567]]]}];
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+if(!window.THREE || !THREE.OrbitControls){ $('err').style.display='grid'; $('loader').remove(); return; }
+
+/* ---------- teams ---------- */
+const TEAMS = {
+  TSG:{name:"つくばユナイテッドSun GAIA",short:"つくば",city:"茨城・つくば",c1:"#2E9E3F",c2:"#FFFFFF",c3:null,mono:"TSG",num:3,lat:36.085,lon:140.11},
+  RTC:{name:"レーヴィス栃木",short:"R栃木",city:"栃木・足利",c1:"#A88BDA",c2:"#FFFFFF",c3:null,mono:"RVT",num:7,lat:36.335,lon:139.452},
+  CBD:{name:"千葉ドット",short:"千葉ドット",city:"千葉・千葉",c1:"#1E5BD8",c2:"#FFFFFF",c3:"#E0262E",mono:"CDT",num:1,lat:35.60,lon:140.11},
+  FKR:{name:"富士通カワサキレッドスピリッツ",short:"富士通",city:"神奈川・川崎",c1:"#D7192A",c2:"#FFFFFF",c3:null,mono:"FRS",num:10,lat:35.56,lon:139.68},
+  ATH:{name:"アイシンティルマーレ碧南",short:"T碧南",city:"愛知・碧南",c1:"#22386E",c2:"#FFFFFF",c3:null,mono:"ATH",num:5,lat:34.86,lon:136.96},
+  VYK:{name:"ヴィアティン四日市",short:"V四日市",city:"三重・四日市",c1:"#F57C00",c2:"#FFFFFF",c3:null,mono:"VTY",num:8,lat:34.975,lon:136.615},
+  KSO:{name:"クボタスピアーズ大阪",short:"クボタ",city:"大阪",c1:"#4FC3F7",c2:"#FFFFFF",c3:null,mono:"KSO",num:11,lat:34.67,lon:135.52},
+  KTB:{name:"きんでんトリニティーブリッツ",short:"きんでん",city:"大阪",c1:"#0F7A4C",c2:"#F57C00",c3:null,mono:"KTO",num:4,lat:34.745,lon:135.53},
+};
+const ORDER=["TSG","RTC","CBD","FKR","ATH","VYK","KSO","KTB"];
+const isLight=hex=>{ const c=new THREE.Color(hex); return (c.r*0.3+c.g*0.59+c.b*0.11)>0.6; };
+const numInk=k=>isLight(TEAMS[k].c1)?'#14263b':'#ffffff';
+
+/* ---------- dates / weeks (all calendar weeks, incl. weeks with no games) ---------- */
+const WD="日月火水木金土";
+const pd = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const fmtMD = d => `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}`;
+const jMD = d => `${d.getMonth()+1}/${d.getDate()}（${WD[d.getDay()]}）`;
+const monday = d => { const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; };
+const games = DATA.games.map((g,i)=>Object.assign({id:i},g,{date:g.d?pd(g.d):null}));
+const dated = games.filter(g=>g.date);
+const weekMap=new Map();
+dated.forEach(g=>{ const k=monday(g.date).getTime(); if(!weekMap.has(k)) weekMap.set(k,[]); weekMap.get(k).push(g); });
+const WEEKS=[];
+{ const first=monday(new Date(Math.min(...dated.map(g=>+g.date)))), last=monday(new Date(Math.max(...dated.map(g=>+g.date))));
+  for(let d=new Date(first); d<=last; d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+7)){
+    const gs=(weekMap.get(d.getTime())||[]).sort((a,b)=>a.date-b.date||a.t.localeCompare(b.t));
+    const sun=new Date(d.getFullYear(),d.getMonth(),d.getDate()+6);
+    const lo=gs.length?new Date(Math.min(...gs.map(g=>+g.date))):new Date(d), hi=gs.length?new Date(Math.max(...gs.map(g=>+g.date))):sun;
+    WEEKS.push({mon:new Date(d),games:gs,lo,hi,empty:!gs.length,rounds:[...new Set(gs.map(g=>g.r))].sort((a,b)=>a-b)});
+  } }
+const pending = games.filter(g=>!g.date);
+function seriesOf(gs){
+  const m=new Map();
+  gs.forEach(g=>{ const k=g.h+g.a+g.v; if(!m.has(k)) m.set(k,{h:g.h,a:g.a,v:g.v,city:g.city,lat:g.lat,lon:g.lon,tbd:g.tbd,r:g.r,games:[]}); m.get(k).games.push(g); });
+  return [...m.values()];
+}
+const venueKey=s=>s.tbd?'tbd:'+s.city:s.v;
+
+/* ---------- projection ---------- */
+const LON0=137.2, LAT0=36.0, K=10, KX=K*Math.cos(LAT0*Math.PI/180), MAP_H=0.45;
+const P = (lat,lon,y=MAP_H) => new THREE.Vector3((lon-LON0)*KX, y, -(lat-LAT0)*K);
+const haversine=(a,b,c,d)=>{const R=6371,r=Math.PI/180,dl=(c-a)*r,dn=(d-b)*r;const x=Math.sin(dl/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
+const homePos=k=>P(TEAMS[k].lat,TEAMS[k].lon);
+const venuePos=s=>P(s.lat,s.lon);
+
+/* ---------- renderer / scene ---------- */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let renderer;
+try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'}); }
+catch(e){ $('err').style.display='grid'; $('loader').remove(); return; }
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+$('stage').appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(36,innerWidth/innerHeight,0.1,2500);
+camera.position.set(10,330,140);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.dampingFactor=0.08;
+controls.minDistance=5; controls.maxDistance=300;
+controls.maxPolarAngle=Math.PI*0.45; controls.minPolarAngle=0.1;
+controls.target.set(4,0,4);
+
+const hemi=new THREE.HemisphereLight(0xffffff,0x8aa0b8,0.75); scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffffff,1.35);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+sun.shadow.bias=-0.0005; sun.shadow.normalBias=0.03;
+const sc=sun.shadow.camera; sc.near=1; sc.far=400;
+scene.add(sun); scene.add(sun.target);
+const fill=new THREE.DirectionalLight(0xbcd4ff,0.35); fill.position.set(-80,60,-60); scene.add(fill);
+scene.fog=new THREE.Fog(0xc9d6e3,300,900);
+
+function gradTex(c1,c2){ const cv=document.createElement('canvas'); cv.width=cv.height=512; const x=cv.getContext('2d');
+  const g=x.createRadialGradient(256,256,10,256,256,256); g.addColorStop(0,c1); g.addColorStop(1,c2); x.fillStyle=g; x.fillRect(0,0,512,512);
+  const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; return t; }
+const oceanMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.85,metalness:0.05});
+const ocean=new THREE.Mesh(new THREE.CircleGeometry(800,96),oceanMat);
+ocean.rotation.x=-Math.PI/2; ocean.position.set(4,-0.02,0); ocean.receiveShadow=true; scene.add(ocean);
+
+const gratPts=[];
+for(let lat=24;lat<=46;lat++){ for(let lon=122;lon<150;lon+=0.5){ gratPts.push(P(lat,lon,0.005),P(lat,lon+0.5,0.005)); } }
+for(let lon=122;lon<=150;lon++){ for(let lat=24;lat<46;lat+=0.5){ gratPts.push(P(lat,lon,0.005),P(lat+0.5,lon,0.005)); } }
+const grat=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gratPts),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.12,depthWrite:false}));
+scene.add(grat);
+
+/* map */
+const prefMeshes=[]; const edgePts=[];
+const sideMat=new THREE.MeshStandardMaterial({color:0xd9e1ea,roughness:0.9});
+GEO.forEach(pf=>{
+  const shapes=[];
+  pf.p.forEach(poly=>{
+    const rings=poly.map(r=>{ const pts=[]; for(let i=0;i<r.length;i+=2){ pts.push(new THREE.Vector2((r[i]/100-LON0)*KX,(r[i+1]/100-LAT0)*K)); }
+      if(pts.length>1&&pts[0].distanceTo(pts[pts.length-1])<1e-6) pts.pop(); return pts; });
+    if(rings[0].length<3) return;
+    const sh=new THREE.Shape(rings[0]);
+    rings.slice(1).forEach(h=>{ if(h.length>2) sh.holes.push(new THREE.Path(h)); });
+    shapes.push(sh);
+    rings.forEach(rg=>{ for(let i=0;i<rg.length;i++){ const a=rg[i],b=rg[(i+1)%rg.length]; edgePts.push(new THREE.Vector3(a.x,MAP_H+0.012,-a.y),new THREE.Vector3(b.x,MAP_H+0.012,-b.y)); } });
+  });
+  if(!shapes.length) return;
+  const geo=new THREE.ExtrudeGeometry(shapes,{depth:MAP_H,bevelEnabled:false,curveSegments:1});
+  geo.rotateX(-Math.PI/2);
+  const top=new THREE.MeshStandardMaterial({color:0xf7f9fb,roughness:0.62,metalness:0.0});
+  const m=new THREE.Mesh(geo,[top,sideMat]);
+  m.castShadow=true; m.receiveShadow=true; m.userData={name:pf.n,top,base:new THREE.Color(0xf7f9fb),glow:0,target:0};
+  scene.add(m); prefMeshes.push(m);
+});
+const edgeMat=new THREE.LineBasicMaterial({color:0x9fb0c2,transparent:true,opacity:0.6});
+scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(edgePts),edgeMat));
+const downRay=new THREE.Raycaster();
+function prefAt(lat,lon){ const p=P(lat,lon); downRay.set(new THREE.Vector3(p.x,50,p.z),new THREE.Vector3(0,-1,0)); const h=downRay.intersectObjects(prefMeshes,false)[0]; return h?h.object:null; }
+
+/* ---------- badges ---------- */
+function shade(hex,amt){ const c=new THREE.Color(hex); const hsl={}; c.getHSL(hsl); c.setHSL(hsl.h,hsl.s,Math.max(0,Math.min(1,hsl.l+amt*0.5))); return '#'+c.getHexString(); }
+function shieldPath(x,cx,cy,w,h){
+  x.beginPath();
+  x.moveTo(cx-w/2,cy-h/2+h*0.08);
+  x.quadraticCurveTo(cx-w/2,cy-h/2,cx-w/2+w*0.1,cy-h/2);
+  x.lineTo(cx+w/2-w*0.1,cy-h/2); x.quadraticCurveTo(cx+w/2,cy-h/2,cx+w/2,cy-h/2+h*0.08);
+  x.lineTo(cx+w/2,cy+h*0.05);
+  x.bezierCurveTo(cx+w/2,cy+h*0.32,cx+w*0.18,cy+h*0.42,cx,cy+h/2);
+  x.bezierCurveTo(cx-w*0.18,cy+h*0.42,cx-w/2,cy+h*0.32,cx-w/2,cy+h*0.05);
+  x.closePath();
+}
+function sash(x,cx,cy,w,h,o0,o1){ x.beginPath(); x.moveTo(cx-w/2,cy+h*o0); x.lineTo(cx+w/2,cy+h*(o0-0.34)); x.lineTo(cx+w/2,cy+h*(o1-0.34)); x.lineTo(cx-w/2,cy+h*o1); x.closePath(); x.fill(); }
+function drawBadge(x,key,cx,cy,w){
+  const t=TEAMS[key], h=w*1.18;
+  x.save(); x.shadowColor='rgba(0,0,0,.35)'; x.shadowBlur=w*0.08; x.shadowOffsetY=w*0.03;
+  shieldPath(x,cx,cy,w,h);
+  const g=x.createLinearGradient(cx-w/2,cy-h/2,cx+w/2,cy+h/2);
+  g.addColorStop(0,shade(t.c1,0.25)); g.addColorStop(0.55,t.c1); g.addColorStop(1,shade(t.c1,-0.35));
+  x.fillStyle=g; x.fill(); x.restore();
+  x.save(); shieldPath(x,cx,cy,w,h); x.clip();
+  x.globalAlpha=0.92; x.fillStyle=t.c2; sash(x,cx,cy,w,h,0.14,0.23);
+  if(t.c3){ x.fillStyle=t.c3; sash(x,cx,cy,w,h,0.245,0.285); }
+  x.globalAlpha=0.24; const gl=x.createLinearGradient(0,cy-h/2,0,cy); gl.addColorStop(0,'#fff'); gl.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=gl; x.fillRect(cx-w/2,cy-h/2,w,h*0.5);
+  x.restore();
+  x.save(); shieldPath(x,cx,cy,w*0.86,h*0.86); x.lineWidth=w*0.025; x.strokeStyle='rgba(255,255,255,.85)'; x.stroke(); x.restore();
+  x.save(); x.translate(cx,cy-h*0.27); const r=w*0.09;
+  x.beginPath(); x.arc(0,0,r,0,Math.PI*2); x.fillStyle='#fff'; x.fill(); x.clip();
+  x.lineWidth=r*0.24; x.strokeStyle=t.c1; x.beginPath(); x.arc(-r*1.0,-r*0.5,r*1.15,-0.4,1.0); x.stroke(); x.beginPath(); x.arc(r*0.8,r*1.0,r*1.15,3.3,4.6); x.stroke();
+  x.restore();
+  x.fillStyle=numInk(key); x.textAlign='center'; x.textBaseline='middle';
+  x.font=`800 ${w*0.34}px "Barlow Condensed","Arial Narrow",sans-serif`;
+  x.save(); if(!isLight(t.c1)){ x.shadowColor='rgba(0,0,0,.45)'; x.shadowBlur=w*0.04; } x.fillText(t.mono,cx,cy+h*0.08); x.restore();
+}
+const badgeURL={};
+function makeBadgeURLs(){ ORDER.forEach(k=>{ const cv=document.createElement('canvas'); cv.width=200; cv.height=236; drawBadge(cv.getContext('2d'),k,100,118,170); badgeURL[k]=cv.toDataURL(); }); }
+function rrect(x,X,Y,W,H,R){ x.beginPath(); x.moveTo(X+R,Y); x.arcTo(X+W,Y,X+W,Y+H,R); x.arcTo(X+W,Y+H,X,Y+H,R); x.arcTo(X,Y+H,X,Y,R); x.arcTo(X,Y,X+W,Y,R); x.closePath(); }
+function matchCardTexture(s){
+  const W=760,H=360, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d');
+  const bg=night?'rgba(12,26,44,.93)':'rgba(255,255,255,.96)', acc=night?'#f5a524':'#e8891c';
+  const ink=night?'#eef3f9':'#14263b', soft=night?'#a9b9cc':'#4c6077';
+  x.save(); x.shadowColor='rgba(0,0,0,.3)'; x.shadowBlur=24; x.shadowOffsetY=8;
+  rrect(x,20,16,W-40,H-58,34); x.fillStyle=bg; x.fill(); x.restore();
+  x.beginPath(); x.moveTo(W/2-22,H-43); x.lineTo(W/2,H-8); x.lineTo(W/2+22,H-43); x.closePath(); x.fillStyle=bg; x.fill();
+  x.save(); rrect(x,20,16,W-40,H-58,34); x.clip(); x.fillStyle=acc; x.fillRect(20,16,W-40,9); x.restore();
+  drawBadge(x,s.h,148,138,124); drawBadge(x,s.a,W-148,138,124);
+  x.textAlign='center'; x.textBaseline='middle';
+  x.fillStyle=acc; x.font='800 66px "Barlow Condensed","Arial Narrow",sans-serif'; x.fillText('VS',W/2,104);
+  x.fillStyle=soft; x.font='600 25px "Barlow Condensed","Arial Narrow",sans-serif';
+  x.fillText(s.games.map(g=>`${fmtMD(g.date)} ${WD[g.date.getDay()]}${g.t?' '+g.t:''}`).join('   '),W/2,160);
+  x.fillStyle=ink; x.font='700 25px "Zen Kaku Gothic New",sans-serif';
+  x.fillText(TEAMS[s.h].short,148,238); x.fillText(TEAMS[s.a].short,W-148,238);
+  x.fillStyle=soft; x.font='600 17px "Barlow Condensed",sans-serif'; x.fillText('HOME',148,266); x.fillText('AWAY',W-148,266);
+  x.fillStyle=s.tbd?acc:ink; x.font='700 22px "Zen Kaku Gothic New",sans-serif';
+  let vn=s.tbd?'会場調整中':s.v; if(vn.length>12) vn=vn.slice(0,11)+'…';
+  x.fillText(vn,W/2,214);
+  x.fillStyle=soft; x.font='400 17px "Zen Kaku Gothic New",sans-serif'; x.fillText(s.city||'',W/2,246);
+  const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return t;
+}
+function labelTexture(text,sub){
+  const W=520,H=150, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d');
+  rrect(x,10,10,W-20,H-20,26); x.fillStyle=night?'rgba(12,26,44,.92)':'rgba(255,255,255,.95)'; x.fill();
+  x.textAlign='center'; x.textBaseline='middle';
+  x.fillStyle=night?'#eef3f9':'#14263b'; x.font='700 32px "Zen Kaku Gothic New",sans-serif';
+  let t=text; if(t.length>13) t=t.slice(0,12)+'…'; x.fillText(t,W/2,58);
+  x.fillStyle=night?'#f5a524':'#e8891c'; x.font='700 32px "Barlow Condensed","Zen Kaku Gothic New",sans-serif'; x.fillText(sub,W/2,103);
+  const tx=new THREE.CanvasTexture(cv); tx.encoding=THREE.sRGBEncoding; return tx;
+}
+
+/* ---------- chibi characters ---------- */
+const skinMat=new THREE.MeshStandardMaterial({color:0xf2c7a2,roughness:0.6});
+const eyeMat=new THREE.MeshStandardMaterial({color:0x161616,roughness:0.15});
+const whiteMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.5});
+const blushMat=new THREE.MeshBasicMaterial({color:0xf29b8c,transparent:true,opacity:0.55});
+function jerseyMats(key){
+  const t=TEAMS[key]; const cv=document.createElement('canvas'); cv.width=512; cv.height=256; const x=cv.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,256); g.addColorStop(0,shade(t.c1,0.15)); g.addColorStop(1,shade(t.c1,-0.15));
+  x.fillStyle=g; x.fillRect(0,0,512,256);
+  // side panels (u=0/1 and u=0.5 are the flanks; front is u=0.75, back u=0.25)
+  x.fillStyle=t.c2; x.fillRect(222,0,68,256); x.fillRect(0,0,34,256); x.fillRect(478,0,34,256);
+  if(t.c3){ x.fillStyle=t.c3; x.fillRect(212,0,10,256); x.fillRect(290,0,10,256); x.fillRect(34,0,10,256); x.fillRect(468,0,10,256); }
+  x.fillStyle=t.c2; x.fillRect(0,0,512,14);
+  x.fillStyle=numInk(key); x.textAlign='center'; x.textBaseline='middle';
+  x.font='800 110px "Barlow Condensed","Arial Narrow",sans-serif'; x.fillText(String(t.num),128,136);
+  x.font='800 150px "Barlow Condensed","Arial Narrow",sans-serif'; x.fillText(String(t.num),384,140);
+  const tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
+  const hairC=[0x17110f,0x2e1d14,0x0f0c0b,0x3a2414][ORDER.indexOf(key)%4];
+  return {jersey:new THREE.MeshStandardMaterial({map:tex,roughness:0.55}),
+    solid:new THREE.MeshStandardMaterial({color:new THREE.Color(t.c1),roughness:0.55}),
+    trim:new THREE.MeshStandardMaterial({color:new THREE.Color(t.c2),roughness:0.55}),
+    shorts:new THREE.MeshStandardMaterial({color:new THREE.Color(shade(t.c1,-0.4)),roughness:0.6}),
+    hair:new THREE.MeshStandardMaterial({color:hairC,roughness:0.45})};
+}
+const G={
+  head:new THREE.SphereGeometry(0.62,32,24),
+  hair:new THREE.SphereGeometry(0.665,32,16,0,Math.PI*2,0,Math.PI*0.56),
+  eye:new THREE.SphereGeometry(0.075,12,10), hl:new THREE.SphereGeometry(0.025,8,6),
+  cheek:new THREE.CircleGeometry(0.07,16),
+  torso:new THREE.CylinderGeometry(0.36,0.42,0.72,28),
+  shorts:new THREE.CylinderGeometry(0.43,0.4,0.28,24),
+  limb:new THREE.CapsuleGeometry(0.12,0.38,6,12),
+  sleeve:new THREE.CylinderGeometry(0.155,0.155,0.18,14),
+  band:new THREE.CylinderGeometry(0.648,0.648,0.09,32,1,true),
+  pad:new THREE.CylinderGeometry(0.15,0.15,0.13,14),
+  shoe:new THREE.SphereGeometry(0.16,16,10),
+  ball:new THREE.SphereGeometry(0.2,24,16),
+  shadow:new THREE.CircleGeometry(0.55,24),
+};
+const ballMat=(()=>{ const cv=document.createElement('canvas'); cv.width=256; cv.height=128; const x=cv.getContext('2d');
+  x.fillStyle='#f6f2e6'; x.fillRect(0,0,256,128);
+  for(let i=0;i<6;i++){ x.fillStyle=i%2?'#2a63c7':'#f2c230'; x.beginPath(); x.moveTo(i*44,0); x.bezierCurveTo(i*44+30,40,i*44-10,88,i*44+20,128); x.lineTo(i*44+36,128); x.bezierCurveTo(i*44+6,88,i*44+46,40,i*44+16,0); x.closePath(); x.fill(); }
+  const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; return new THREE.MeshStandardMaterial({map:t,roughness:0.45}); })();
+
+function makeChibi(key){
+  const m=jerseyMats(key); const root=new THREE.Group(); const body=new THREE.Group(); root.add(body);
+  const add=(geo,mat,x,y,z,parent=body,cast=true)=>{ const o=new THREE.Mesh(geo,mat); o.position.set(x,y,z); o.castShadow=cast; o.userData.team=key; parent.add(o); return o; };
+  const legL=new THREE.Group(), legR=new THREE.Group(); legL.position.set(-0.17,0.62,0); legR.position.set(0.17,0.62,0); body.add(legL,legR);
+  [legL,legR].forEach(l=>{ add(G.limb,skinMat,0,-0.3,0,l); add(G.pad,whiteMat,0,-0.3,0.02,l); const s=add(G.shoe,whiteMat,0,-0.55,0.06,l); s.scale.set(1,0.6,1.4); });
+  add(G.shorts,m.shorts,0,0.72,0);
+  const torso=add(G.torso,m.jersey,0,1.18,0); torso.rotation.y=Math.PI/2;
+  const armL=new THREE.Group(), armR=new THREE.Group(); armL.position.set(-0.47,1.45,0); armR.position.set(0.47,1.45,0); body.add(armL,armR);
+  [armL,armR].forEach(a=>{ add(G.sleeve,m.trim,0,-0.06,0,a); add(G.limb,skinMat,0,-0.32,0,a); });
+  const head=new THREE.Group(); head.position.set(0,2.05,0); body.add(head);
+  add(G.head,skinMat,0,0,0,head);
+  const hair=add(G.hair,m.hair,0,0.06,-0.05,head); hair.rotation.x=-0.28;
+  [-0.2,0.2].forEach(ex=>{ const e=add(G.eye,eyeMat,ex,-0.02,0.565,head,false); e.scale.set(1,1.4,0.6);
+    add(G.hl,whiteMat,ex+0.025,0.03,0.6,head,false);
+    const ck=add(G.cheek,blushMat,ex*1.45,-0.17,0.56,head,false); ck.rotation.y=ex>0?0.45:-0.45; });
+  const hb=add(G.band,m.solid,0,0.22,0,head); hb.rotation.x=-0.2;
+  root.userData={body,armL,armR,legL,legR,head};
+  return root;
+}
+function pose(ud,{bob=0,run=0,phase=0,hit=0,lean=0,sway=0}){
+  const sw=Math.sin(phase)*run;
+  ud.body.position.y=bob+hit*0.35;
+  ud.body.rotation.x=lean;
+  ud.legL.rotation.x=hit*0.3+sw*0.9; ud.legR.rotation.x=-hit*0.3-sw*0.9;
+  ud.armL.rotation.x=-0.3-hit*2.2-sw*0.9; ud.armR.rotation.x=-0.3-hit*2.2+sw*0.9;
+  ud.armL.rotation.z=-0.25+hit*0.15; ud.armR.rotation.z=0.25-hit*0.15;
+  ud.head.rotation.x=-hit*0.25; ud.head.rotation.z=sway;
+}
+
+/* ---------- anim helpers ---------- */
+const C1=1.70158, C3=C1+1;
+const outBack=t=>1+C3*Math.pow(t-1,3)+C1*Math.pow(t-1,2);
+const inBack=t=>C3*t*t*t-C1*t*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const now=()=>performance.now()/1000;
+const D=s=>reduce?0.001:s;
+function tween(from,to,dur,delay=0){ return {from,to,t0:now()+delay,dur:Math.max(0.001,dur)}; }
+function tweenVal(tw){ const k=THREE.MathUtils.clamp((now()-tw.t0)/tw.dur,0,1); const f=tw.to>tw.from?outBack(k):inBack(k); return {v:tw.from+(tw.to-tw.from)*f,done:k>=1,started:now()>=tw.t0}; }
+
+/* ---------- pins ---------- */
+const pinRoot=new THREE.Group(), charRoot=new THREE.Group(), arcRoot=new THREE.Group(), allRoot=new THREE.Group();
+scene.add(pinRoot,charRoot,arcRoot,allRoot);
+const beamGeo=new THREE.CylinderGeometry(0.06,0.06,1,12,1,true); beamGeo.translate(0,0.5,0);
+const ringGeo=new THREE.RingGeometry(0.5,0.62,48); ringGeo.rotateX(-Math.PI/2);
+const discGeo=new THREE.CircleGeometry(0.62,48); discGeo.rotateX(-Math.PI/2);
+const headGeo=new THREE.SphereGeometry(0.22,24,16);
+const coneGeo=new THREE.ConeGeometry(0.22,0.5,24); coneGeo.rotateX(Math.PI); coneGeo.translate(0,-0.25,0);
+const pillarGeo=new THREE.CylinderGeometry(0.28,0.28,1,28); pillarGeo.translate(0,0.5,0);
+const capGeo=new THREE.CircleGeometry(0.28,28); capGeo.rotateX(-Math.PI/2);
+const matGeo=new THREE.PlaneGeometry(6.2,3.2); const lineGeo=new THREE.PlaneGeometry(0.06,3.2);
+const beamTex=(()=>{ const cv=document.createElement('canvas'); cv.width=4; cv.height=128; const x=cv.getContext('2d'); const g=x.createLinearGradient(0,0,0,128); g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(255,255,255,1)'); x.fillStyle=g; x.fillRect(0,0,4,128); return new THREE.CanvasTexture(cv); })();
+const STAGE_YAW=-0.35;
+const SLOT={h:new THREE.Vector3(-0.95,0,0.75),a:new THREE.Vector3(0.95,0,0.75)};
+
+let night=false, mode='week', focusTeam=null, routeOn=false, weekIdx=0;
+const pinMap=new Map(); let pickables=[]; let hiPrefs=new Set(); const pillars=[];
+const accent=()=>night?0xf5a524:0xe8891c;
+
+function createPin(s,key){
+  const grp=new THREE.Group(); grp.position.copy(venuePos(s)); grp.scale.setScalar(0.0001); pinRoot.add(grp);
+  const mk=(geo,mat)=>{ const o=new THREE.Mesh(geo,mat); grp.add(o); return o; };
+  const disc=mk(discGeo,new THREE.MeshBasicMaterial({transparent:true,depthWrite:false})); disc.position.y=0.01;
+  const ring=mk(ringGeo,new THREE.MeshBasicMaterial({transparent:true,depthWrite:false})); ring.position.y=0.02;
+  const beam=mk(beamGeo,new THREE.MeshBasicMaterial({alphaMap:beamTex,transparent:true,depthWrite:false}));
+  const hm=new THREE.MeshStandardMaterial({roughness:0.3});
+  const head=mk(headGeo,hm); head.castShadow=true; const cone=mk(coneGeo,hm);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false})); spr.center.set(0.5,0); grp.add(spr);
+  const stage=new THREE.Group(); stage.rotation.y=STAGE_YAW; grp.add(stage);
+  const mat=new THREE.Mesh(matGeo,new THREE.MeshStandardMaterial({roughness:0.85})); mat.rotation.x=-Math.PI/2; mat.position.set(0,0.02,0.75); mat.receiveShadow=true;
+  const line=new THREE.Mesh(lineGeo,whiteMat); line.rotation.x=-Math.PI/2; line.position.set(0,0.03,0.75);
+  const ball=new THREE.Mesh(G.ball,ballMat); ball.castShadow=true; ball.visible=false;
+  stage.add(mat,line,ball);
+  const pin={key,grp,disc,ring,beam,hm,head,cone,spr,stage,mat,ball,series:s,beamH:2.4,dim:false,a:0,tw:tween(0,1,D(0.7)),removing:false,t0:Math.random()*6,sig:''};
+  spr.userData.pin=pin; head.userData.pin=pin;
+  return pin;
+}
+function stylePin(p){
+  const s=p.series, sig=[s.h,s.a,s.v,s.games.map(g=>g.id).join(','),night,p.dim].join('|');
+  const col=new THREE.Color(s.tbd?0x8aa0b8:accent());
+  p.disc.material.color.copy(col); p.disc.material.opacity=p.dim?0.06:0.22;
+  p.ring.material.color.copy(col); p.ringOp=p.dim?0.2:0.9;
+  p.beam.material.color.copy(col); p.beam.material.opacity=p.dim?0.15:(night?0.95:0.8);
+  p.beam.material.blending=night?THREE.AdditiveBlending:THREE.NormalBlending; p.beam.material.needsUpdate=true;
+  p.hm.color.copy(col); p.hm.emissive.copy(col); p.hm.emissiveIntensity=night?0.9:0.25; p.hm.transparent=p.dim; p.hm.opacity=p.dim?0.3:1; p.hm.needsUpdate=true;
+  p.mat.material.color.set(night?0x2c4a6e:0xe2ad72);
+  p.stage.visible=!p.dim; p.head.castShadow=!p.dim;
+  if(sig!==p.sig){ if(p.spr.material.map) p.spr.material.map.dispose(); p.spr.material.map=matchCardTexture(s); p.spr.material.needsUpdate=true; p.sig=sig; }
+  p.spr.material.opacity=p.dim?0.22:1; p.spr.renderOrder=p.dim?1:2;
+}
+function disposePin(p){
+  pinRoot.remove(p.grp);
+  [p.disc.material,p.ring.material,p.beam.material,p.hm,p.mat.material].forEach(m=>m.dispose());
+  if(p.spr.material.map) p.spr.material.map.dispose(); p.spr.material.dispose();
+  pinMap.forEach((v,k)=>{ if(v===p) pinMap.delete(k); });
+}
+const _v=new THREE.Vector3();
+function slotWorld(p,slot,out){ return p.stage.localToWorld(out.copy(SLOT[slot])); }
+function slotYaw(slot){ return STAGE_YAW+(slot==='h'?Math.PI/2-0.25:-Math.PI/2+0.25); }
+
+/* ---------- characters ---------- */
+const chars={};
+ORDER.forEach(k=>{ const o=makeChibi(k); o.visible=false; charRoot.add(o);
+  const sh=new THREE.Mesh(G.shadow,new THREE.MeshBasicMaterial({color:0x0b1626,transparent:true,opacity:0.22,depthWrite:false})); sh.rotation.x=-Math.PI/2; sh.visible=false; charRoot.add(sh);
+  chars[k]={k,obj:o,sh,state:'hidden',pos:new THREE.Vector3(),sc:0,tw:null,move:null,pend:null,venue:null,slot:null,atSlot:false,yaw:0,ph:Math.random()*6}; });
+
+function startMove(c,key,slot,delay=0){
+  if(c.state==='in'&&c.tw&&!tweenVal(c.tw).done){ c.pend={key,slot}; return; }
+  const p=pinMap.get(key); if(!p) return;
+  const to=slotWorld(p,slot,new THREE.Vector3()); if(p.a<0.5) to.copy(p.grp.position);
+  const d=c.pos.distanceTo(to);
+  c.move={p0:c.pos.clone(),t0:now()+delay,dur:D(THREE.MathUtils.clamp(0.9+d*0.045,1.0,2.8)),key,slot,h:Math.max(0.8,d*0.2)};
+  c.state='move'; c.venue=key; c.slot=slot; c.atSlot=false; c.pend=null;
+}
+function hideChar(c){ if(c.state==='hidden'||c.state==='out') return; c.state='out'; c.tw=tween(c.sc,0,D(0.5)); c.move=null; c.pend=null; }
+
+/* arcs */
+const ARC_VS=`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
+const ARC_FS=`uniform vec3 uColor; uniform float uTime; uniform float uOpacity; varying vec2 vUv;
+ void main(){ float d=fract(vUv.x*14.0-uTime*0.9); float dash=smoothstep(0.0,0.15,d)*(1.0-smoothstep(0.55,0.7,d));
+ float fade=smoothstep(0.0,0.06,vUv.x)*(1.0-smoothstep(0.92,1.0,vUv.x));
+ gl_FragColor=vec4(uColor,(0.25+0.75*dash)*fade*uOpacity); }`;
+const arcMats=[];
+function makeArc(a,b,color,height,opacity,radius){
+  const mid=a.clone().add(b).multiplyScalar(0.5); mid.y+=height;
+  const geo=new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a,mid,b),64,radius,6,false);
+  const mat=new THREE.ShaderMaterial({vertexShader:ARC_VS,fragmentShader:ARC_FS,transparent:true,depthWrite:false,
+    uniforms:{uColor:{value:new THREE.Color(color)},uTime:{value:0},uOpacity:{value:opacity}}});
+  arcMats.push(mat); return new THREE.Mesh(geo,mat);
+}
+function clearGroup(g){ g.traverse(o=>{ if(o.isMesh||o.isSprite){ if(o.userData.ownGeo) o.geometry.dispose(); if(o.material){ if(o.material.map&&o.userData.ownTex) o.material.map.dispose(); if(o.userData.ownMat) o.material.dispose(); } } }); g.clear(); }
+function clearArcs(){ arcRoot.traverse(o=>{ if(o.isMesh){ o.geometry.dispose(); o.material.dispose(); } }); arcRoot.clear(); arcMats.length=0; }
+
+/* ---------- sync: compute the target state for the current week and animate toward it ---------- */
+function weekSeries(){ if(mode!=='week') return []; return seriesOf(WEEKS[weekIdx].games).filter(s=>s.lat!=null); }
+function staggerFor(list,th=3.4,stp=3.2){
+  const out=list.map(()=>0);
+  for(let i=0;i<list.length;i++){ let moved=true; while(moved){ moved=false; for(let j=0;j<i;j++){
+    if(venuePos(list[i]).distanceTo(venuePos(list[j]))<th && Math.abs(out[i]-out[j])<stp*0.5){ out[i]=out[j]+stp; moved=true; } } } }
+  return out;
+}
+function sync(){
+  const ser=weekSeries(); const st=ser.map(()=>0); const keep=new Set();
+  hiPrefs=new Set();
+  ser.forEach((s,i)=>{
+    const key=venueKey(s); keep.add(key);
+    let p=pinMap.get(key);
+    if(p&&p.removing){ p.removing=false; p.tw=tween(p.a,1,D(0.5)); }
+    if(!p){ p=createPin(s,key); pinMap.set(key,p); }
+    p.series=s; p.dim=!!focusTeam&&s.h!==focusTeam&&s.a!==focusTeam; p.beamH=2.4+st[i]; stylePin(p);
+    if(!p.dim){ const pm=prefAt(s.lat,s.lon); if(pm) hiPrefs.add(pm); }
+  });
+  pinMap.forEach((p,key)=>{ if(!keep.has(key)&&!p.removing){ p.removing=true; p.tw=tween(p.a,0,D(0.5)); } });
+  pinRoot.updateMatrixWorld(true);
+  // characters
+  const tg=new Map();
+  ser.forEach(s=>{ const inv=!focusTeam||s.h===focusTeam||s.a===focusTeam; if(!inv) return; const key=venueKey(s); tg.set(s.h,{key,slot:'h',s}); tg.set(s.a,{key,slot:'a',s}); });
+  clearArcs();
+  ORDER.forEach(k=>{
+    const c=chars[k], t=tg.get(k);
+    if(!t){ hideChar(c); return; }
+    const p=pinMap.get(t.key);
+    if(c.state==='hidden'||c.state==='out'){
+      c.obj.visible=true; c.sh.visible=true;
+      if(t.slot==='h'){ // home team pops up at the venue together with the pin
+        c.state='in'; c.venue=t.key; c.slot='h'; c.atSlot=true; c.tw=tween(0,1,D(0.6),D(0.15)); c.sc=0; c.pend=null; c.move=null;
+      } else {          // away team pops up at its home, then travels
+        c.pos.copy(homePos(k)); c.state='in'; c.atSlot=false; c.venue=null; c.slot=null; c.sc=0; c.tw=tween(0,1,D(0.55),D(0.1)); c.move=null; c.pend={key:t.key,slot:'a'};
+        const to=venuePos(t.s); const d=c.pos.distanceTo(to); if(d>1.2) arcRoot.add(makeArc(c.pos.clone().setY(MAP_H+0.05),to.setY(MAP_H+0.05),TEAMS[k].c1,Math.max(1.2,d*0.22),night?1:0.95,0.06));
+      }
+    } else {
+      if(c.venue===t.key&&c.slot===t.slot&&!c.move&&!c.pend) return;
+      const from=c.pos.clone(), to=venuePos(t.s); const d=from.distanceTo(to);
+      if(d>1.2) arcRoot.add(makeArc(from.setY(MAP_H+0.05),to.setY(MAP_H+0.05),TEAMS[k].c1,Math.max(1.2,d*0.22),night?1:0.95,0.06));
+      startMove(c,t.key,t.slot,D(0.25));
+    }
+  });
+  if(focusTeam&&routeOn) addRoute(focusTeam);
+  prefMeshes.forEach(m=>m.userData.target=hiPrefs.has(m)?1:0);
+  pickables=[]; pinMap.forEach(p=>{ if(!p.removing&&!p.dim) pickables.push(p.spr,p.head); });
+}
+
+/* all-venues mode */
+function buildAll(){
+  clearGroup(allRoot); pillars.length=0;
+  if(mode!=='all') return;
+  const vm=new Map();
+  games.forEach(g=>{ if(g.lat==null) return; if(focusTeam&&g.h!==focusTeam&&g.a!==focusTeam) return;
+    const k=g.tbd?('tbd'+g.city):g.v; if(!vm.has(k)) vm.set(k,{v:g.tbd?'会場調整中':g.v,city:g.city,lat:g.lat,lon:g.lon,n:0,homes:{},tbd:g.tbd});
+    const o=vm.get(k); o.n++; o.homes[g.h]=(o.homes[g.h]||0)+1; });
+  const vs=[...vm.values()].sort((a,b)=>b.n-a.n);
+  const maxN=Math.max(...vs.map(v=>v.n)); const st=staggerFor(vs,7,2.2);
+  hiPrefs=new Set();
+  vs.forEach((v,i)=>{
+    const grp=new THREE.Group(); grp.position.copy(P(v.lat,v.lon)); allRoot.add(grp);
+    const hk=Object.keys(v.homes).sort((a,b)=>v.homes[b]-v.homes[a])[0]; const col=new THREE.Color(TEAMS[hk].c1);
+    const h=0.6+(v.n/maxN)*7;
+    const pil=new THREE.Mesh(pillarGeo,new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:night?0.55:0.12,roughness:0.35,metalness:0.1}));
+    pil.userData.ownMat=true; pil.scale.y=0.001; pil.castShadow=true; grp.add(pil);
+    const cap=new THREE.Mesh(capGeo,whiteMat); grp.add(cap);
+    const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTexture(v.v,`${v.n} 試合`),transparent:true,depthWrite:false}));
+    spr.userData.ownTex=true; spr.userData.ownMat=true; spr.center.set(0.5,0); grp.add(spr);
+    spr.userData.venue=v; pil.userData.venue=v;
+    pillars.push({pil,cap,spr,h,stag:st[i],tw:tween(0,1,D(0.9),D(i*0.03))});
+    const pm=prefAt(v.lat,v.lon); if(pm) hiPrefs.add(pm);
+  });
+  prefMeshes.forEach(m=>m.userData.target=hiPrefs.has(m)?1:0);
+  pickables=pillars.flatMap(p=>[p.spr,p.pil]);
+  renderVenueList(vs);
+}
+
+function teamSeries(key){
+  const out=[]; let last=null;
+  dated.filter(g=>g.h===key||g.a===key).sort((a,b)=>a.date-b.date).forEach(g=>{
+    const k=g.h+g.a+g.v; if(last&&last.k===k&&(g.date-last.end)<4*864e5){ last.games.push(g); last.end=g.date; return; }
+    last={k,h:g.h,a:g.a,v:g.v,lat:g.lat,lon:g.lon,tbd:g.tbd,games:[g],end:g.date}; out.push(last); });
+  return out;
+}
+function teamStats(key){
+  const t=TEAMS[key]; let km=0;
+  teamSeries(key).forEach(s=>{ if(s.a===key&&s.lat!=null) km+=2*haversine(t.lat,t.lon,s.lat,s.lon); });
+  const today=new Date(); today.setHours(0,0,0,0);
+  const nxt=dated.filter(g=>g.date>=today&&(g.h===key||g.a===key)).sort((a,b)=>a.date-b.date)[0];
+  return {home:games.filter(g=>g.h===key).length,away:games.filter(g=>g.a===key).length,km:Math.round(km/10)*10,nxt};
+}
+function addRoute(key){
+  const t=TEAMS[key]; const home=P(t.lat,t.lon,MAP_H+0.05);
+  const pts=[home]; teamSeries(key).filter(s=>s.lat!=null).forEach(s=>pts.push(P(s.lat,s.lon,MAP_H+0.05))); pts.push(home);
+  for(let i=0;i<pts.length-1;i++){ const d=pts[i].distanceTo(pts[i+1]); if(d<0.8) continue; arcRoot.add(makeArc(pts[i],pts[i+1],t.c1,Math.max(1,d*0.22),0.55,0.035)); }
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,0.14,32),new THREE.MeshStandardMaterial({color:new THREE.Color(t.c1),emissive:new THREE.Color(t.c1),emissiveIntensity:0.45}));
+  base.position.copy(P(t.lat,t.lon,MAP_H+0.07)); arcRoot.add(base);
+}
+
+/* ---------- UI ---------- */
+const list=$('list');
+const teamSide=(k,role)=>`<button type="button" class="side" data-team="${k}" aria-label="${TEAMS[k].name}で絞り込み"><img src="${badgeURL[k]}" alt=""><span>${TEAMS[k].name}</span><em>${role}</em></button>`;
+let curSer=[], detailIdx=0, selKey=null, follow=false;
+function nextGameWeek(from,team){ for(let i=from+1;i<WEEKS.length;i++){ if(WEEKS[i].games.some(g=>!team||g.h===team||g.a===team)) return i; } return -1; }
+function renderList(){
+  venueView=null;
+  const W=WEEKS[weekIdx]; let ser=seriesOf(W.games);
+  if(focusTeam) ser=ser.filter(s=>s.h===focusTeam||s.a===focusTeam);
+  curSer=ser;
+  $('pTitle').textContent=focusTeam?`${TEAMS[focusTeam].short}の試合`:'この週の試合';
+  $('pSub').textContent=W.empty?`${W.lo.getMonth()+1}月${W.lo.getDate()}日〜${W.hi.getMonth()+1}月${W.hi.getDate()}日`:`${W.lo.getMonth()+1}月${W.lo.getDate()}日（${WD[W.lo.getDay()]}）〜${W.hi.getMonth()+1}月${W.hi.getDate()}日（${WD[W.hi.getDay()]}）　第${W.rounds.join('・')}節`;
+  let html=focusTeam?teamCard(focusTeam):'';
+  if(!ser.length){
+    const ni=nextGameWeek(weekIdx,focusTeam);
+    const nx=ni>=0?`<span class="t">次の試合は ${jMD(WEEKS[ni].lo)} の週です</span><button class="pill" id="jumpNext">次の試合の週へ</button>`:'';
+    if(focusTeam){
+      html+=`<div class="card off"><span class="offh"><img src="${badgeURL[focusTeam]}" alt=""><span><b>${TEAMS[focusTeam].name}</b><em>試合なし週</em></span></span>${nx}</div>`;
+    } else {
+      html+=`<div class="card off"><span class="offh"><span><b>この週は試合がありません</b><em>試合なし週</em></span></span>${nx}</div>`;
+    }
+  }
+  if(ser.length){ detailIdx=Math.max(0,Math.min(detailIdx||0,ser.length-1)); renderDetail(ser,html); return; }
+  if(!focusTeam&&pending.length&&W.games.some(g=>g.r===pending[0].r)){
+    const p=pending[0]; html+=`<div class="empty">第${p.r}節 ${TEAMS[p.h].short} vs ${TEAMS[p.a].short} は延期となり、代替日程は未発表です。</div>`;
+  }
+  list.innerHTML=html; list.scrollTop=0;
+  const j=$('jumpNext'); if(j) j.onclick=()=>{ const ni=nextGameWeek(weekIdx,focusTeam); if(ni>=0) setWeek(ni); };
+  bindTeamCard();
+}
+const PINI='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 3.3 4.5 8.5 4.5 8.5s4.5-5.2 4.5-8.5A4.5 4.5 0 0 0 8 1.5zm0 6.2A1.7 1.7 0 1 1 8 4.3a1.7 1.7 0 0 1 0 3.4z"/></svg>';
+function cardHTML(s,i,clickable){
+  const rows=s.games.map(g=>`${jMD(g.date)}${g.t?' '+g.t:' 時間未定'}　GAME${g.g}`).join('<br>');
+  const vb=s.tbd?'':`<span class="vfoot"><button type="button" class="pill vbtn" data-v="${s.v.replace(/"/g,'&quot;')}">${PINI}会場情報</button></span>`;
+  return `<div class="card${clickable?' clickable':''}" data-i="${i}"${clickable?' role="button" tabindex="0" aria-label="試合の詳細を開く"':''}><span class="vs">${teamSide(s.h,'HOME')}<span class="x">VS</span>${teamSide(s.a,'AWAY')}</span>
+      <span class="meta"><span>会場</span><b class="${s.tbd?'tbd':''}">${s.tbd?'会場調整中':s.v}</b><span>場所</span><b>${s.city||'—'}</b><span>日時</span><b>${rows}</b><span>節</span><b>第${s.r}節</b></span>${vb}</div>`;
+}
+const ARW='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M10.5 2.5 4.5 8l6 5.5z"/></svg>', ARE='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 2.5 11.5 8l-6 5.5z"/></svg>';
+const zd=d=>innerWidth<=900?d*1.6:d;
+function openDetail(i){ detailIdx=i; renderList(); const s=curSer[i]; if(s) flyTo(venuePos(s),zd(focusTeam?22:15)); openPanel(); }
+function renderDetail(ser,head){
+  const many=ser.length>1;
+  let html=head+`<div class="dhead"><span class="dcount" id="dcount">${detailIdx+1} / ${ser.length}</span>${many?`<button class="ic sm" id="dPrev" aria-label="前の試合">${ARW}</button><button class="ic sm" id="dNext" aria-label="次の試合">${ARE}</button>`:''}</div>`;
+  html+=`<div class="swipe" id="swipe" aria-roledescription="カルーセル">${ser.map((s,i)=>`<div class="slide" aria-label="${i+1} / ${ser.length}">${cardHTML(s,i,false).replace('</div>',many?'</div>':'</div>')}</div>`).join('')}</div>`;
+  if(many) html+=`<div class="sdots" id="sdots">${ser.map((_,i)=>`<i class="${i===detailIdx?'on':''}"></i>`).join('')}</div><div class="empty" style="padding:8px 0 0">左右にスワイプで同じ週の試合に切り替え</div>`;
+  list.innerHTML=html; list.scrollTop=0;
+  const sw=$('swipe');
+  sw.scrollLeft=detailIdx*sw.clientWidth;
+  let tmr=null;
+  const settle=()=>{ const i=Math.round(sw.scrollLeft/Math.max(1,sw.clientWidth)); if(i!==detailIdx&&ser[i]){ detailIdx=i; markDetail(ser); flyTo(venuePos(ser[i]),zd(focusTeam?22:15)); } };
+  sw.addEventListener('scroll',()=>{ clearTimeout(tmr); tmr=setTimeout(settle,120); },{passive:true});
+  const go=d=>{ const i=Math.max(0,Math.min(ser.length-1,detailIdx+d)); sw.scrollTo({left:i*sw.clientWidth,behavior:reduce?'auto':'smooth'}); };
+  if(many){ $('dPrev').onclick=()=>go(-1); $('dNext').onclick=()=>go(1); sw.tabIndex=0; sw.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'){go(-1);e.preventDefault();e.stopPropagation();} if(e.key==='ArrowRight'){go(1);e.preventDefault();e.stopPropagation();} }); }
+  bindTeamCard(); markDetail(ser);
+}
+function markDetail(ser){
+  const c=$('dcount'); if(c) c.textContent=`${detailIdx+1} / ${ser.length}`;
+  document.querySelectorAll('#sdots i').forEach((d,i)=>d.classList.toggle('on',i===detailIdx));
+  selKey=ser[detailIdx]?venueKey(ser[detailIdx]):null;
+}
+function openPanel(){ if(innerWidth<=900){ $('panel').classList.add('open'); $('sheetBtn').setAttribute('aria-pressed','true'); } }
+list.addEventListener('click',e=>{
+  const tb=e.target.closest('[data-team]'); if(tb&&list.contains(tb)){ e.stopPropagation(); if(focusTeam!==tb.dataset.team) selectTeam(tb.dataset.team); else openPanel(); return; }
+  const vb=e.target.closest('.vbtn'); if(vb){ e.stopPropagation(); openVenue(vb.dataset.v); return; }
+  const c=e.target.closest('.card.clickable'); if(c) openDetail(+c.dataset.i);
+});
+list.addEventListener('keydown',e=>{ const c=e.target.closest&&e.target.closest('.card.clickable'); if(c&&e.target===c&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); openDetail(+c.dataset.i); } });
+let venueView=null, lastVs=null;
+const enc=encodeURIComponent;
+function openVenue(name){
+  venueView=name; renderVenue();
+  const g=games.find(x=>x.v===name&&x.lat!=null); if(g) flyTo(P(g.lat,g.lon),zd(15));
+  openPanel();
+}
+function renderVenue(){
+  const name=venueView; const gs=dated.filter(g=>g.v===name).sort((a,b)=>a.date-b.date||a.g-b.g); const g0=games.find(g=>g.v===name);
+  if(!g0){ venueView=null; return; }
+  const hosts={}; gs.forEach(g=>hosts[g.h]=(hosts[g.h]||0)+1);
+  const hk=Object.keys(hosts).sort((a,b)=>hosts[b]-hosts[a]);
+  const today=new Date(); today.setHours(0,0,0,0);
+  const q=enc(`${name} ${g0.city}`);
+  $('pTitle').textContent='会場情報'; $('pSub').textContent=g0.city;
+  let html=`<div class="venue"><div class="dhead"><button class="pill" id="vBack">戻る</button></div>
+   <h3 style="margin-top:4px">${name}</h3><div class="city">${g0.city}</div>
+   <div class="vstats"><div><b>${gs.length}</b><small>今季の開催試合</small></div><div><span class="hosts">${hk.map(k=>`<img src="${badgeURL[k]}" alt="${TEAMS[k].name}" title="${TEAMS[k].name}">`).join('')}</span><small>ホームチーム</small></div></div>
+   <div class="links">
+    <a class="main" href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Googleマップで開く<span>地図・住所</span></a>
+    <a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">ここへの経路を調べる<span>Googleマップ</span></a>
+    <a href="https://www.google.com/search?tbm=isch&q=${enc(name)}" target="_blank" rel="noopener">会場の写真を見る<span>Google画像検索</span></a>
+    <a href="https://www.google.com/search?q=${enc(name+' アクセス 駐車場')}" target="_blank" rel="noopener">アクセス・駐車場を調べる<span>Google検索</span></a>
+   </div>
+   <h4>この会場の試合</h4>`;
+  gs.forEach(g=>{ const wi=WEEKS.findIndex(w=>w.games.includes(g));
+    html+=`<button class="grow${g.date<today?' past':''}" data-w="${wi}"><span class="d">${g.date.getMonth()+1}/${g.date.getDate()}</span><span class="m"><img src="${badgeURL[g.h]}" alt="">${TEAMS[g.h].short} vs <img src="${badgeURL[g.a]}" alt="">${TEAMS[g.a].short}</span><span class="t">${WD[g.date.getDay()]}曜　${g.t||'時間未定'}　第${g.r}節 GAME${g.g}</span></button>`; });
+  html+=`<p class="note">写真・住所・アクセスはリンク先で確認できます。</p></div>`;
+  list.innerHTML=html; list.scrollTop=0;
+  $('vBack').onclick=closeVenue;
+  list.querySelectorAll('.grow').forEach(b=>b.onclick=()=>{ const wi=+b.dataset.w; venueView=null; if(mode!=='week') setMode('week'); if(wi!==weekIdx) setWeek(wi); else renderList(); });
+}
+function closeVenue(){ venueView=null; if(mode==='all'&&lastVs) renderVenueList(lastVs); else renderList(); }
+function renderVenueList(vs){
+  venueView=null; lastVs=vs;
+  $('pTitle').textContent=focusTeam?`${TEAMS[focusTeam].short}の試合会場`:'シーズン全会場';
+  $('pSub').textContent=`${vs.length}会場　柱の高さは開催試合数、色は主なホームチーム`;
+  let html=focusTeam?teamCard(focusTeam):'';
+  vs.forEach((v,i)=>{ html+=`<button class="vrow" data-i="${i}"><span>${v.v}<small>${v.city}</small></span><b>${v.n}</b></button>`; });
+  list.innerHTML=html; list.scrollTop=0;
+  list.querySelectorAll('.vrow').forEach(b=>b.addEventListener('click',()=>{ const v=vs[+b.dataset.i]; if(v.tbd) flyTo(P(v.lat,v.lon),18); else openVenue(v.v); }));
+  bindTeamCard();
+}
+function teamCard(k){
+  const t=TEAMS[k], s=teamStats(k);
+  const nx=s.nxt?`<br>次の試合 ${jMD(s.nxt.date)} vs ${TEAMS[s.nxt.h===k?s.nxt.a:s.nxt.h].short}（${s.nxt.h===k?'ホーム':'アウェー'}）`:'';
+  return `<div class="tsum"><div class="hd"><img src="${badgeURL[k]}" alt=""><div><h3>${t.name}</h3><div class="sub">${t.mono}　${t.city}${nx}</div></div></div>
+   <div class="stats"><div><b>${s.home}</b><small>ホーム戦</small></div><div><b>${s.away}</b><small>アウェー戦</small></div><div><b>${s.km.toLocaleString()}</b><small>遠征距離 km</small></div></div>
+   <div class="actions"><button class="pill" id="routeBtn" aria-pressed="${routeOn}">遠征ルート</button><button class="pill" id="nextBtn">次の試合へ</button><button class="pill" id="clearBtn">絞り込み解除</button></div></div>`;
+}
+function bindTeamCard(){
+  const r=$('routeBtn'); if(r) r.onclick=()=>{ routeOn=!routeOn; r.setAttribute('aria-pressed',String(routeOn)); if(mode==='week') sync(); else { clearArcs(); if(routeOn) addRoute(focusTeam); } if(routeOn) flyView('all'); };
+  const n=$('nextBtn'); if(n) n.onclick=()=>{ const s=teamStats(focusTeam); const tgt=s.nxt||dated.find(g=>g.h===focusTeam||g.a===focusTeam);
+    const wi=WEEKS.findIndex(w=>w.games.includes(tgt)); if(wi>=0){ if(mode!=='week') setMode('week'); setWeek(wi); const ss=seriesOf(WEEKS[wi].games).find(s=>s.h===focusTeam||s.a===focusTeam); if(ss) flyTo(venuePos(ss),15);} };
+  const c=$('clearBtn'); if(c) c.onclick=()=>selectTeam(null);
+}
+function renderRail(){
+  const rail=$('rail');
+  rail.innerHTML=`<div class="rt">チームで絞り込み</div>`+ORDER.map(k=>`<button data-k="${k}" aria-pressed="false" title="${TEAMS[k].name}"><img src="${badgeURL[k]}" alt=""><span class="tx"><span class="tn" style="display:block">${TEAMS[k].short}</span><span class="tc">${TEAMS[k].mono}　${TEAMS[k].city}</span></span></button>`).join('');
+  rail.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>selectTeam(focusTeam===b.dataset.k?null:b.dataset.k)));
+}
+function selectTeam(k){
+  focusTeam=k; if(!k){ routeOn=false; detailIdx=0; }
+  $('rail').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===k)));
+  rebuild();
+  detailIdx=0; follow=!!k;
+  if(k&&mode==='week'){ const ss=seriesOf(WEEKS[weekIdx].games).find(s=>s.h===k||s.a===k); if(ss) flyTo(venuePos(ss),22); }
+  if(k) openPanel();
+}
+function rebuild(){
+  if(mode==='week'){ clearGroup(allRoot); pillars.length=0; sync(); renderList(); }
+  else { sync(); buildAll(); clearArcs(); if(focusTeam&&routeOn) addRoute(focusTeam); }
+  updateTimelineUI();
+}
+
+/* timeline */
+const range=$('week'); range.max=WEEKS.length-1;
+function updateTimelineUI(){
+  const W=WEEKS[weekIdx];
+  $('wkNum').innerHTML=mode==='all'?'ALL':`${String(weekIdx+1).padStart(2,'0')}<small>/${WEEKS.length}</small>`;
+  $('wkRange').textContent=mode==='all'?'シーズン全体':`${fmtMD(W.lo)} ${WD[W.lo.getDay()]} – ${fmtMD(W.hi)} ${WD[W.hi.getDay()]}`;
+  $('wkRound').textContent=mode==='all'?'全会場と開催試合数':(W.empty?'試合のない週':`第${W.rounds.join('・')}節　${seriesOf(W.games).length}カード ${W.games.length}試合`);
+  range.value=weekIdx; range.style.setProperty('--p',(weekIdx/(WEEKS.length-1)*100)+'%');
+  document.querySelectorAll('#dots i').forEach((d,i)=>{ d.classList.toggle('cur',i===weekIdx&&mode==='week');
+    d.classList.toggle('g',!!focusTeam&&WEEKS[i].games.some(g=>g.h===focusTeam||g.a===focusTeam)); });
+}
+function buildTicks(){
+  let lastM=-1, html='', dh='';
+  WEEKS.forEach((w,i)=>{ const p=i/(WEEKS.length-1)*100; dh+=`<i class="${w.empty?'e':''}" style="left:${p}%"></i>`;
+    const m=w.lo.getMonth(); if(m!==lastM&&!w.empty||(m!==lastM&&i===0)){ html+=`<span style="left:${p}%">${m+1}月</span>`; lastM=m; } });
+  $('ticks').innerHTML=html; $('dots').innerHTML=dh;
+}
+function setWeek(i){ const ni=Math.max(0,Math.min(WEEKS.length-1,i)); if(ni===weekIdx&&mode==='week'){ updateTimelineUI(); return; } weekIdx=ni; if(focusTeam) follow=true; detailIdx=0;
+  if(mode!=='week'){ updateTimelineUI(); return; }
+  const zoomed=camera.position.distanceTo(controls.target)<45;
+  const showing=innerWidth<=900?$('panel').classList.contains('open'):zoomed;
+  rebuild();
+  // without a team filter, keep the camera on the match being shown: jump to the first match of the new week
+  if(!focusTeam&&showing&&curSer.length){ const s0=curSer[0]; selKey=venueKey(s0); flyTo(venuePos(s0),zd(15)); }
+}
+range.addEventListener('input',()=>{ const v=+range.value; if(mode!=='week'){ weekIdx=v; setMode('week'); } else setWeek(v); });
+$('prev').onclick=()=>{ if(mode!=='week') setMode('week'); setWeek(weekIdx-1); };
+$('next').onclick=()=>{ if(mode!=='week') setMode('week'); setWeek(weekIdx+1); };
+let playing=false, playT0=0, speedI=0; const SPEEDS=[[1,4200],[2,2700],[4,1600]];
+const RING=169.65;
+function setPlay(p){ playing=p; playT0=performance.now();
+  $('playIco').innerHTML=p?'<path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>':'<path d="M4 2.5v11l9-5.5z"/>';
+  $('play').setAttribute('aria-label',p?'一時停止':'自動再生');
+  document.querySelector('.playwrap').classList.toggle('on',p);
+  $('ringPrg').style.strokeDashoffset=RING;
+  if(p){ if(mode!=='week') setMode('week'); if(weekIdx>=WEEKS.length-1) setWeek(0); } }
+// one full turn of the ring = one week
+function tickPlay(){
+  if(!playing) return;
+  const k=(performance.now()-playT0)/SPEEDS[speedI][1];
+  $('ringPrg').style.strokeDashoffset=RING*(1-Math.min(1,k));
+  if(k>=1){ if(weekIdx>=WEEKS.length-1){ setPlay(false); return; } setWeek(weekIdx+1); playT0=performance.now(); }
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&playing) playT0=performance.now(); });
+$('play').onclick=()=>setPlay(!playing);
+$('speed').onclick=()=>{ speedI=(speedI+1)%SPEEDS.length; $('speed').textContent=SPEEDS[speedI][0]+'×'; if(playing) playT0=performance.now(); };
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ $('about').style.display='none'; return; }
+  if(e.target.tagName==='BUTTON'&&e.key===' ') return;
+  if(e.key==='ArrowRight'&&e.target!==range){ $('next').click(); e.preventDefault(); }
+  if(e.key==='ArrowLeft'&&e.target!==range){ $('prev').click(); e.preventDefault(); }
+  if(e.key===' '){ setPlay(!playing); e.preventDefault(); } });
+
+function setMode(m){ if(mode===m) return; mode=m; $('mWeek').setAttribute('aria-pressed',String(m==='week')); $('mAll').setAttribute('aria-pressed',String(m==='all')); if(m==='all') setPlay(false); rebuild(); }
+$('mWeek').onclick=()=>setMode('week');
+$('mAll').onclick=()=>{ setMode('all'); flyView('all'); };
+
+const VIEWS={ all:{lat:35.1,lon:138.45,d:92,pol:0.64,az:0.1}, allM:{lat:35.25,lon:137.75,d:176,pol:0.64,az:0.1},
+  kanto:{lat:35.95,lon:139.85,d:26,pol:0.82,az:-0.1}, tokai:{lat:34.92,lon:136.75,d:20,pol:0.84,az:0.05}, kansai:{lat:34.62,lon:135.48,d:20,pol:0.84,az:0.12} };
+function backToMap(){
+  $('panel').classList.remove('open'); $('sheetBtn').setAttribute('aria-pressed','false');
+  const p=selKey&&pinMap.get(selKey); if(!p||p.removing) return;
+  const v=innerWidth<=900?VIEWS.allM:VIEWS.all; follow=false;
+  flyTo(p.grp.position.clone(),v.d,v.pol,null);
+}
+function flyView(k){
+  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===k)));
+  const mob=innerWidth<=900; const v=(mob&&k==='all')?VIEWS.allM:VIEWS[k]; const f=mob&&k!=='all'?1.35:1; flyTo(P(v.lat,v.lon,0),v.d*f,v.pol,v.az);
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>flyView(b.dataset.view)));
+let fly=null;
+function flyTo(target,dist,pol=0.82,az=null){
+  const t=target.clone(); t.y=0;
+  const sph=new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+  const endPos=new THREE.Vector3().setFromSpherical(new THREE.Spherical(dist,pol,az==null?sph.theta:az)).add(t);
+  if(reduce){ controls.target.copy(t); camera.position.copy(endPos); return; }
+  fly={t0:performance.now(),dur:1400,fromT:controls.target.clone(),toT:t,fromP:camera.position.clone(),toP:endPos};
+}
+controls.addEventListener('start',()=>{ fly=null; follow=false; document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed','false')); });
+
+function applyTheme(n){
+  night=n; document.documentElement.setAttribute('data-theme',n?'dark':'light');
+  if(oceanMat.map) oceanMat.map.dispose();
+  oceanMat.map=n?gradTex('#21456d','#0b1829'):gradTex('#7d96b0','#4d6580'); oceanMat.needsUpdate=true;
+  scene.fog.color.set(n?0x0b1829:0x6f88a3);
+  hemi.intensity=n?0.38:0.8; hemi.color.set(n?0x9fb8d8:0xffffff); hemi.groundColor.set(n?0x0a1524:0x8aa0b8);
+  sun.intensity=n?0.6:1.35; sun.color.set(n?0xaac4ff:0xfff4e6); fill.intensity=n?0.25:0.35;
+  edgeMat.color.set(n?0x7f93ab:0x9fb0c2); grat.material.opacity=n?0.08:0.14;
+  renderer.toneMappingExposure=n?1.15:1.05;
+  prefMeshes.forEach(m=>m.userData.base.set(n?0xdde4ec:0xf7f9fb)); sideMat.color.set(n?0x93a6bb:0xd9e1ea);
+  Object.values(chars).forEach(c=>c.sh.material.color.set(n?0x000000:0x0b1626));
+  pinMap.forEach(p=>stylePin(p));
+  rebuild();
+}
+$('discLink').onclick=()=>$('aboutBtn').click();
+$('aboutBtn').onclick=()=>{ $('about').style.display='block'; $('aboutClose').focus(); };
+$('aboutClose').onclick=()=>{ $('about').style.display='none'; $('aboutBtn').focus(); };
+$('sheetBtn').onclick=()=>{ if($('panel').classList.contains('open')){ if(venueView){ venueView=null; renderList(); } backToMap(); return; } $('panel').classList.add('open'); $('sheetBtn').setAttribute('aria-pressed','true'); measurePanel(); };
+
+/* picking: pins, labels, and characters */
+const ray=new THREE.Raycaster(), mouse=new THREE.Vector2(), tip=$('tip'); let downAt=null;
+function pick(e){
+  mouse.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); ray.setFromCamera(mouse,camera);
+  const vis=Object.values(chars).filter(c=>c.obj.visible&&c.sc>0.3).map(c=>c.obj);
+  const hc=ray.intersectObjects(vis,true)[0]; const hp=ray.intersectObjects(pickables,false)[0];
+  if(hc&&(!hp||hc.distance<hp.distance)) return {team:hc.object.userData.team};
+  return hp?hp.object.userData:null;
+}
+renderer.domElement.addEventListener('pointerdown',e=>{ downAt=[e.clientX,e.clientY]; });
+renderer.domElement.addEventListener('pointermove',e=>{
+  if(e.pointerType!=='mouse') return;
+  const h=pick(e); renderer.domElement.style.cursor=h?'pointer':'';
+  if(h){ const s=h.pin&&h.pin.series, v=h.venue;
+    tip.textContent=h.team?`${TEAMS[h.team].name}　クリックで絞り込み`:s?`${s.tbd?'会場調整中':s.v}　${TEAMS[s.h].short} vs ${TEAMS[s.a].short}`:`${v.v}　${v.n}試合`;
+    tip.style.left=Math.min(e.clientX+14,innerWidth-300)+'px'; tip.style.top=(e.clientY+14)+'px'; tip.style.opacity=1; }
+  else tip.style.opacity=0;
+});
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(!downAt||Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>5) return;
+  const h=pick(e);
+  if(!h){ const wasVenue=!!venueView; if(wasVenue){ venueView=null; renderList(); }
+    if(innerWidth<=900&&$('panel').classList.contains('open')) backToMap(); return; }
+  if(h.team){ selectTeam(focusTeam===h.team?null:h.team); return; }
+  if(h.pin){ const s=h.pin.series; const i=curSer.findIndex(x=>x.v===s.v&&x.h===s.h); if(i>=0) openDetail(i); else flyTo(venuePos(s),14); }
+  if(h.venue) flyTo(P(h.venue.lat,h.venue.lon),16);
+});
+
+(function(){ const today=new Date(); today.setHours(0,0,0,0); const open=new Date(2026,9,24), end=new Date(2027,2,21);
+  const days=Math.round((open-today)/864e5);
+  $('countdown').innerHTML= days>0?`開幕まで<b>${days}</b>日　10月24日（土）足利と大阪で開幕`:(today<=end?'レギュラーシーズン開催中':'レギュラーシーズン終了');
+  const cw=WEEKS.findIndex(w=>w.hi>=today&&!w.empty); weekIdx=cw<0?WEEKS.length-1:cw; })();
+
+let PW=0, vOff=0, vOffY=0;
+function measurePanel(){ PW=innerWidth<=900?$('panel').offsetWidth:0; }
+function viewShiftY(){ const open=innerWidth>900||$('panel').classList.contains('open'); return open&&mode==='week'?-Math.round(innerHeight*(innerWidth>900?0.05:0.14)):0; }
+function viewShift(){ if(innerWidth>900) return 70; return $('panel').classList.contains('open')?Math.round(PW/2+6):0; }
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; measurePanel(); camera.updateProjectionMatrix(); });
+measurePanel();
+
+/* ---------- animate ---------- */
+const clock=new THREE.Clock(); const tmp=new THREE.Vector3(), tgtV=new THREE.Vector3(), prevV=new THREE.Vector3(); const warm=new THREE.Color();
+function animate(){
+  requestAnimationFrame(animate);
+  tickPlay();
+  const dt=Math.min(clock.getDelta(),0.05), T=clock.elapsedTime, mo=reduce?0.2:1;
+  if(fly){ const k=Math.min(1,(performance.now()-fly.t0)/fly.dur), e=ease(k);
+    controls.target.lerpVectors(fly.fromT,fly.toT,e); camera.position.lerpVectors(fly.fromP,fly.toP,e);
+    camera.position.y+=Math.sin(e*Math.PI)*fly.fromP.distanceTo(fly.toP)*0.1; if(k>=1) fly=null; }
+  // follow the focused team's player while it travels
+  if(follow&&focusTeam&&mode==='week'&&!fly){ const c=chars[focusTeam];
+    if(c.state!=='hidden'&&c.state!=='out'){ tmp.set(c.pos.x,0,c.pos.z).sub(controls.target).multiplyScalar(Math.min(1,dt*2.6)); controls.target.add(tmp); camera.position.add(tmp);
+      const off=tmp.copy(camera.position).sub(controls.target), L=off.length(), want=THREE.MathUtils.clamp(L,14,34); if(Math.abs(want-L)>0.05){ off.setLength(L+(want-L)*Math.min(1,dt*1.6)); camera.position.copy(controls.target).add(off); } } }
+  controls.update();
+  { const tv=viewShift(); vOff+=(tv-vOff)*Math.min(1,dt*6); vOffY+=(viewShiftY()-vOffY)*Math.min(1,dt*6); camera.setViewOffset(innerWidth,innerHeight,vOff,vOffY,innerWidth,innerHeight); }
+  const dist=camera.position.distanceTo(controls.target);
+  const ext=THREE.MathUtils.clamp(dist*0.8,8,160);
+  sc.left=-ext; sc.right=ext; sc.top=ext; sc.bottom=-ext; sc.updateProjectionMatrix();
+  sun.target.position.copy(controls.target); sun.position.copy(controls.target).add(tmp.set(-50,110,60));
+  const s=THREE.MathUtils.clamp(dist/22,0.6,4.6)*(innerWidth<=900?0.78:1), up=Math.max(1,s*0.6);
+  const S=0.5*THREE.MathUtils.clamp(dist/24,0.8,2.4);
+
+  // pins
+  const dead=[];
+  pinMap.forEach(p=>{
+    const r=tweenVal(p.tw); p.a=Math.max(0,r.v); p.grp.scale.setScalar(Math.max(0.0001,p.a));
+    if(p.removing&&r.done){ dead.push(p); return; }
+    p.spr.scale.set(3.6*s,1.705*s,1);
+    p.bh0=p.beamH*Math.max(1,s*0.85); p.lift=(p.lift||0)+((p.liftT||0)-(p.lift||0))*Math.min(1,dt*7);
+    const bh=p.bh0+p.lift; p.beam.scale.set(up,bh,up);
+    p.head.position.y=p.cone.position.y=bh+0.5*up; p.head.scale.setScalar(up); p.cone.scale.setScalar(up);
+    p.spr.position.y=p.head.position.y+0.3*up;
+    p.stage.scale.setScalar(S);
+    const k=((T+p.t0)%2)/2; p.ring.scale.setScalar(1+k*1.6*mo); p.ring.material.opacity=(1-k)*p.ringOp; if(selKey===p.key&&mode==='week'){ p.ring.scale.multiplyScalar(1.6); }
+    p.ball.visible=false;
+  });
+  dead.forEach(disposePin);
+  deOverlap(s,up);
+  pinRoot.updateMatrixWorld(true);
+
+  // characters
+  ORDER.forEach(k=>{
+    const c=chars[k]; if(c.state==='hidden') return;
+    if(c.tw){ const r=tweenVal(c.tw); c.sc=Math.max(0,r.v);
+      if(r.done){ c.tw=null;
+        if(c.state==='out'){ c.state='hidden'; c.obj.visible=false; c.sh.visible=false; return; }
+        if(c.state==='in'){ c.state='idle'; if(c.pend){ const pd_=c.pend; c.pend=null; startMove(c,pd_.key,pd_.slot); } } } }
+    let running=0, lean=0;
+    const p=c.venue?pinMap.get(c.venue):null;
+    if(c.state==='move'&&c.move){
+      const m=c.move; const u=THREE.MathUtils.clamp((now()-m.t0)/m.dur,0,1);
+      const tp=pinMap.get(m.key); if(tp) slotWorld(tp,m.slot,tgtV); else tgtV.copy(m.p0);
+      const e=ease(u);
+      prevV.copy(c.pos);
+      c.pos.lerpVectors(m.p0,tgtV,e); c.pos.y=THREE.MathUtils.lerp(m.p0.y,tgtV.y,e)+Math.sin(u*Math.PI)*m.h;
+      if(u<0.98){ const dx=c.pos.x-prevV.x, dz=c.pos.z-prevV.z; if(dx*dx+dz*dz>1e-6) c.yaw=Math.atan2(dx,dz); }
+      running=u>0&&u<1?1:0; lean=running*0.25;
+      if(u>=1){ c.move=null; c.state='idle'; c.atSlot=true; }
+    }
+    if(c.atSlot&&p){ slotWorld(p,c.slot,c.pos); const ty=slotYaw(c.slot); c.yaw+=Math.atan2(Math.sin(ty-c.yaw),Math.cos(ty-c.yaw))*Math.min(1,dt*8); }
+    c.obj.position.copy(c.pos); c.obj.rotation.y=c.yaw; c.obj.scale.setScalar(Math.max(0.0001,S*c.sc));
+    c.sh.position.set(c.pos.x,MAP_H+0.02,c.pos.z); const air=Math.max(0,c.pos.y-MAP_H);
+    c.sh.scale.setScalar(Math.max(0.0001,S*c.sc*(1/(1+air*0.25)))); c.sh.material.opacity=0.22/(1+air*0.3);
+    c.ph+=dt*(running?16:0);
+    pose(c.obj.userData,{bob:running?Math.abs(Math.sin(c.ph))*0.15:Math.abs(Math.sin((T+c.ph)*3.2))*0.06*mo,run:running*mo,phase:c.ph,lean,sway:Math.sin(T*1.3+c.ph)*0.06*mo});
+  });
+
+  // rally when both players stand at the same court
+  pinMap.forEach(p=>{
+    if(p.dim||p.removing||p.a<0.95) return;
+    const ch=chars[p.series.h], ca=chars[p.series.a];
+    const ready=c=>c.state==='idle'&&c.atSlot&&c.venue===p.key&&!c.tw;
+    if(!ready(ch)||!ready(ca)) return;
+    p.ball.visible=true;
+    const cyc=(T*0.62+p.t0)%2, dir=cyc<1?1:-1, u=cyc<1?cyc:cyc-1, from=dir>0?-0.95:0.95;
+    p.ball.position.set(THREE.MathUtils.lerp(from,-from,u)*0.78,2.0+Math.sin(u*Math.PI)*1.9,0.75);
+    p.ball.rotation.x+=dt*6*mo; p.ball.rotation.z+=dt*3*mo;
+    [[ch,dir>0?1-u:u],[ca,dir>0?u:1-u]].forEach(([c,near],j)=>{
+      const hit=Math.max(0,1-Math.abs(near-1)*5)*mo;
+      pose(c.obj.userData,{bob:Math.abs(Math.sin((T+p.t0+j)*3.2))*0.06*mo,hit,sway:Math.sin(T*1.3+j)*0.06*mo});
+    });
+  });
+
+  // all-venues pillars
+  pillars.forEach(o=>{ const r=tweenVal(o.tw); const k=Math.max(0.001,r.v); const h=o.h*k;
+    o.pil.scale.y=h; o.cap.position.y=h+0.003; o.spr.scale.set(2.2*s*Math.min(1,k),0.635*s*Math.min(1,k),1); o.spr.position.y=h+0.4+o.stag*Math.max(1,s*0.5); });
+
+  arcMats.forEach(m=>m.uniforms.uTime.value=T*mo);
+  warm.set(night?0xf7d79c:0xffdcae);
+  prefMeshes.forEach(m=>{ const u=m.userData; u.glow+=(u.target-u.glow)*Math.min(1,dt*5);
+    u.top.color.copy(u.base).lerp(warm,u.glow*0.6); u.top.emissive.setRGB(0.22,0.14,0.04).multiplyScalar(night?u.glow*0.6:0); });
+  renderer.render(scene,camera);
+}
+
+/* lift cards that sit behind others (in screen space) so no two match cards overlap */
+const _a=new THREE.Vector3(), _b=new THREE.Vector3();
+function deOverlap(s,up){
+  const W=innerWidth, H=innerHeight, items=[];
+  pinMap.forEach(p=>{
+    if(p.a<0.05){ p.liftT=0; return; }
+    const baseY=p.bh0+0.5*up+0.3*up;               // card bottom without lift (local units)
+    _a.copy(p.grp.position); _a.y+=baseY*p.a;
+    const hW=1.705*s*p.a;
+    _b.copy(_a); _b.y+=hW;
+    const d=camera.position.distanceTo(_a);
+    _a.project(camera); _b.project(camera);
+    if(_a.z>1||_b.z>1){ p.liftT=0; return; }
+    const x=(_a.x+1)/2*W, y0=(1-_a.y)/2*H, y1=(1-_b.y)/2*H, hPx=Math.max(1,y0-y1), wPx=hPx*3.6/1.705;
+    items.push({p,d,x,bottom:y0,h:hPx,w:wPx,perPx:hW/hPx/p.a});
+  });
+  items.sort((a,b)=>a.d-b.d);                    // nearest card keeps its place
+  const placed=[];
+  items.forEach(it=>{
+    let lift=0;
+    for(let n=0;n<12;n++){
+      let moved=false;
+      for(const r of placed){
+        const L=it.x-it.w/2, Rr=it.x+it.w/2, B=it.bottom-lift, T=B-it.h;
+        if(L<r.R-2&&Rr>r.L+2&&T<r.B&&B>r.T){ lift=it.bottom-r.T+6; moved=true; }
+      }
+      if(!moved) break;
+    }
+    placed.push({L:it.x-it.w/2,R:it.x+it.w/2,B:it.bottom-lift,T:it.bottom-lift-it.h});
+    it.p.liftT=lift*it.perPx;
+  });
+}
+
+/* ---------- boot ---------- */
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const fontLoad=document.fonts?Promise.all([document.fonts.load('800 40px "Barlow Condensed"'),document.fonts.load('700 20px "Zen Kaku Gothic New"'),document.fonts.load('400 20px "Zen Kaku Gothic New"')]).catch(()=>{}):Promise.resolve();
+Promise.race([fontLoad,wait(3000)]).then(()=>{
+  makeBadgeURLs(); renderRail(); buildTicks();
+  night=true;
+  animate();
+  const l=$('loader'); l.style.opacity=0; setTimeout(()=>l.remove(),900);
+  setTimeout(()=>flyView('all'),150);
+  setTimeout(()=>applyTheme(night),900);   // pins and players pop in after the camera starts moving
+  setTimeout(()=>{ $('hint').style.opacity=0; },7000);
+});
+})();
+</script>
+</body>
+</html>
