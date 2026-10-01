@@ -1081,7 +1081,7 @@ function stackLayout(){
   const railB=12+tl.offsetHeight+8; root.setProperty('--rail-b',railB+'px');
   root.setProperty('--panel-b',(railB+rail.offsetHeight+8)+'px');
 }
-addEventListener('resize',()=>{ stackLayout(); measureDesk(); requestAnimationFrame(fitList); });
+addEventListener('resize',()=>{ stackLayout(); measureDesk(); leagueHeader(); requestAnimationFrame(fitList); });
 function markDetail(ser){
   const c=$('dcount'); if(c) c.textContent=`${detailIdx+1} / ${ser.length}`;
   document.querySelectorAll('#sdots i').forEach((d,i)=>d.classList.toggle('on',i===detailIdx));
@@ -1168,9 +1168,9 @@ function selectTeam(k){
   if(k) openPanel();
 }
 function leagueHeader(){
-  const n=games.length, t={M:'【非公式】26-27 SVG MEN',W:'【非公式】26-27 SVG WOMEN',B:'【非公式】26-27 SVG MEN / WOMEN'}[league];
+  const n=games.length, mob=innerWidth<=900, t={M:'【非公式】26-27 SVG MEN',W:'【非公式】26-27 SVG WOMEN',B:mob?'【非公式】26-27 SVG M / W':'【非公式】26-27 SVG MEN / WOMEN'}[league];
   $('lgTitle').textContent=t;
-  $('subt').textContent=league==='B'?`MEN 128 + WOMEN 96 matches`:`${LG_NAME[league]} ${n} matches`;
+  $('subt').textContent=league==='B'?(mob?'M 128 + W 96 matches':'MEN 128 + WOMEN 96 matches'):`${LG_NAME[league]} ${n} matches`;
   document.title='【非公式】26-27 SVG 試合&アリーナマップ';
   $('lgSeg').querySelectorAll('[data-lg]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lg===league)));
   const today=new Date(); today.setHours(0,0,0,0);
@@ -1422,7 +1422,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
 
 (function(){ const today=new Date(); today.setHours(0,0,0,0); const cw=WEEKS.findIndex(w=>w.hi>=today&&!w.empty); weekIdx=cw<0?WEEKS.length-1:cw; })();
 
-let PW=0, vOff=0, vOffY=0;
+let PW=0, vOff=0, vOffY=0, uiK=1;
 function measurePanel(){ PW=innerWidth<=900?$('panel').offsetWidth:0; }
 function viewShiftY(){ const open=innerWidth>900||$('panel').classList.contains('open'); return open&&mode==='week'?-Math.round(innerHeight*(innerWidth>900?0.05:0.14)):0; }
 let DSH=70;
@@ -1442,7 +1442,8 @@ function animate(){
     camera.position.y+=Math.sin(e*Math.PI)*fly.fromP.distanceTo(fly.toP)*0.1; if(k>=1) fly=null; }
   // follow the focused team's player while it travels
   if(follow&&focusTeam&&mode==='week'&&!fly){ const c=chars[focusTeam];
-    if(c.state!=='hidden'&&c.state!=='out'){ tmp.set(c.pos.x,0,c.pos.z).sub(controls.target).multiplyScalar(Math.min(1,dt*2.6)); controls.target.add(tmp); camera.position.add(tmp);
+    if(c.state!=='hidden'&&c.state!=='out'){ const vp=c.atSlot&&c.venue&&pinMap.get(c.venue); const fx=vp?vp.grp.position.x:c.pos.x, fz=vp?vp.grp.position.z+0.4*uiK:c.pos.z;
+      tmp.set(fx,0,fz).sub(controls.target).multiplyScalar(Math.min(1,dt*2.6)); controls.target.add(tmp); camera.position.add(tmp);
       const off=tmp.copy(camera.position).sub(controls.target), L=off.length(), want=THREE.MathUtils.clamp(L,14,34); if(Math.abs(want-L)>0.05){ off.setLength(L+(want-L)*Math.min(1,dt*1.6)); camera.position.copy(controls.target).add(off); } } }
   controls.update();
   { const tv=viewShift(); vOff+=(tv-vOff)*Math.min(1,dt*6); vOffY+=(viewShiftY()-vOffY)*Math.min(1,dt*6); camera.setViewOffset(innerWidth,innerHeight,vOff,vOffY,innerWidth,innerHeight); }
@@ -1450,8 +1451,12 @@ function animate(){
   const ext=THREE.MathUtils.clamp(dist*0.8,8,160);
   sc.left=-ext; sc.right=ext; sc.top=ext; sc.bottom=-ext; sc.updateProjectionMatrix();
   sun.target.position.copy(controls.target); sun.position.copy(controls.target).add(tmp.set(-50,110,60));
-  const s=THREE.MathUtils.clamp(dist/22,0.6,4.6)*(innerWidth<=900?0.78:1), up=Math.max(1,s*0.6);
-  const S=0.5*THREE.MathUtils.clamp(dist/24,0.8,2.4);
+  // while the match panel covers part of a phone screen, shrink the 3D card, court and players
+  // so the whole group fits in the visible map area beside the panel
+  { let tk=1; if(innerWidth<=900&&$('panel').classList.contains('open')){ const freeW=innerWidth-PW-18; tk=THREE.MathUtils.clamp(0.72*freeW/(0.2*innerHeight),0.4,1); }
+    uiK+=(tk-uiK)*Math.min(1,dt*6); }
+  const s=THREE.MathUtils.clamp(dist/22,0.6,4.6)*(innerWidth<=900?0.78:1)*uiK, up=Math.max(1,s*0.6);
+  const S=0.5*THREE.MathUtils.clamp(dist/24,0.8,2.4)*uiK;
 
   // pins
   const dead=[];
