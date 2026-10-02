@@ -138,7 +138,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--court);outline-
 .tsum .hd img{width:46px;height:54px}
 .tsum h3{margin:0;font-size:15px}
 .tsum .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.tsum .stats div{background:var(--glass);border-radius:10px;padding:8px 4px;text-align:center}
+.tsum .stats div,.tsum .stats .stat{background:var(--glass);border-radius:10px;padding:8px 4px;text-align:center}
+.tsum .stats .stat{border:1px solid transparent;font:inherit;color:inherit;cursor:pointer}
+.tsum .stats .stat:hover{border-color:var(--court)}
+.tsum .stats .stat[aria-current="true"]{border-color:var(--court);background:var(--court-soft)}
 .tsum .stats b{display:block;font-family:var(--num);font-size:24px;font-weight:700;line-height:1}
 .tsum .stats small{font-size:10.5px;color:var(--ink-soft)}
 .tsum .actions{display:flex;gap:6px;margin-top:10px;flex-wrap:nowrap}
@@ -185,6 +188,8 @@ input[type=range]:disabled{opacity:.4}
 .ring .prg{stroke:var(--court);stroke-linecap:round;stroke-dasharray:169.65;stroke-dashoffset:169.65;opacity:0}
 .playwrap.on .trk,.playwrap.on .prg{opacity:1}
 .disc{grid-column:1/-1;margin:-4px 0 0;text-align:right;font-size:10px;line-height:1.5;color:var(--ink-faint)}
+.disc .upd{color:var(--ink-soft);margin-right:.6em;white-space:nowrap}
+.disc .upd b{color:var(--court);font-weight:700}
 .disc button{border:0;background:none;padding:0;font:inherit;color:var(--ink-soft);text-decoration:underline;text-underline-offset:2px}
 #tlrow #trackwrap{flex:1}
 .speed{font-family:var(--num);font-weight:700;font-size:14px;border:1px solid var(--glass-line);background:var(--chip);border-radius:999px;padding:6px 11px;flex:none}
@@ -192,7 +197,13 @@ input[type=range]:disabled{opacity:.4}
 #tip{position:fixed;z-index:8;pointer-events:none;padding:8px 12px;border-radius:10px;font-size:12px;opacity:0;transition:opacity .15s;white-space:nowrap}
 #hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 172px);z-index:4;font-size:12px;color:var(--ink-soft);padding:6px 14px;border-radius:999px;transition:opacity .6s;pointer-events:none}
 #loader{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(28px,6vh,56px);background:#fff;transition:opacity .7s ease,transform .7s ease;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
-#loader.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#loader{transition:background-color 1.9s ease}
+#loader.out{pointer-events:none}
+#loader.out .tts{opacity:0;transition:opacity .25s}
+#loader.out img{transform:scale(.55);opacity:0;transition:transform .8s cubic-bezier(.5,0,.75,0),opacity .45s ease .45s}
+#loader.clear{background-color:rgba(255,255,255,0)}
+#mast{transition:opacity .6s ease}
+body.intro #mast{opacity:0}
 #loader img{width:min(68vw,560px);max-height:46vh;object-fit:contain;display:block;animation:logoIn .9s cubic-bezier(.2,.8,.2,1) both}
 #loader .tts{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:clamp(18px,4.6vw,26px);letter-spacing:.24em;padding-left:.24em;color:#111;min-height:1.3em}
 #loader .tts.ready{animation:blink 1.4s ease-in-out infinite}
@@ -207,6 +218,9 @@ input[type=range]:disabled{opacity:.4}
 #about h3{margin:0 0 8px;font-size:17px}
 #about p{margin:0 0 10px;color:var(--ink-soft)}
 #about .close{position:absolute;right:14px;top:12px}
+#about .hist{margin:0 0 10px;padding-left:1.1em;color:var(--ink-soft)}
+#about .hist li{margin-bottom:4px}
+#about .hist b{color:var(--ink);font-family:var(--num);font-weight:700;margin-right:.5em}
 .sheetbtn{display:none}
 
 @media (max-width:900px){
@@ -243,7 +257,7 @@ input[type=range]:disabled{opacity:.4}
   .dcount{font-size:13px}
   #panel header{padding:9px 12px 7px}
   .tsum{padding:8px}
-  .tsum .stats div{padding:5px 2px;border-radius:8px}
+  .tsum .stats div,.tsum .stats .stat{padding:5px 2px;border-radius:8px}
   .tsum .stats b{font-size:15px}
   .tsum .stats small{font-size:8.5px;white-space:nowrap}
   .tsum .hd img{width:26px;height:31px}
@@ -265,6 +279,9 @@ input[type=range]:disabled{opacity:.4}
   #list{padding:6px 6px 8px}
   .tsum{margin-bottom:6px}
   .empty{padding:14px 6px;font-size:11.5px}
+  .grow{grid-template-columns:1fr;gap:1px}
+  .grow .t{grid-column:1}
+  .grow .d{font-size:13px}
   .venue .links a span{display:none}
   .venue .links a{padding:9px 10px;font-size:11.5px}
   .venue h3{font-size:14px}
@@ -370,6 +387,30 @@ input[type=range]:disabled{opacity:.4}
 .bgmbtn[aria-pressed="true"] .off{display:none}
 .seg .bgmbtn[aria-pressed="true"]{background:var(--court);color:#1b1206}
 #mobtools .bgmbtn[aria-pressed="true"]{color:var(--court)}
+/* fav team */
+.tsum .hd{position:relative}
+.favbtn{margin-left:auto;align-self:flex-start;flex:none;border:1px solid var(--glass-line);background:var(--glass);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.favbtn .st{color:var(--ink-faint);font-size:13px;line-height:1}
+.favbtn[aria-pressed="true"]{background:var(--court);border-color:var(--court);color:#1b1206}
+.favbtn[aria-pressed="true"] .st{color:#1b1206}
+.icsrow{margin-top:8px}
+.icsrow .pill{width:100%;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.icsrow svg{width:13px;height:13px;flex:none}
+#now .rng{white-space:nowrap}
+#rail button{position:relative}
+#rail .favstar{position:absolute;left:1px;top:0;font-style:normal;font-size:12px;color:var(--court);text-shadow:0 0 4px rgba(0,0,0,.6);pointer-events:none}
+#mast .favline{display:inline-flex;align-items:center;gap:4px;color:var(--ink);font-weight:500}
+#mast .favline .st{color:var(--court)}
+/* card calendar link */
+.calbtn{display:inline-grid;place-items:center;width:30px;height:28px;padding:0;margin-right:6px;color:var(--ink);text-decoration:none}
+.calbtn svg{width:14px;height:14px}
+/* trails toggle */
+#now{position:relative}
+.tlx{margin-left:auto;align-self:center;display:flex;gap:6px}
+.trailbtn,.seasonbtn{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;white-space:nowrap}
+.trailbtn svg,.seasonbtn svg{width:14px;height:14px}
+.trailbtn[aria-pressed="true"],.seasonbtn[aria-pressed="true"]{background:var(--court);border-color:var(--court);color:#1b1206}
+@media (max-width:900px){ .calbtn{width:26px;height:24px;margin-right:4px} .tlx{position:absolute;right:-4px;top:26px;gap:4px} .trailbtn,.seasonbtn{width:30px;height:30px;padding:0;justify-content:center;border-radius:50%} .tlx .bl{display:none} .favbtn{padding:3px 8px;font-size:10px} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 </head>
@@ -413,7 +454,7 @@ input[type=range]:disabled{opacity:.4}
 </aside>
 
 <section id="timeline" class="glass" aria-label="日程タイムライン">
-  <div id="now"><div class="wk" id="wkNum">01<small>/18</small></div><div><div class="rng" id="wkRange"></div><div class="rd" id="wkRound"></div></div></div>
+  <div id="now"><div class="wk" id="wkNum">01<small>/18</small></div><div><div class="rng" id="wkRange"></div><div class="rd" id="wkRound"></div></div><span class="tlx"><button class="pill seasonbtn" id="seasonBtn" aria-pressed="false" aria-label="季節の演出を表示"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v12M3 5l10 6M13 5L3 11"/></svg><span class="bl">季節</span></button><button class="pill trailbtn" id="trailBtn" aria-pressed="false" aria-label="遠征の軌跡を表示"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 12c2-6 5-8 12-8"/><circle cx="2.5" cy="12" r="1.3" fill="currentColor"/><circle cx="13.5" cy="4" r="1.3" fill="currentColor"/></svg><span class="bl">軌跡</span></button></span></div>
   <div id="tlrow">
     <div class="ctrls">
       <button class="ic" id="prev" aria-label="前の週"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M10.5 2.5 4.5 8l6 5.5z"/></svg></button>
@@ -428,7 +469,7 @@ input[type=range]:disabled{opacity:.4}
     </div>
     <button class="speed" id="speed" aria-label="再生速度を切り替え">1×</button>
   </div>
-  <p class="disc">当サイトは非公式のファンサイトです。掲載情報の正確性・最新性を保証するものではありません。詳しくは<button type="button" id="discLink">データについて</button>をご覧ください。</p>
+  <p class="disc"><span class="upd" id="updLine"></span>当サイトは非公式のファンサイトです。掲載情報の正確性・最新性を保証するものではありません。詳しくは<button type="button" id="discLink">データについて</button>をご覧ください。</p>
 </section>
 
 <div id="cal" class="glass" role="dialog" aria-label="カレンダーで週を選ぶ" hidden>
@@ -465,6 +506,8 @@ input[type=range]:disabled{opacity:.4}
     <dt>ピンをタップ</dt><dd>その試合のカードを表示</dd>
     <dt>カードを左右にスワイプ</dt><dd>同じ週の別の試合へ（地図も移動）</dd>
     <dt>エンブレム・人形をタップ</dt><dd>そのチームで絞り込み（下のエンブレム列と人形は、もう一度タップで解除）</dd>
+    <dt>★推し登録</dt><dd>チームを絞り込んだカードで登録。次回からそのチームで始まり、上部に次の試合までの日数を表示</dd>
+    <dt>カードのカレンダーアイコン</dt><dd>その試合をGoogleカレンダーに追加</dd>
     <dt>会場情報</dt><dd>会場の地図・写真・アクセスへのリンクと、その会場の試合一覧</dd>
     <dt>全会場</dt><dd>今季の全会場を表示。会場をタップで会場情報</dd>
   </dl>
@@ -472,6 +515,7 @@ input[type=range]:disabled{opacity:.4}
   <dl>
     <dt>スライダー・前後ボタン</dt><dd>週を移動</dd>
     <dt>カレンダー</dt><dd>日付をタップでその週へ。左右スワイプで月を切り替え</dd>
+    <dt>軌跡ボタン</dt><dd>これまでの遠征ルートを地図に残して表示（オン／オフ）</dd>
     <dt>再生ボタン</dt><dd>自動で週を進める（ボタンの円が一周で次の週）。回転以外の操作をすると停止</dd>
   </dl>
 </div>
@@ -482,6 +526,8 @@ input[type=range]:disabled{opacity:.4}
   <p>会場の位置は市区町村レベルの目安です。「会場調整中」の試合は開催県内の目安の位置に表示しています。第2節 レーヴィス栃木 vs きんでんトリニティーブリッツは延期となり、代替日程が未発表のため地図には表示していません。</p>
   <p>チームカラーや略称、エンブレム、ユニフォーム等は正式なものではなく、当マップ用のオリジナルデザインで、各クラブの公式ではありません。遠征距離は本拠地（目安）と会場の直線距離の往復から算出した参考値です。</p>
   <p>最新の日程は公式サイト（svleague.jp）で確認してください。</p>
+  <h3 style="margin-top:16px">更新履歴</h3>
+  <ul class="hist" id="histList"></ul>
   <h3 style="margin-top:16px">このサイトについて</h3>
   <p>当サイトは個人が制作した非公式のファンサイトで、SV.LEAGUE（公益社団法人SVリーグ）、大同生命保険株式会社、各クラブおよびその運営会社とは関係ありません。リーグ名・大会名・クラブ名は各権利者の名称・商標です。掲載情報の正確性・最新性・完全性は保証しておらず、当サイトの利用によって生じたいかなる損害についても責任を負いかねます。観戦の際は必ず公式情報をご確認ください。</p>
   <p>地図データ：地球地図日本（国土地理院）を加工して作成。3D表示：three.js（MIT License）。フォント：Zen Kaku Gothic New、Barlow Condensed（SIL Open Font License）。</p>
@@ -519,6 +565,8 @@ const TEAMS = {
 const ALL_ORDER=["TSG","RTC","CBD","FKR","ATH","VYK","KSO","KTB","WSEN","WSHI","WGIF","WHAM","WFUK","WKUM"];
 const LG_NAME={M:'MEN',W:'WOMEN'};
 let league='M';
+let fav=null; try{ fav=localStorage.getItem('svgmap.fav'); }catch(e){}
+if(fav&&!TEAMS[fav]) fav=null;
 try{ const v=localStorage.getItem('svgmap.league'); if(v==='M'||v==='W'||v==='B') league=v; }catch(e){}
 let ORDER=ALL_ORDER.filter(k=>league==='B'||TEAMS[k].lg===league);
 const isLight=hex=>{ const c=new THREE.Color(hex); return (c.r*0.3+c.g*0.59+c.b*0.11)>0.6; };
@@ -581,10 +629,11 @@ $('stage').appendChild(renderer.domElement);
 
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(36,innerWidth/innerHeight,0.1,2500);
-camera.position.set(10,330,140);
+camera.position.set(4,1650,150);
+document.body.classList.add('intro');
 const controls=new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true; controls.dampingFactor=0.08;
-controls.minDistance=5; controls.maxDistance=380;
+controls.minDistance=5; controls.maxDistance=1800;
 controls.maxPolarAngle=Math.PI*0.45; controls.minPolarAngle=0.1;
 controls.target.set(4,0,4);
 
@@ -826,6 +875,52 @@ const capGeo=new THREE.CircleGeometry(0.28,28); capGeo.rotateX(-Math.PI/2);
 const matGeo=new THREE.PlaneGeometry(6.2,3.2); const lineGeo=new THREE.PlaneGeometry(0.06,3.2);
 const beamTex=(()=>{ const cv=document.createElement('canvas'); cv.width=4; cv.height=128; const x=cv.getContext('2d'); const g=x.createLinearGradient(0,0,0,128); g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(255,255,255,1)'); x.fillStyle=g; x.fillRect(0,0,4,128); return new THREE.CanvasTexture(cv); })();
 const STAGE_YAW=-0.35;
+const FAN_ROWS=[{z:-1.45,y:0.22},{z:-2.05,y:0.52}], FAN_PER=7, FAN_N=FAN_ROWS.length*FAN_PER*2;
+const standGeo1=new THREE.BoxGeometry(6.4,0.22,0.6), standGeo2=new THREE.BoxGeometry(6.4,0.52,0.6);
+const standMat=new THREE.MeshStandardMaterial({color:0x22354f,roughness:0.85});
+const fanBodyGeo=new THREE.CylinderGeometry(0.15,0.19,0.42,10); fanBodyGeo.translate(0,0.21,0);
+const fanHeadGeo=new THREE.SphereGeometry(0.15,12,10);
+const fanHandGeo=new THREE.SphereGeometry(0.075,8,6);
+const flagGeo=new THREE.PlaneGeometry(0.75,0.48,6,1); flagGeo.translate(0.375,0,0);
+const poleGeo=new THREE.CylinderGeometry(0.025,0.025,1.6,6); poleGeo.translate(0,0.8,0);
+const _fo=new THREE.Object3D();
+function buildCrowd(stage){
+  const g=new THREE.Group(); stage.add(g);
+  const s1=new THREE.Mesh(standGeo1,standMat); s1.position.set(0,0.11,FAN_ROWS[0].z); s1.receiveShadow=true;
+  const s2=new THREE.Mesh(standGeo2,standMat); s2.position.set(0,0.26,FAN_ROWS[1].z); s2.receiveShadow=true;
+  const bodyMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.6});
+  const handMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.5});
+  const bodies=new THREE.InstancedMesh(fanBodyGeo,bodyMat,FAN_N), heads=new THREE.InstancedMesh(fanHeadGeo,skinMat,FAN_N), hands=new THREE.InstancedMesh(fanHandGeo,handMat,FAN_N);
+  [bodies,heads,hands].forEach(m=>{ m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled=false; });
+  const fans=[];
+  FAN_ROWS.forEach((r,ri)=>{ for(let side of [-1,1]) for(let i=0;i<FAN_PER;i++){
+    fans.push({x:side*(0.42+i*0.37+(ri?0.18:0)), y:r.y, z:r.z, side, ph:Math.random()*6.3, sp:3+Math.random()*2}); } });
+  const flags=[];
+  [-1,1].forEach(side=>{ [0,1].forEach(j=>{ const pole=new THREE.Mesh(poleGeo,whiteMat); pole.position.set(side*(1.0+j*1.6),FAN_ROWS[1].y,FAN_ROWS[1].z-0.35);
+    const fm=new THREE.MeshStandardMaterial({color:0xffffff,side:THREE.DoubleSide,roughness:0.7});
+    const f=new THREE.Mesh(flagGeo,fm); f.position.set(0,1.32,0); f.rotation.y=side>0?Math.PI:0; pole.add(f); g.add(pole); flags.push({f,side,ph:Math.random()*6.3}); }); });
+  g.add(s1,s2,bodies,heads,hands);
+  return {g,bodies,heads,hands,fans,flags,bodyMat,handMat,cheer:[0,0]};
+}
+function styleCrowd(cr,s){
+  const hc=new THREE.Color(TEAMS[s.h].c1), h2=new THREE.Color(TEAMS[s.h].c2), ac=new THREE.Color(TEAMS[s.a].c1), a2=new THREE.Color(TEAMS[s.a].c2), tmpc=new THREE.Color();
+  cr.fans.forEach((f,i)=>{ const home=f.side<0; const c=(i%4===3)?(home?h2:a2):(home?hc:ac);
+    cr.bodies.setColorAt(i,tmpc.copy(c).multiplyScalar(0.85+((i*37)%10)/60)); cr.hands.setColorAt(i,home?h2:a2); });
+  cr.bodies.instanceColor.needsUpdate=true; cr.hands.instanceColor.needsUpdate=true;
+  cr.flags.forEach(fl=>fl.f.material.color.set(fl.side<0?TEAMS[s.h].c1:TEAMS[s.a].c1));
+}
+function tickCrowd(cr,T,mo){
+  cr.cheer[0]*=0.94; cr.cheer[1]*=0.94;
+  cr.fans.forEach((f,i)=>{ const ch=cr.cheer[f.side<0?0:1];
+    const bob=Math.abs(Math.sin(T*f.sp+f.ph))*0.05*mo, jump=ch*Math.abs(Math.sin(T*9+f.ph))*0.28*mo;
+    const y=f.y+bob+jump;
+    _fo.position.set(f.x,y,f.z); _fo.rotation.set(0,0,Math.sin(T*1.6+f.ph)*0.08*mo); _fo.scale.setScalar(1); _fo.updateMatrix(); cr.bodies.setMatrixAt(i,_fo.matrix);
+    _fo.position.set(f.x,y+0.56,f.z); _fo.updateMatrix(); cr.heads.setMatrixAt(i,_fo.matrix);
+    const up=0.15+0.25*Math.max(ch,0.35+0.35*Math.sin(T*2.2+f.ph)); // hands up, higher when cheering
+    _fo.position.set(f.x+Math.sin(T*6+f.ph)*0.06*mo,y+0.56+up,f.z+0.05); _fo.updateMatrix(); cr.hands.setMatrixAt(i,_fo.matrix); });
+  cr.bodies.instanceMatrix.needsUpdate=true; cr.heads.instanceMatrix.needsUpdate=true; cr.hands.instanceMatrix.needsUpdate=true;
+  cr.flags.forEach(fl=>{ fl.f.rotation.y=(fl.side>0?Math.PI:0)+Math.sin(T*3+fl.ph)*0.45*mo; fl.f.scale.x=0.9+0.1*Math.sin(T*5+fl.ph); });
+}
 const SLOT={h:new THREE.Vector3(-1.3,0,0.75),a:new THREE.Vector3(1.3,0,0.75)};
 
 let night=false, mode='week', focusTeam=null, routeOn=false, weekIdx=0;
@@ -846,7 +941,8 @@ function createPin(s,key){
   const line=new THREE.Mesh(lineGeo,whiteMat); line.rotation.x=-Math.PI/2; line.position.set(0,0.03,0.75);
   const ball=new THREE.Mesh(G.ball,ballMat); ball.castShadow=true; ball.visible=false;
   stage.add(mat,line,ball);
-  const pin={key,grp,disc,ring,beam,hm,head,cone,spr,stage,mat,ball,series:s,beamH:2.4,dim:false,a:0,tw:tween(0,1,D(0.7)),removing:false,t0:Math.random()*6,sig:''};
+  const crowd=buildCrowd(stage);
+  const pin={key,grp,crowd,disc,ring,beam,hm,head,cone,spr,stage,mat,ball,series:s,beamH:2.4,dim:false,a:0,tw:tween(0,1,D(0.7)),removing:false,t0:Math.random()*6,sig:''};
   spr.userData.pin=pin; head.userData.pin=pin;
   return pin;
 }
@@ -859,13 +955,14 @@ function stylePin(p){
   p.beam.material.blending=night?THREE.AdditiveBlending:THREE.NormalBlending; p.beam.material.needsUpdate=true;
   p.hm.color.copy(col); p.hm.emissive.copy(col); p.hm.emissiveIntensity=night?0.9:0.25; p.hm.transparent=p.dim; p.hm.opacity=p.dim?0.3:1; p.hm.needsUpdate=true;
   p.mat.material.color.set(night?0x2c4a6e:0xe2ad72);
-  p.stage.visible=!p.dim; p.head.castShadow=!p.dim;
+  p.stage.visible=!p.dim; p.head.castShadow=!p.dim; styleCrowd(p.crowd,s);
   if(sig!==p.sig){ if(p.spr.material.map) p.spr.material.map.dispose(); p.spr.material.map=matchCardTexture(s); p.spr.material.needsUpdate=true; p.sig=sig; }
   p.spr.material.opacity=p.dim?0.22:1; p.spr.renderOrder=p.dim?1:2;
 }
 function disposePin(p){
   pinRoot.remove(p.grp);
-  [p.disc.material,p.ring.material,p.beam.material,p.hm,p.mat.material].forEach(m=>m.dispose());
+  [p.disc.material,p.ring.material,p.beam.material,p.hm,p.mat.material,p.crowd.bodyMat,p.crowd.handMat].forEach(m=>m.dispose());
+  p.crowd.flags.forEach(fl=>fl.f.material.dispose()); [p.crowd.bodies,p.crowd.heads,p.crowd.hands].forEach(m=>m.dispose&&m.dispose());
   if(p.spr.material.map) p.spr.material.map.dispose(); p.spr.material.dispose();
   pinMap.forEach((v,k)=>{ if(v===p) pinMap.delete(k); });
 }
@@ -904,6 +1001,38 @@ function makeArc(a,b,color,height,opacity,radius){
   arcMats.push(mat); return new THREE.Mesh(geo,mat);
 }
 function clearGroup(g){ g.traverse(o=>{ if(o.isMesh||o.isSprite){ if(o.userData.ownGeo) o.geometry.dispose(); if(o.material){ if(o.material.map&&o.userData.ownTex) o.material.map.dispose(); if(o.userData.ownMat) o.material.dispose(); } } }); g.clear(); }
+const TRAIL_FS=`uniform vec3 uColor; uniform float uOpacity; uniform float uDraw; varying vec2 vUv;
+ void main(){ float vis=step(vUv.x,uDraw); float head=smoothstep(uDraw-0.1,uDraw,vUv.x)*vis*step(uDraw,0.999);
+ float fade=smoothstep(0.0,0.05,vUv.x)*(1.0-smoothstep(0.95,1.0,vUv.x));
+ gl_FragColor=vec4(uColor+head*0.7,(uOpacity+head*0.8)*vis*fade); }`;
+const trailRoot=new THREE.Group(); scene.add(trailRoot);
+const trailMap=new Map();
+let trailsOn=false; try{ trailsOn=localStorage.getItem('svgmap.trails')==='on'; }catch(e){}
+function updateTrails(){
+  const need=new Map();
+  if(trailsOn&&mode==='week'&&WEEKS[weekIdx]){
+    const lim=WEEKS[weekIdx].mon.getTime()+7*864e5;
+    const sm=new Map();
+    dated.forEach(g=>{ if(+g.date>=lim||g.lat==null) return; if(focusTeam&&g.a!==focusTeam) return;
+      const key=g.lg+g.h+g.a+g.v+'@'+g.r; if(!sm.has(key)) sm.set(key,g); });
+    sm.forEach((g,key)=>need.set(key,g));
+  }
+  trailMap.forEach((m,key)=>{ if(!need.has(key)){ trailRoot.remove(m); m.geometry.dispose(); m.material.dispose(); trailMap.delete(key); } });
+  const curMon=WEEKS[weekIdx]?WEEKS[weekIdx].mon.getTime():0;
+  need.forEach((g,key)=>{
+    if(trailMap.has(key)) return;
+    const a=homePos(g.a).setY(MAP_H+0.03), b=P(g.lat,g.lon,MAP_H+0.03), d=a.distanceTo(b); if(d<1) return;
+    const mid=a.clone().add(b).multiplyScalar(0.5); mid.y+=Math.max(1,d*0.22);
+    const geo=new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a,mid,b),64,0.035,5,false);
+    const fresh=monday(g.date).getTime()===curMon&&!reduce;
+    const mat=new THREE.ShaderMaterial({vertexShader:ARC_VS,fragmentShader:TRAIL_FS,transparent:true,depthWrite:false,blending:night?THREE.AdditiveBlending:THREE.NormalBlending,
+      uniforms:{uColor:{value:new THREE.Color(TEAMS[g.a].c1)},uOpacity:{value:night?0.38:0.45},uDraw:{value:fresh?0:1}}});
+    const m=new THREE.Mesh(geo,mat); m.userData.t0=fresh?performance.now()+500:0; trailRoot.add(m); trailMap.set(key,m);
+  });
+}
+function trailUI(){ $('trailBtn').setAttribute('aria-pressed',String(trailsOn)); }
+$('trailBtn').onclick=()=>{ trailsOn=!trailsOn; try{ localStorage.setItem('svgmap.trails',trailsOn?'on':'off'); }catch(e){} trailUI(); updateTrails(); };
+trailUI();
 function clearArcs(){ arcRoot.traverse(o=>{ if(o.isMesh){ o.geometry.dispose(); o.material.dispose(); } }); arcRoot.clear(); arcMats.length=0; }
 
 /* ---------- sync: compute the target state for the current week and animate toward it ---------- */
@@ -1009,10 +1138,11 @@ function addRoute(key){
 /* ---------- UI ---------- */
 const list=$('list');
 const teamSide=(k,role)=>`<button type="button" class="side" data-team="${k}" aria-label="${TEAMS[k].name}で絞り込み"><img src="${badgeURL[k]}" alt=""><span class="nm-f">${TEAMS[k].name}</span><span class="nm-s">${TEAMS[k].short}</span><em>${role}</em></button>`;
+const enc=encodeURIComponent;
 let curSer=[], detailIdx=0, selKey=null, follow=false;
 function nextGameWeek(from,team){ for(let i=from+1;i<WEEKS.length;i++){ if(WEEKS[i].games.some(g=>!team||g.h===team||g.a===team)) return i; } return -1; }
 function renderList(){
-  venueView=null;
+  venueView=null; glView=null;
   const W=WEEKS[weekIdx]; let ser=seriesOf(W.games);
   if(focusTeam) ser=ser.filter(s=>s.h===focusTeam||s.a===focusTeam);
   curSer=ser;
@@ -1040,9 +1170,36 @@ function renderList(){
 const PINI='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 3.3 4.5 8.5 4.5 8.5s4.5-5.2 4.5-8.5A4.5 4.5 0 0 0 8 1.5zm0 6.2A1.7 1.7 0 1 1 8 4.3a1.7 1.7 0 0 1 0 3.4z"/></svg>';
 function cardHTML(s,i,clickable){
   const rows=s.games.map(g=>`${g.date.getMonth()+1}/${g.date.getDate()}(${WD[g.date.getDay()]}) ${g.t||'時間未定'} GAME${g.g}`).join('<br>');
-  const vb=s.tbd?'':`<span class="vfoot"><button type="button" class="pill vbtn" data-v="${s.v.replace(/"/g,'&quot;')}">${PINI}会場情報</button></span>`;
+  const cal=`<a class="pill calbtn" href="${gcalURL(s)}" target="_blank" rel="noopener" aria-label="Googleカレンダーに追加" title="Googleカレンダーに追加">${CALI}</a>`;
+  const vb=`<span class="vfoot">${cal}${s.tbd?'':`<button type="button" class="pill vbtn" data-v="${s.v.replace(/"/g,'&quot;')}">${PINI}会場情報</button>`}</span>`;
   return `<div class="card${clickable?' clickable':''}" data-i="${i}"${clickable?' role="button" tabindex="0" aria-label="試合の詳細を開く"':''}><span class="vs">${teamSide(s.h,'HOME')}<span class="x">VS</span>${teamSide(s.a,'AWAY')}</span>
       <span class="meta"><span>会場</span><b class="${s.tbd?'tbd':''}">${s.tbd?'会場調整中':s.v}</b><span>場所</span><b>${s.city||'—'}</b><span>日時</span><b>${rows}</b><span>節</span><b><span class="lgchip ${s.lg}">${LG_NAME[s.lg]}</span> 第${s.r}節</b></span>${vb}</div>`;
+}
+const CALI='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/><path d="M8 8.6v3.4M6.3 10.3h3.4" stroke-linecap="round"/></svg>';
+const ymd=d=>`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+function seriesText(s){
+  return { title:`${TEAMS[s.h].name} vs ${TEAMS[s.a].name}（SV.LEAGUE GROWTH ${LG_NAME[s.lg]} 第${s.r}節）`,
+    loc:s.tbd?`${s.city}（会場調整中）`:`${s.v} ${s.city}`,
+    det:s.games.map(g=>`${jMD(g.date)} ${g.t||'時間未定'} GAME${g.g}`).join('\n')+'\n\n非公式ファンサイト「試合&アリーナマップ」より。最新の日程は公式サイトでご確認ください。' };
+}
+function gcalURL(s){
+  const d0=s.games[0].date, d1=s.games[s.games.length-1].date, end=new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+1), x=seriesText(s);
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+enc(x.title)+'&dates='+ymd(d0)+'/'+ymd(end)+'&location='+enc(x.loc)+'&details='+enc(x.det)+'&ctz=Asia/Tokyo';
+}
+// .ics files can't be offered from inside the Claude viewer, so this only appears on a self-hosted copy
+const canIcs=()=>!window.claude;
+function saveIcs(k){
+  const esc=t=>String(t).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//unofficial//svg-arena-map//JA','CALSCALE:GREGORIAN','X-WR-CALNAME:'+esc(TEAMS[k].name+' 26-27')];
+  teamSeries(k).forEach(sr=>{
+    const s={h:sr.h,a:sr.a,v:sr.v,lg:TEAMS[k].lg,r:sr.games[0].r,tbd:sr.tbd,city:sr.games[0].city,games:sr.games};
+    const x=seriesText(s), d0=s.games[0].date, d1=s.games[s.games.length-1].date, end=new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+1);
+    L.push('BEGIN:VEVENT','UID:'+k+'-'+ymd(d0)+'-'+s.h+s.a+'@svg-arena-map','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+ymd(d0),'DTEND;VALUE=DATE:'+ymd(end),'SUMMARY:'+esc(x.title),'LOCATION:'+esc(x.loc),'DESCRIPTION:'+esc(x.det),'END:VEVENT');
+  });
+  L.push('END:VCALENDAR');
+  const url=URL.createObjectURL(new Blob([L.join('\r\n')],{type:'text/calendar'}));
+  const a=document.createElement('a'); a.href=url; a.download=`${TEAMS[k].mono}_26-27.ics`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 const ARW='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M10.5 2.5 4.5 8l6 5.5z"/></svg>', ARE='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 2.5 11.5 8l-6 5.5z"/></svg>';
 const zd=d=>innerWidth<=900?d*1.6:d;
@@ -1065,7 +1222,7 @@ function renderDetail(ser,head){
 // on phones, a team-filtered panel always fits without scrolling: shrink its contents if needed
 function fitList(){
   const kids=[...list.children]; kids.forEach(c=>c.style.zoom='');
-  if(innerWidth>900||!focusTeam||venueView) return;
+  if(innerWidth>900||!focusTeam||venueView||glView) return;
   for(let n=0;n<3;n++){
     const over=list.scrollHeight-list.clientHeight; if(over<=1) break;
     const cur=parseFloat(kids[0]&&kids[0].style.zoom)||1;
@@ -1095,7 +1252,6 @@ list.addEventListener('click',e=>{
 });
 list.addEventListener('keydown',e=>{ const c=e.target.closest&&e.target.closest('.card.clickable'); if(c&&e.target===c&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); openDetail(+c.dataset.i); } });
 let venueView=null, lastVs=null;
-const enc=encodeURIComponent;
 function openVenue(name){
   venueView=name; renderVenue();
   const g=games.find(x=>x.v===name&&x.lat!=null); if(g) flyTo(P(g.lat,g.lon),zd(15));
@@ -1126,6 +1282,25 @@ function renderVenue(){
   $('vBack').onclick=closeVenue;
   list.querySelectorAll('.grow').forEach(b=>b.onclick=()=>{ const wi=+b.dataset.w; venueView=null; if(mode!=='week') setMode('week'); if(wi!==weekIdx) setWeek(wi); else renderList(); });
 }
+let glView=null;
+function openGameList(kind){ glView=kind; renderGameList(); openPanel(); }
+function renderGameList(){
+  const k=focusTeam, home=glView==='home'; if(!k){ glView=null; renderList(); return; }
+  const today=new Date(); today.setHours(0,0,0,0);
+  const ss=teamSeries(k).filter(s=>home?s.h===k:s.a===k);
+  $('pTitle').textContent=`${TEAMS[k].short}の${home?'ホーム':'アウェー'}戦`;
+  $('pSub').textContent=`${ss.length}カード ${ss.reduce((a,s)=>a+s.games.length,0)}試合　タップでその週へ移動`;
+  let html=teamCard(k)+`<div class="venue"><div class="dhead"><button class="pill" id="glBack">戻る</button></div>`;
+  ss.forEach(s=>{ const opp=home?s.a:s.h, g0=s.games[0], wi=WEEKS.findIndex(w=>w.games.includes(g0));
+    const ds=s.games.map(g=>`${g.date.getMonth()+1}/${g.date.getDate()}`).join('・');
+    html+=`<button class="grow${s.end<today?' past':''}" data-w="${wi}" data-v="${(s.v||'').replace(/"/g,'&quot;')}"><span class="d">${ds}</span><span class="m"><img src="${badgeURL[opp]}" alt="">vs ${TEAMS[opp].short}</span><span class="t">${s.tbd?'会場調整中':s.v}　第${g0.r}節</span></button>`; });
+  html+=`</div>`;
+  list.innerHTML=html; list.scrollTop=0;
+  list.querySelectorAll('.stat').forEach(b=>b.setAttribute('aria-current',String(b.dataset.gl===glView)));
+  $('glBack').onclick=()=>{ glView=null; renderList(); };
+  list.querySelectorAll('.grow').forEach(b=>b.onclick=()=>{ const wi=+b.dataset.w; glView=null; if(mode!=='week') setMode('week'); if(wi!==weekIdx) setWeek(wi); else renderList(); });
+  bindTeamCard();
+}
 function closeVenue(){ venueView=null; if(mode==='all'&&lastVs) renderVenueList(lastVs); else renderList(); }
 function renderVenueList(vs){
   venueView=null; lastVs=vs;
@@ -1140,11 +1315,16 @@ function renderVenueList(vs){
 function teamCard(k){
   const t=TEAMS[k], s=teamStats(k);
   const nx=s.nxt?`<br>次の試合 ${jMD(s.nxt.date)} vs ${TEAMS[s.nxt.h===k?s.nxt.a:s.nxt.h].short}（${s.nxt.h===k?'ホーム':'アウェー'}）`:'';
-  return `<div class="tsum"><div class="hd"><img src="${badgeURL[k]}" alt=""><div><h3>${t.name}</h3><div class="sub">${t.mono}　${t.city}${nx}</div></div></div>
-   <div class="stats"><div><b>${s.home}</b><small>ホーム戦</small></div><div><b>${s.away}</b><small>アウェー戦</small></div><div><b>${s.km.toLocaleString()}</b><small>遠征距離 km</small></div></div>
-   <div class="actions"><button class="pill" id="routeBtn" aria-pressed="${routeOn}">遠征ルート</button><button class="pill" id="nextBtn">次の試合</button><button class="pill" id="clearBtn">絞込解除</button></div></div>`;
+  const icsBtn=canIcs()?`<div class="icsrow"><button class="pill" id="icsBtn">${CALI} 全${s.home+s.away}試合をカレンダーに保存（.ics）</button></div>`:'';
+  return `<div class="tsum"><div class="hd"><img src="${badgeURL[k]}" alt=""><div><h3>${t.name}</h3><div class="sub">${t.mono}　${t.city}${nx}</div></div><button class="favbtn" id="favBtn" aria-pressed="${fav===k}" aria-label="推しチームに登録"><span class="st">★</span>${fav===k?'推し':'推し登録'}</button></div>
+   <div class="stats"><button class="stat" data-gl="home" aria-label="ホーム戦の一覧"><b>${s.home}</b><small>ホーム戦 ›</small></button><button class="stat" data-gl="away" aria-label="アウェー戦の一覧"><b>${s.away}</b><small>アウェー戦 ›</small></button><div><b>${s.km.toLocaleString()}</b><small>遠征距離 km</small></div></div>
+   <div class="actions"><button class="pill" id="routeBtn" aria-pressed="${routeOn}">遠征ルート</button><button class="pill" id="nextBtn">次の試合</button><button class="pill" id="clearBtn">絞込解除</button></div>${icsBtn}</div>`;
 }
+function setFav(k){ fav=k; try{ k?localStorage.setItem('svgmap.fav',k):localStorage.removeItem('svgmap.fav'); }catch(e){} renderRail(); leagueHeader(); }
 function bindTeamCard(){
+  list.querySelectorAll('.stat[data-gl]').forEach(b=>b.onclick=()=>{ if(glView===b.dataset.gl){ glView=null; renderList(); } else openGameList(b.dataset.gl); });
+  const fb=$('favBtn'); if(fb) fb.onclick=()=>{ setFav(fav===focusTeam?null:focusTeam); fb.setAttribute('aria-pressed',String(fav===focusTeam)); fb.innerHTML=`<span class="st">★</span>${fav===focusTeam?'推し':'推し登録'}`; };
+  const ib=$('icsBtn'); if(ib) ib.onclick=()=>saveIcs(focusTeam);
   const r=$('routeBtn'); if(r) r.onclick=()=>{ routeOn=!routeOn; r.setAttribute('aria-pressed',String(routeOn)); if(mode==='week') sync(); else { clearArcs(); if(routeOn) addRoute(focusTeam); } if(routeOn) flyView('all'); };
   const n=$('nextBtn'); if(n) n.onclick=()=>{ const s=teamStats(focusTeam); const tgt=s.nxt||dated.find(g=>g.h===focusTeam||g.a===focusTeam);
     const wi=WEEKS.findIndex(w=>w.games.includes(tgt)); if(wi>=0){ if(mode!=='week') setMode('week'); setWeek(wi); const ss=seriesOf(WEEKS[wi].games).find(s=>s.h===focusTeam||s.a===focusTeam); if(ss) flyTo(venuePos(ss),15);} };
@@ -1152,7 +1332,7 @@ function bindTeamCard(){
 }
 function renderRail(){
   const rail=$('rail');
-  const btn=k=>`<button data-k="${k}" aria-pressed="${focusTeam===k}" title="${TEAMS[k].name}"><img src="${badgeURL[k]}" alt=""><span class="tx"><span class="tn" style="display:block">${TEAMS[k].short}</span><span class="tc">${TEAMS[k].mono}　${TEAMS[k].city}</span></span></button>`;
+  const btn=k=>`<button data-k="${k}" aria-pressed="${focusTeam===k}" title="${TEAMS[k].name}${fav===k?'（推し）':''}">${fav===k?'<i class="favstar" aria-hidden="true">★</i>':''}<img src="${badgeURL[k]}" alt=""><span class="tx"><span class="tn" style="display:block">${TEAMS[k].short}</span><span class="tc">${TEAMS[k].mono}　${TEAMS[k].city}</span></span></button>`;
   rail.classList.toggle('many',league==='B');
   rail.innerHTML=`<div class="rt">チームで絞り込み</div>`+(league==='B'
     ?`<div class="rlg">MEN</div>`+ORDER.filter(k=>TEAMS[k].lg==='M').map(btn).join('')+`<div class="rlg">WOMEN</div>`+ORDER.filter(k=>TEAMS[k].lg==='W').map(btn).join('')
@@ -1176,7 +1356,15 @@ function leagueHeader(){
   const today=new Date(); today.setHours(0,0,0,0);
   const open=new Date(Math.min(...dated.map(g=>+g.date))), end=new Date(Math.max(...dated.map(g=>+g.date)));
   const days=Math.round((open-today)/864e5);
-  $('countdown').innerHTML= days>0?`開幕まで<b>${days}</b>日　${open.getMonth()+1}月${open.getDate()}日（${WD[open.getDay()]}）開幕`:(today<=end?'レギュラーシーズン開催中':'レギュラーシーズン終了');
+  let cd= days>0?`開幕まで<b>${days}</b>日　${open.getMonth()+1}月${open.getDate()}日（${WD[open.getDay()]}）開幕`:(today<=end?'レギュラーシーズン開催中':'レギュラーシーズン終了');
+  if(fav&&ORDER.includes(fav)){
+    const ng=dated.filter(g=>g.date>=today&&(g.h===fav||g.a===fav)).sort((a,b)=>a.date-b.date)[0], t2=TEAMS[fav];
+    if(ng){ const d=Math.round((ng.date-today)/864e5), opp=TEAMS[ng.h===fav?ng.a:ng.h].short, ha=ng.h===fav?'H':'A';
+      cd=`<span class="favline"><span class="st">★</span>${t2.short}　${d===0?'<b>今日</b>試合':`次の試合まで<b>${d}</b>日`}　${jMD(ng.date)} vs ${opp}（${ha}）</span>`;
+      if(mob) $('subt').textContent=`★${t2.short} ${d===0?'今日試合':`次戦まで${d}日`}`; }
+    else cd=`<span class="favline"><span class="st">★</span>${t2.short}　今季の試合は終了</span>`;
+  }
+  $('countdown').innerHTML=cd;
 }
 function setLeague(lg,first){
   if(!first&&lg===league) return;
@@ -1189,13 +1377,14 @@ function setLeague(lg,first){
   let wi=keepMon!=null?WEEKS.findIndex(w=>w.mon.getTime()===keepMon):-1;
   if(first||wi<0){ wi=WEEKS.findIndex(w=>w.hi>=today&&!w.empty); if(wi<0) wi=WEEKS.length-1; }
   weekIdx=wi; detailIdx=0; venueView=null;
-  range.max=WEEKS.length-1; buildTicks(); renderRail(); renderRegions(); leagueHeader(); stackLayout(); measureDesk();
+  range.max=WEEKS.length-1; buildTicks(); renderRail(); renderRegions(); leagueHeader(); stackLayout(); measureDesk(); updateTimelineUI();
   if(!first){ rebuild(); flyView('all'); }
 }
 $('lgSeg').addEventListener('click',e=>{ const b=e.target.closest('[data-lg]'); if(b) setLeague(b.dataset.lg); });
 function rebuild(){
   if(mode==='week'){ clearGroup(allRoot); pillars.length=0; sync(); renderList(); }
   else { sync(); buildAll(); clearArcs(); if(focusTeam&&routeOn) addRoute(focusTeam); }
+  updateTrails(); seasonFor();
   updateTimelineUI();
 }
 
@@ -1318,7 +1507,7 @@ document.addEventListener('pointerdown',e=>{
     if(navKind!=='rotate') userAct();
     return;
   }
-  if(!playing) return; if(e.target.closest('#play,#speed,.playwrap,.bgmbtn')) return; userAct();
+  if(!playing) return; if(e.target.closest('#play,#speed,.playwrap,.bgmbtn,.trailbtn,.seasonbtn')) return; userAct();
 },true);
 ['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,e=>activePtr.delete(e.pointerId),true));
 document.addEventListener('wheel',()=>{ navKind='other'; userAct(); },{capture:true,passive:true});
@@ -1358,17 +1547,20 @@ function flyView(k){
   document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===k)));
   const mob=innerWidth<=900, V=curViews(); const v=k==='all'?(mob?V.allM:V.all):(V.regions.find(r=>r[0]===k)||[0,0,V.all])[2]; const f=mob&&k!=='all'?1.35:1; flyTo(P(v.lat,v.lon,0),v.d*f,v.pol,v.az);
 }
-let fly=null;
+let fly=null, flyIntro=false;
+// dive: slow drift in orbit, fast through the clouds, gentle landing
+const introEase=k=>{ const a=k<0.25?0.5*Math.pow(k/0.25,2)*0.12:0; if(k<0.25) return a; const u=(k-0.25)/0.75; return 0.06+0.94*(1-Math.pow(1-u,3)); };
 function flyTo(target,dist,pol=0.82,az=null){
   const t=target.clone(); t.y=0;
   const sph=new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
   const endPos=new THREE.Vector3().setFromSpherical(new THREE.Spherical(dist,pol,az==null?sph.theta:az)).add(t);
   if(reduce){ controls.target.copy(t); camera.position.copy(endPos); return; }
-  fly={t0:performance.now(),dur:1400,fromT:controls.target.clone(),toT:t,fromP:camera.position.clone(),toP:endPos};
+  const intro=flyIntro, dur=flyIntro?4000:1400; flyIntro=false;
+  fly={t0:performance.now(),dur,intro,fromT:controls.target.clone(),toT:t,fromP:camera.position.clone(),toP:endPos};
 }
 controls.addEventListener('start',()=>{ if(navKind!=='rotate'){ userAct(); follow=false; } fly=null; document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed','false')); });
 
-function applyTheme(n){
+function applyTheme(n,noRebuild){
   night=n; document.documentElement.setAttribute('data-theme',n?'dark':'light');
   if(oceanMat.map) oceanMat.map.dispose();
   oceanMat.map=n?gradTex('#21456d','#0b1829'):gradTex('#7d96b0','#4d6580'); oceanMat.needsUpdate=true;
@@ -1380,7 +1572,7 @@ function applyTheme(n){
   prefMeshes.forEach(m=>m.userData.base.set(n?0xdde4ec:0xf7f9fb)); sideMat.color.set(n?0x93a6bb:0xd9e1ea);
   Object.values(chars).forEach(c=>c.sh.material.color.set(n?0x000000:0x0b1626));
   pinMap.forEach(p=>stylePin(p));
-  rebuild();
+  if(!noRebuild) rebuild();
 }
 $('discLink').onclick=()=>$('aboutBtn').click();
 $('aboutBtn').onclick=()=>{ $('about').style.display='block'; $('aboutClose').focus(); };
@@ -1413,7 +1605,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt||Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>5) return;
   userAct();   // a tap (not a rotate drag) counts as an action
   const h=pick(e);
-  if(!h){ const wasVenue=!!venueView; if(wasVenue){ venueView=null; renderList(); }
+  if(!h){ const wasVenue=!!venueView||!!glView; if(wasVenue){ venueView=null; glView=null; renderList(); }
     if(innerWidth<=900&&$('panel').classList.contains('open')) backToMap(); return; }
   if(h.team){ selectTeam(focusTeam===h.team?null:h.team); return; }
   if(h.pin){ const s=h.pin.series; const i=curSer.findIndex(x=>x.v===s.v&&x.h===s.h); if(i>=0) openDetail(i); else flyTo(venuePos(s),14); }
@@ -1432,14 +1624,16 @@ addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); camera
 measurePanel();
 
 /* ---------- animate ---------- */
+const SNOWC=new THREE.Color(0xffffff), _snowE=new THREE.Color();
 const clock=new THREE.Clock(); const tmp=new THREE.Vector3(), tgtV=new THREE.Vector3(), prevV=new THREE.Vector3(); const warm=new THREE.Color();
 function animate(){
   requestAnimationFrame(animate);
   tickPlay();
   const dt=Math.min(clock.getDelta(),0.05), T=clock.elapsedTime, mo=reduce?0.2:1;
-  if(fly){ const k=Math.min(1,(performance.now()-fly.t0)/fly.dur), e=ease(k);
+  if(fly){ const k=Math.min(1,(performance.now()-fly.t0)/fly.dur), e=fly.intro?introEase(k):ease(k);
     controls.target.lerpVectors(fly.fromT,fly.toT,e); camera.position.lerpVectors(fly.fromP,fly.toP,e);
-    camera.position.y+=Math.sin(e*Math.PI)*fly.fromP.distanceTo(fly.toP)*0.1; if(k>=1) fly=null; }
+    if(!fly.intro) camera.position.y+=Math.sin(e*Math.PI)*fly.fromP.distanceTo(fly.toP)*0.1; if(k>=1) fly=null; }
+  tickSky();
   // follow the focused team's player while it travels
   if(follow&&focusTeam&&mode==='week'&&!fly){ const c=chars[focusTeam];
     if(c.state!=='hidden'&&c.state!=='out'){ const vp=c.atSlot&&c.venue&&pinMap.get(c.venue); const fx=vp?vp.grp.position.x:c.pos.x, fz=vp?vp.grp.position.z+0.4*uiK:c.pos.z;
@@ -1471,6 +1665,7 @@ function animate(){
     p.stage.scale.setScalar(S);
     const k=((T+p.t0)%2)/2; p.ring.scale.setScalar(1+k*1.6*mo); p.ring.material.opacity=(1-k)*p.ringOp; if(selKey===p.key&&mode==='week'){ p.ring.scale.multiplyScalar(1.6); }
     p.ball.visible=false;
+    if(p.stage.visible&&p.a>0.3) tickCrowd(p.crowd,T,mo);
   });
   dead.forEach(disposePin);
   deOverlap(s,up);
@@ -1515,6 +1710,7 @@ function animate(){
     const u=(tc-DRILL_START[i])/DRILL[i].dur, a=DRILL[i], b=DRILL[(i+1)%6];
     const ax=a.side*a.x, bx=b.side*b.x;
     const uu=a.act==='spike'?u*u*0.35+u*0.65:u;          // spikes leave fast
+    if(a.act==='spike'&&u<0.5) p.crowd.cheer[a.side<0?0:1]=1;   // the spiking side's fans jump
     p.ball.position.set(THREE.MathUtils.lerp(ax,bx,uu), THREE.MathUtils.lerp(a.y,b.y,uu)+Math.sin(uu*Math.PI)*a.arc, 0.75);
     const spin=a.act==='spike'?14:a.act==='dig'?5:3;
     p.ball.rotation.z+=dt*spin*mo*(a.side<0?-1:1); p.ball.rotation.x+=dt*2*mo;
@@ -1532,9 +1728,13 @@ function animate(){
     o.pil.scale.y=h; o.cap.position.y=h+0.003; o.spr.scale.set(2.2*s*Math.min(1,k),0.635*s*Math.min(1,k),1); o.spr.position.y=h+0.4+o.stag*Math.max(1,s*0.5); });
 
   arcMats.forEach(m=>m.uniforms.uTime.value=T*mo);
+  { const tk=THREE.MathUtils.clamp(dist/45,0.22,1)*(night?0.38:0.45); trailMap.forEach(m=>{ m.material.uniforms.uOpacity.value=tk; }); }
+  trailMap.forEach(m=>{ if(m.userData.t0){ const k=(performance.now()-m.userData.t0)/1300; m.material.uniforms.uDraw.value=THREE.MathUtils.clamp(k,0,1); if(k>=1) m.userData.t0=0; } });
+  tickSeason(dt,dist);
   warm.set(night?0xf7d79c:0xffdcae);
   prefMeshes.forEach(m=>{ const u=m.userData; u.glow+=(u.target-u.glow)*Math.min(1,dt*5);
-    u.top.color.copy(u.base).lerp(warm,u.glow*0.6); u.top.emissive.setRGB(0.22,0.14,0.04).multiplyScalar(night?u.glow*0.6:0); });
+    u.top.color.copy(u.base).lerp(warm,u.glow*0.6); if(u.snow>0.01) u.top.color.lerp(SNOWC,u.snow*0.85);
+    u.top.emissive.setRGB(0.22,0.14,0.04).multiplyScalar(night?u.glow*0.6:0); if(u.snow>0.01&&night) u.top.emissive.add(_snowE.setRGB(0.10,0.13,0.18).multiplyScalar(u.snow)); });
   renderer.render(scene,camera);
 }
 
@@ -1571,6 +1771,131 @@ function deOverlap(s,up){
   });
 }
 
+/* ---------- seasons: autumn leaves (Oct-Nov), snow (Dec-Feb), sakura (Mar) ---------- */
+const SNOWY=new Set(['北海道','青森県','岩手県','秋田県','山形県','宮城県','福島県','新潟県','富山県','石川県','福井県','長野県','岐阜県','群馬県']);
+prefMeshes.forEach(m=>{ m.userData.snowy=SNOWY.has(m.userData.name); m.userData.snow=0; });
+// textures are drawn light/neutral and tinted per particle, so each petal or leaf gets its own shade
+function flakeTex(kind){
+  const N=128, cv=document.createElement('canvas'); cv.width=cv.height=N; const x=cv.getContext('2d');
+  if(kind==='snow'){ const g=x.createRadialGradient(64,64,0,64,64,60); g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(.35,'rgba(240,247,255,.95)'); g.addColorStop(.6,'rgba(170,200,240,.55)'); g.addColorStop(1,'rgba(140,175,225,0)'); x.fillStyle=g; x.fillRect(0,0,N,N); }
+  else if(kind==='petal'){
+    // a single cherry-blossom petal: rounded teardrop with the small notch at its tip
+    x.translate(64,64);
+    const path=()=>{ x.beginPath(); x.moveTo(0,46);
+      x.bezierCurveTo(-30,28,-34,-16,-14,-40); x.quadraticCurveTo(-6,-46,0,-36); x.quadraticCurveTo(6,-46,14,-40);
+      x.bezierCurveTo(34,-16,30,28,0,46); x.closePath(); };
+    const g=x.createLinearGradient(0,46,0,-44); g.addColorStop(0,'#ffffff'); g.addColorStop(.55,'#f4f4f4'); g.addColorStop(1,'#e2e2e2');
+    path(); x.fillStyle=g; x.fill();
+    x.strokeStyle='rgba(150,150,150,.35)'; x.lineWidth=1.4;
+    [[0,40,0,-30],[0,40,-10,-26],[0,40,10,-26]].forEach(([a,b,c,d])=>{ x.beginPath(); x.moveTo(a,b); x.quadraticCurveTo((a+c)/2+(c?c*0.3:0),(b+d)/2,c,d); x.stroke(); });
+  }
+  else {
+    // a maple leaf: five toothed lobes, veins and a stem
+    const pts=[[.50,.02],[.57,.17],[.65,.11],[.63,.29],[.79,.17],[.77,.28],[.95,.29],[.86,.41],[.93,.49],[.71,.57],[.75,.66],[.555,.615],[.525,.76],
+               [.475,.76],[.445,.615],[.25,.66],[.29,.57],[.07,.49],[.14,.41],[.05,.29],[.23,.28],[.21,.17],[.37,.29],[.35,.11],[.43,.17]];
+    x.beginPath(); pts.forEach(([px,py],k)=>{ const X=px*N, Y=py*N*0.96; k?x.lineTo(X,Y):x.moveTo(X,Y); }); x.closePath();
+    const g=x.createRadialGradient(64,74,6,64,60,64); g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#d6d6d6');
+    x.fillStyle=g; x.lineJoin='round'; x.fill();
+    x.strokeStyle='rgba(90,90,90,.45)'; x.lineWidth=1.6; x.lineCap='round';
+    const b=[.50*N,.62*N]; [[.50,.06],[.92,.30],[.08,.30],[.90,.50],[.10,.50]].forEach(([px,py])=>{ x.beginPath(); x.moveTo(b[0],b[1]); x.lineTo(px*N,py*N*0.96); x.stroke(); });
+    x.strokeStyle='rgba(120,120,120,.9)'; x.lineWidth=2.6; x.beginPath(); x.moveTo(b[0],b[1]); x.quadraticCurveTo(.5*N,.86*N,.56*N,.99*N); x.stroke();
+  }
+  const t=new THREE.CanvasTexture(cv); return t;
+}
+const FLAKE={snow:{tex:flakeTex('snow'),n:900,fall:0.07,drift:0.015,size:0.019,op:1,spin:0.4,
+    cols:[[1,1,1],[0.95,0.98,1]]},
+  sakura:{tex:flakeTex('petal'),n:340,fall:0.032,drift:0.045,size:0.021,op:1,spin:2.2,
+    cols:[[1,0.66,0.80],[0.98,0.56,0.74],[1,0.78,0.88],[0.96,0.50,0.70]]},
+  autumn:{tex:flakeTex('leaf'),n:190,fall:0.04,drift:0.035,size:0.024,op:0.95,spin:1.3,
+    cols:[[0.92,0.22,0.12],[0.96,0.45,0.10],[0.98,0.72,0.16],[0.78,0.12,0.10],[0.90,0.35,0.08]]}};
+const PN=900, pPos=new Float32Array(PN*3), pSeed=new Float32Array(PN), pRot=new Float32Array(PN), pSpin=new Float32Array(PN), pCol=new Float32Array(PN*3);
+for(let i=0;i<PN;i++){ pPos[i*3]=Math.random()*2-1; pPos[i*3+1]=Math.random(); pPos[i*3+2]=Math.random()*2-1; pSeed[i]=Math.random()*6.28; pRot[i]=Math.random()*6.28; pSpin[i]=(Math.random()*2-1); }
+const pGeo=new THREE.BufferGeometry(); pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+pGeo.setAttribute('aRot',new THREE.BufferAttribute(pRot,1)); pGeo.setAttribute('aSpin',new THREE.BufferAttribute(pSpin,1)); pGeo.setAttribute('aCol',new THREE.BufferAttribute(pCol,3));
+const pMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,
+  uniforms:{uMap:{value:null},uOpacity:{value:0},uSize:{value:1},uScale:{value:400},uTime:{value:0},uSpin:{value:1}},
+  vertexShader:`attribute float aRot; attribute float aSpin; attribute vec3 aCol; uniform float uSize; uniform float uScale; uniform float uTime; uniform float uSpin;
+    varying float vRot; varying vec3 vCol; varying float vFlip;
+    void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_PointSize=uSize*uScale/-mv.z;
+      vRot=aRot+uTime*aSpin*uSpin; vCol=aCol; vFlip=0.55+0.45*abs(cos(uTime*1.7*aSpin*uSpin+aRot)); }`,
+  fragmentShader:`uniform sampler2D uMap; uniform float uOpacity; varying float vRot; varying vec3 vCol; varying float vFlip;
+    void main(){ vec2 p=gl_PointCoord-0.5; p.x/=vFlip; float c=cos(vRot), s=sin(vRot); p=mat2(c,-s,s,c)*p+0.5;
+      if(p.x<0.0||p.x>1.0||p.y<0.0||p.y>1.0) discard; vec4 t=texture2D(uMap,p); if(t.a<0.03) discard;
+      gl_FragColor=vec4(t.rgb*vCol,t.a*uOpacity); }`});
+const particles=new THREE.Points(pGeo,pMat); particles.frustumCulled=false; scene.add(particles);
+function tintParticles(cfg){ for(let i=0;i<PN;i++){ const c=cfg.cols[i%cfg.cols.length], v=0.9+Math.random()*0.1; pCol[i*3]=c[0]*v; pCol[i*3+1]=c[1]*v; pCol[i*3+2]=c[2]*v; } pGeo.attributes.aCol.needsUpdate=true; }
+let season=null, seasonWant=null;
+let seasonOn=false; try{ seasonOn=localStorage.getItem('svgmap.season')==='on'; }catch(e){}
+function seasonUI(){ $('seasonBtn').setAttribute('aria-pressed',String(seasonOn)); }
+$('seasonBtn').onclick=()=>{ seasonOn=!seasonOn; try{ localStorage.setItem('svgmap.season',seasonOn?'on':'off'); }catch(e){} seasonUI(); seasonFor(); };
+seasonUI();
+function seasonFor(){
+  let w=null;
+  if(seasonOn&&mode==='week'&&WEEKS[weekIdx]&&!reduce){ const mth=WEEKS[weekIdx].lo.getMonth()+1; w=(mth===12||mth<=2)?'snow':mth===3?'sakura':(mth>=10?'autumn':null); }
+  seasonWant=w;
+  prefMeshes.forEach(m=>{ m.userData.snowT=(seasonWant==='snow'&&m.userData.snowy)?1:0; });
+}
+function tickSeason(dt,dist){
+  const cfg=season&&FLAKE[season];
+  // cross-fade between seasons: fade out, swap, fade in
+  const U=pMat.uniforms;
+  if(season!==seasonWant){ U.uOpacity.value=Math.max(0,U.uOpacity.value-dt*1.5); if(U.uOpacity.value<=0.01){ season=seasonWant; if(season){ U.uMap.value=FLAKE[season].tex; U.uSpin.value=FLAKE[season].spin; tintParticles(FLAKE[season]); } } }
+  else if(cfg){ U.uOpacity.value=Math.min(cfg.op,U.uOpacity.value+dt*0.8); }
+  particles.visible=!!season&&U.uOpacity.value>0.01;
+  if(particles.visible){
+    const ext=THREE.MathUtils.clamp(dist*0.75,10,140), hgt=THREE.MathUtils.clamp(dist*0.5,6,90);
+    particles.position.set(controls.target.x,MAP_H,controls.target.z); particles.scale.set(ext,hgt,ext);
+    U.uSize.value=cfg.size*ext*1.4; U.uScale.value=renderer.domElement.height/2; pGeo.setDrawRange(0,cfg.n);
+    const T=performance.now()/1000; U.uTime.value=T;
+    for(let i=0;i<cfg.n;i++){ const j=i*3; pPos[j+1]-=cfg.fall*dt*(0.6+0.4*Math.sin(pSeed[i]));
+      pPos[j]+=Math.sin(T*0.7+pSeed[i])*cfg.drift*dt; pPos[j+2]+=Math.cos(T*0.5+pSeed[i]*1.3)*cfg.drift*dt*0.6;
+      if(pPos[j+1]<0){ pPos[j+1]=1; pPos[j]=Math.random()*2-1; pPos[j+2]=Math.random()*2-1; } }
+    pGeo.attributes.position.needsUpdate=true;
+  }
+  prefMeshes.forEach(m=>{ const u=m.userData; u.snow+=(u.snowT-u.snow)*Math.min(1,dt*2); });
+}
+
+/* ---------- opening sky: stars high above, a cloud layer to pass through ---------- */
+const sky=new THREE.Group(); scene.add(sky);
+const starGeo=new THREE.BufferGeometry(); { const n=1400, a=new Float32Array(n*3);
+  for(let i=0;i<n;i++){ const th=Math.random()*Math.PI*2, ph=Math.acos(Math.random()*0.92), r=2200; a[i*3]=r*Math.sin(ph)*Math.cos(th); a[i*3+1]=r*Math.cos(ph)-200; a[i*3+2]=r*Math.sin(ph)*Math.sin(th); }
+  starGeo.setAttribute('position',new THREE.BufferAttribute(a,3)); }
+const starMat=new THREE.PointsMaterial({color:0xdfe9ff,size:2.2,sizeAttenuation:false,transparent:true,opacity:0,fog:false,depthWrite:false});
+const stars=new THREE.Points(starGeo,starMat); stars.frustumCulled=false; sky.add(stars);
+const cloudTex=(()=>{ const N=256, cv=document.createElement('canvas'); cv.width=cv.height=N; const x=cv.getContext('2d');
+  for(let i=0;i<26;i++){ const r=30+Math.random()*60, cx=N/2+(Math.random()-0.5)*N*0.55, cy=N/2+(Math.random()-0.5)*N*0.35;
+    const g=x.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,'rgba(255,255,255,.55)'); g.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=g; x.fillRect(0,0,N,N); }
+  const t=new THREE.CanvasTexture(cv); return t; })();
+const clouds=[];
+for(let i=0;i<30;i++){
+  const m=new THREE.SpriteMaterial({map:cloudTex,transparent:true,depthWrite:false,fog:false,opacity:0,color:0xffffff});
+  const sp=new THREE.Sprite(m); const r=Math.sqrt(Math.random())*170, th=Math.random()*Math.PI*2;
+  sp.position.set(4+Math.cos(th)*r, 195+Math.random()*80, 4+Math.sin(th)*r); const sz=70+Math.random()*120; sp.scale.set(sz,sz*0.62,1);
+  sp.userData.base=0.55+Math.random()*0.35; sky.add(sp); clouds.push(sp);
+}
+let cloudsOn=true, cloudFade=1;
+function fadeClouds(){ cloudsOn=false; }
+function tickSky(){
+  const h=camera.position.y;
+  starMat.opacity=THREE.MathUtils.clamp((h-420)/600,0,1)*0.95;
+  if(!cloudsOn) cloudFade=Math.max(0,cloudFade-0.02);
+  const tint=night?0xc8d6ea:0xffffff;
+  clouds.forEach(c=>{ const d=Math.abs(c.position.y-h); // thin out clouds the camera is about to pass through so they don't fill the screen
+    const near=THREE.MathUtils.clamp((d-12)/50,0,1), win=THREE.MathUtils.clamp((470-h)/110,0,1); c.material.opacity=c.userData.base*near*win*cloudFade; c.material.color.setHex(tint); });
+  sky.visible=cloudFade>0||starMat.opacity>0.01;
+  if(cloudFade<=0&&starMat.opacity<=0.01&&sky.parent){ clouds.forEach(c=>c.material.dispose()); scene.remove(sky); }
+}
+
+/* ---------- data freshness ---------- */
+// update DATA_CHECKED and add a line to HISTORY whenever the schedule data is refreshed
+const DATA_CHECKED='2026-10-02';
+const HISTORY=[
+  ['2026-10-02','WOMENの全96試合を追加（公式PDF 7/1時点）。公式サイトの表示と照合済み'],
+  ['2026-10-01','MENの全128試合を掲載（公式PDF 7/1時点）。9/28発表の第2節 R栃木 vs きんでんの延期を反映'],
+];
+{ const d=pd(DATA_CHECKED); $('updLine').innerHTML=`日程データ：<b>${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}</b> 時点`;
+  $('histList').innerHTML=HISTORY.map(([dt,t])=>{ const x=pd(dt); return `<li><b>${x.getMonth()+1}/${x.getDate()}</b>${t}</li>`; }).join(''); }
+
 /* ---------- BGM ---------- */
 const bgm=$('bgm'); const BGM_VOL=0.42;
 let bgmOn=true; try{ bgmOn=localStorage.getItem('svgmap.bgm')!=='off'; }catch(e){}
@@ -1594,15 +1919,22 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const fontLoad=document.fonts?Promise.all([document.fonts.load('800 40px "Barlow Condensed"'),document.fonts.load('700 20px "Zen Kaku Gothic New"'),document.fonts.load('400 20px "Zen Kaku Gothic New"')]).catch(()=>{}):Promise.resolve();
 Promise.race([fontLoad,wait(3000)]).then(()=>{
   makeBadgeURLs(); setLeague(league,true);
-  night=true;
+  night=true; applyTheme(true,true);   // night look from the very first frame
   animate();
   // title screen: wait for a tap, then start BGM and the opening camera move
   const l=$('loader'), tts=$('tts'); let started=false;
   tts.textContent='TAP TO START'; tts.className='tts ready';
   const start=()=>{ if(started) return; started=true; bgmPlay();
-    l.classList.add('out'); setTimeout(()=>l.remove(),750);
-    setTimeout(()=>flyView('all'),120);
-    setTimeout(()=>applyTheme(night),850);   // pins and players pop in after the camera starts moving
+    // 1) on white, the logo shrinks and fades out  2) the white fades while the camera dives from space through the clouds
+    const img=l.querySelector('img'); img.style.animation='none'; void img.offsetWidth;
+    l.classList.add('out');
+    const D0=reduce?0:1000;
+    setTimeout(()=>{ l.classList.add('clear'); flyIntro=true; flyView('all'); },D0);
+    setTimeout(()=>l.remove(),D0+2000);
+    setTimeout(()=>{ document.body.classList.remove('intro'); },D0+2600);
+    setTimeout(()=>{ controls.maxDistance=380; fadeClouds(); },D0+4000);
+    setTimeout(()=>rebuild(),D0+3300);   // pins and players pop in as the camera settles
+    if(fav&&ORDER.includes(fav)) setTimeout(()=>selectTeam(fav),D0+4600);
     setTimeout(()=>{ $('hint').style.opacity=0; },7000); };
   l.addEventListener('click',start);
   l.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); start(); } });
