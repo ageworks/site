@@ -60,7 +60,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--court);outline-
 #mast .count{margin-top:10px;font-size:13px;color:var(--ink-soft)}
 #mast .count b{font-family:var(--num);font-size:24px;color:var(--ink);font-weight:700;margin:0 3px}
 
-#tools{position:fixed;right:20px;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:6;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:46vw}
+#tools{position:fixed;right:20px;top:calc(env(safe-area-inset-top,0px) + 20px);z-index:6;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:46vw}
 .seg{display:flex;border-radius:12px;padding:3px;gap:2px}
 .seg button{border:0;background:transparent;padding:7px 12px;border-radius:9px;font-size:13px;font-weight:500;color:var(--ink-soft);white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--sky-bot)}
@@ -99,7 +99,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--court);outline-
 .card.off .t{font-size:11.5px;color:var(--ink-soft)}
 .card{position:relative}
 .card .vfoot{display:flex;justify-content:flex-end;align-items:center;gap:0;margin-top:8px}
-.nm-s{display:none}
+@media (min-width:901px){ #rail{max-width:210px} #rail.many{max-width:290px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+#rail button{min-width:0}
+#rail .tx{display:block;flex:1 1 auto;min-width:0;overflow:hidden}
+.grow .m .nmin{display:inline-block;max-width:9.5em;vertical-align:bottom}
+.grow .m .vsx{font-style:normal;margin:0 2px;color:var(--ink-faint)}
+.fit1{display:block;white-space:nowrap;overflow:hidden;text-overflow:clip;min-width:0;max-width:100%}
+.fit2{display:block;max-width:100%;line-height:1.25;overflow:hidden;word-break:break-all}
 .vbtn{display:inline-flex;align-items:center;gap:6px}
 .vbtn svg{width:13px;height:13px}
 .venue .art{border-radius:14px;overflow:hidden;background:var(--chip);line-height:0}
@@ -171,6 +177,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--court);outline-
 #trackwrap{position:relative;padding-top:2px}
 #ticks{position:relative;height:18px;margin:0 10px}
 #ticks span{position:absolute;transform:translateX(-50%);font-family:var(--num);font-size:13px;font-weight:600;color:var(--ink-soft);white-space:nowrap}
+#ticks b{font-weight:600}
+#ticks em{font-style:normal}
 #dots{position:relative;height:8px;margin:0 10px 0}
 #dots i{position:absolute;top:1px;width:6px;height:6px;border-radius:50%;background:var(--ink-faint);transform:translateX(-50%);opacity:.45}
 #dots i.g{background:var(--court);opacity:.95}
@@ -270,8 +278,6 @@ body.intro #mast{opacity:0}
   .card .side img{width:26px;height:31px}
   .card .side span{font-size:11px}
   .card .side em{font-size:9px}
-  .nm-f{display:none}
-  .nm-s{display:inline}
   .card .meta{font-size:10px;line-height:1.45;gap:1px 6px;margin-top:6px}
   .card .vfoot{margin-top:6px}
   .card .vfoot .pill{font-size:10px;padding:4px 8px}
@@ -299,10 +305,12 @@ body.intro #mast{opacity:0}
   #tools .seg{flex:0 1 auto;min-width:0}
   .deskonly{display:none!important}
   #mast{left:14px;max-width:none;top:calc(env(safe-area-inset-top,0px) + 12px)}
-  #mast h1{font-size:clamp(17px,5.1vw,23px)}
-  #mast{right:164px}
+  #mast h1{font-size:clamp(14px,calc((100vw - 196px)/10.3),23px)}
+  #mast{right:182px}
+  #mast h1,#mast .league,#mast h1 span{white-space:nowrap}
+  #mast .league{font-size:clamp(9.5px,calc((100vw - 196px)/15),12px)!important;overflow:hidden;text-overflow:ellipsis}
   #mast .league{font-size:12px}
-  #ticks span{font-size:11px}
+  #ticks span{font-size:11.5px} #ticks span:not(:first-child) em{display:none}
   #mast .count{display:none}
   .seg button{padding:6px clamp(4px,1.9vw,9px);font-size:clamp(10px,3.1vw,12px);white-space:nowrap;flex:1 1 auto}
   #hint{display:none}
@@ -356,18 +364,18 @@ body.intro #mast{opacity:0}
 #guide .gi{display:inline-block;font-weight:800}
 #guide .close{position:absolute;right:12px;top:10px}
 @media (max-width:900px){
-  #mobtools{display:flex;gap:5px;position:fixed;z-index:7;right:10px;top:calc(env(safe-area-inset-top,0px) + 12px)}
-  #mobtools .ic{width:34px;height:34px;border-radius:50%;padding:0;display:grid;place-items:center;color:var(--ink)}
+  #mobtools{display:flex;gap:3px;position:fixed;z-index:7;right:10px;top:calc(env(safe-area-inset-top,0px) + 12px)}
+  #mobtools .ic{width:30px;height:30px;border-radius:50%;padding:0;display:grid;place-items:center;color:var(--ink)}
   #mobtools .ic svg{width:16px;height:16px}
   #guide dl{grid-template-columns:1fr;gap:0}
   #guide dd{margin-bottom:7px}
 }
 .regwrap{position:relative;display:flex;min-width:0}
 .regwrap #regSeg{flex:1 1 auto;min-width:0}
-.lsrow{position:absolute;right:0;bottom:calc(100% + 6px);display:flex;gap:6px;align-items:center}
+
 .lsw{position:static}
-#linksBtnM{display:none;width:34px;height:34px;border-radius:50%;padding:0;place-items:center;color:var(--ink)}
-#linksBtnM svg{width:16px;height:16px}
+
+
 .lsw .ls{display:none}
 .lsw button[data-lg="M"][aria-pressed="true"]{background:#3d7fe0;color:#fff}
 .lsw button[data-lg="W"][aria-pressed="true"]{background:#e85d9a;color:#fff}
@@ -420,8 +428,38 @@ body.intro #mast{opacity:0}
 .trailbtn svg,.seasonbtn svg{width:14px;height:14px}
 .trailbtn[aria-pressed="true"],.seasonbtn[aria-pressed="true"]{background:var(--court);border-color:var(--court);color:#1b1206}
 @media (max-width:900px){ .card .vfoot .calbtn,.calbtn{width:26px;height:26px;padding:0;margin-right:4px} .calbtn svg{width:13px;height:13px} .tlx{position:absolute;right:-6px;top:0;gap:4px} .trailbtn,.seasonbtn{width:28px;height:28px;padding:0;justify-content:center;border-radius:50%} #now{padding-right:64px} #now>div:nth-child(2){min-width:0} #now .rng{font-size:clamp(14px,4.4vw,18px);overflow:hidden;text-overflow:ellipsis} .tlx .bl{display:none} .favbtn{padding:3px 8px;font-size:10px} }
-#links,#imgDlg{position:fixed;z-index:9;left:50%;top:50%;transform:translate(-50%,-50%);max-height:86vh;overflow:auto;border-radius:20px;padding:20px 22px 16px;display:none;font-size:13px;line-height:1.6}
+#links,#imgDlg,#matrix{position:fixed;z-index:9;left:50%;top:50%;transform:translate(-50%,-50%);max-height:86vh;overflow:auto;border-radius:20px;padding:20px 22px 16px;display:none;font-size:13px;line-height:1.6}
 #links{width:min(560px,92vw)}
+#matrix{width:min(760px,96vw);padding:18px 14px 14px}
+#matrix h3{margin:0 0 4px;font-size:17px}
+#matrix .sub{font-size:11.5px;color:var(--ink-soft);margin:0 2px 10px}
+#matrix .close{position:absolute;right:12px;top:10px}
+.mxtabs{display:flex;gap:6px;margin:0 0 10px}
+.mxtabs:empty{display:none}
+.mxtabs button{border:1px solid var(--glass-line);background:var(--chip);border-radius:999px;padding:5px 14px;font-family:var(--num);font-weight:800;font-size:13px;letter-spacing:.04em}
+.mxtabs button[aria-selected="true"][data-lg="M"]{background:#3d7fe0;border-color:#3d7fe0;color:#fff}
+.mxtabs button[aria-selected="true"][data-lg="W"]{background:#e85d9a;border-color:#e85d9a;color:#fff}
+.mxwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mx{border-collapse:separate;border-spacing:3px;width:100%;table-layout:fixed;min-width:300px}
+.mx th{font-weight:400;padding:2px 0 3px;vertical-align:bottom}
+.mx th .tb{display:flex;flex-direction:column;align-items:center;gap:1px;font-family:var(--num);font-weight:800;font-size:10.5px;letter-spacing:.02em;color:var(--ink-soft)}
+.mx th img{width:22px;height:26px}
+.mx th.rh{width:46px}
+.mx th.rh .tb{flex-direction:row;justify-content:flex-start;gap:3px;padding-left:2px}
+.mx td{background:var(--chip);border-radius:7px;padding:3px 1px;text-align:center;vertical-align:middle;height:34px}
+.mx td.self{background:transparent}
+.mx td.self img{width:18px;height:21px;opacity:.25}
+.mx td.fav,.mx th.fav .tb{box-shadow:inset 0 0 0 1px rgba(245,165,36,.35)}
+.mx .d{display:block;width:100%;border:0;background:transparent;font-family:var(--num);font-weight:700;font-size:12.5px;line-height:1.25;color:var(--ink);padding:1px 0;border-radius:5px;cursor:pointer}
+.mx .d:hover{background:var(--court-soft)}
+.mx .d.past{color:var(--ink-faint);font-weight:500}
+.mx .d.now{background:var(--court);color:#1b1206}
+.mx .d.warn::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#ff9b7a;margin-left:2px;vertical-align:2px}
+.mx .d.tbd{color:var(--court);font-weight:800}
+.mxleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:10px 2px 0;font-size:10.5px;color:var(--ink-faint)}
+.mxleg .k{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;background:var(--chip)}
+.mxleg .k.now{background:var(--court)}.mxleg .k.past{background:var(--ink-faint);opacity:.5}.mxleg .k.warn{background:#ff9b7a;border-radius:50%}.mxleg .k.tbd{background:transparent;box-shadow:inset 0 0 0 2px var(--court)}
+@media (max-width:900px){ .mx{border-spacing:2px} .mx th.rh{width:40px} .mx th img{width:18px;height:21px} .mx th .tb{font-size:9px} .mx .d{font-size:11px} .mx td{height:30px;border-radius:5px} }
 #imgDlg{width:min(430px,92vw);text-align:center}
 #links h3,#imgDlg h3{margin:0 0 4px;font-size:17px}
 #links .close,#imgDlg .close{position:absolute;right:12px;top:10px}
@@ -468,18 +506,13 @@ body.intro #mast{opacity:0}
     <button id="mWeek" aria-pressed="true">週ごと</button>
     <button id="mAll" aria-pressed="false">全会場</button>
     <button id="sheetBtn" class="sheetbtn" aria-pressed="false">試合一覧</button>
+    <button id="matrixBtn" aria-pressed="false">対戦表</button>
   </div>
-  <div class="regwrap">
-    <div class="lsrow">
-    <button class="ic glass" id="linksBtnM" aria-label="公式リンク集"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 9.5a3 3 0 0 0 4.2 0l2.3-2.3a3 3 0 0 0-4.2-4.2L7.7 4.1"/><path d="M9.5 6.5a3 3 0 0 0-4.2 0L3 8.8a3 3 0 0 0 4.2 4.2l1.1-1.1"/></svg></button>
     <div class="seg glass lsw" id="lgSeg" role="group" aria-label="リーグ">
       <button data-lg="M" aria-pressed="false"><span class="lf">MEN</span><span class="ls">M</span></button>
       <button data-lg="W" aria-pressed="false"><span class="lf">WOMEN</span><span class="ls">W</span></button>
       <button data-lg="B" aria-pressed="false">両方</button>
     </div>
-    </div>
-    <div class="seg glass" id="regSeg" role="group" aria-label="エリア"></div>
-  </div>
   <div class="seg glass deskonly" role="group" aria-label="その他">
     <button id="aboutBtn" aria-pressed="false">データについて</button>
     <button id="linksBtn" aria-pressed="false">公式リンク</button>
@@ -527,6 +560,14 @@ body.intro #mast{opacity:0}
   <div id="linksBody"></div>
   <p class="note">外部サイトへ移動します。リンク先は各運営者が管理しており、当サイトは関与しません。リンクは2026/10/3に確認しました。</p>
 </div>
+<div id="matrix" class="glass" role="dialog" aria-modal="true" aria-labelledby="mxH">
+  <button class="ic close" id="mxClose" aria-label="閉じる"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 2.4 8 6.9l4.5-4.5 1.1 1.1L9.1 8l4.5 4.5-1.1 1.1L8 9.1l-4.5 4.5-1.1-1.1L6.9 8 2.4 3.5z"/></svg></button>
+  <h3 id="mxH">対戦表</h3>
+  <div class="sub">縦がホーム、横がアウェー。日付をタップするとその週の試合カードを表示します。</div>
+  <div class="mxtabs" id="mxTabs" role="tablist"></div>
+  <div class="mxwrap" id="mxBody"></div>
+  <div class="mxleg"><span><i class="k now"></i>表示中の週</span><span><i class="k past"></i>終了</span><span><i class="k warn"></i>注意あり</span><span><i class="k tbd"></i>延期・日程未定</span></div>
+</div>
 <div id="imgDlg" class="glass" role="dialog" aria-modal="true" aria-labelledby="imgH">
   <button class="ic close" id="imgClose" aria-label="閉じる"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 2.4 8 6.9l4.5-4.5 1.1 1.1L9.1 8l4.5 4.5-1.1 1.1L8 9.1l-4.5 4.5-1.1-1.1L6.9 8 2.4 3.5z"/></svg></button>
   <h3 id="imgH">今週のマップ画像</h3>
@@ -543,6 +584,7 @@ body.intro #mast{opacity:0}
   <button class="ic glass bgmbtn" id="bgmBtnM" aria-pressed="false" aria-label="BGMのオンとオフ"><svg class="on" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6v4h2.5l3.5 3V3L5 6z" fill="currentColor"/><path d="M10.5 5.6a3.2 3.2 0 0 1 0 4.8M12.3 3.8a5.7 5.7 0 0 1 0 8.4"/></svg><svg class="off" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6v4h2.5l3.5 3V3L5 6z" fill="currentColor"/><path d="M11 6l3.5 4M14.5 6L11 10"/></svg></button>
   <button class="ic glass" id="guideBtn" aria-label="操作ガイド"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.3"/><path d="M6.2 6.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.5" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".7" fill="currentColor" stroke="none"/></svg></button>
   <button class="ic glass" id="aboutBtnM" aria-label="データについて"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.2v4"/><circle cx="8" cy="4.9" r=".75" fill="currentColor" stroke="none"/></svg></button>
+<button class="ic glass" id="linksBtnM" aria-label="公式リンク集"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 9.5a3 3 0 0 0 4.2 0l2.3-2.3a3 3 0 0 0-4.2-4.2L7.7 4.1"/><path d="M9.5 6.5a3 3 0 0 0-4.2 0L3 8.8a3 3 0 0 0 4.2 4.2l1.1-1.1"/></svg></button>
   <button class="ic glass" id="homeBtn" aria-label="最初の視点に戻す"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.3 2.6v2.8h2.8"/></svg></button>
 </div>
 <div id="guide" class="glass" role="dialog" aria-modal="true" aria-labelledby="guideH">
@@ -569,12 +611,13 @@ body.intro #mast{opacity:0}
     <dt>カードのカレンダーアイコン</dt><dd>その試合をGoogleカレンダーに追加</dd>
     <dt>会場情報</dt><dd>会場の地図・写真・アクセスへのリンクと、その会場の試合一覧</dd>
     <dt>全会場</dt><dd>今季の全会場を表示。会場をタップで会場情報</dd>
+    <dt>対戦表</dt><dd>ホーム（縦）×アウェー（横）の一覧。日付をタップでその週の試合カードへ</dd>
   </dl>
   <h4>週の移動</h4>
   <dl>
     <dt>スライダー・前後ボタン</dt><dd>週を移動</dd>
     <dt>カレンダー</dt><dd>日付をタップでその週へ。左右スワイプで月を切り替え</dd>
-    <dt>季節ボタン</dt><dd>紅葉・雪・桜の演出（オン／オフ）。開幕週は花火、最終週は紙吹雪。クリスマス週はサンタが空を飛び、正月週はMENが2チームずつ一緒に餅つき（栃木とつくば、千葉と富士通、四日市と碧南、クボタときんでん）、WOMENは各ホームで羽根つき</dd>
+    <dt>季節ボタン</dt><dd>紅葉・雪・桜の演出（オン／オフ）。クリスマス週はサンタが空を飛び、正月週はMENが2チームずつ一緒に餅つき（栃木とつくば、千葉と富士通、四日市と碧南、クボタときんでん）、WOMENは各ホームで羽根つき</dd>
     <dt>軌跡ボタン</dt><dd>これまでの遠征ルートを地図に残して表示（オン／オフ）</dd>
     <dt>再生ボタン</dt><dd>自動で週を進める（ボタンの円が一周で次の週）。回転以外の操作をすると停止</dd>
   </dl>
@@ -606,7 +649,7 @@ if(!window.THREE || !THREE.OrbitControls){ $('err').style.display='grid'; $('loa
 
 /* ---------- teams ---------- */
 const TEAMS = {
-  TSG:{lg:'M',name:"つくばユナイテッドSun GAIA",short:"つくば",city:"茨城・つくば",c1:"#2E9E3F",c2:"#FFFFFF",c3:null,mono:"TSG",num:3,lat:36.085,lon:140.11},
+  TSG:{lg:'M',name:"つくばユナイテッドSun GAIA",short:"サンガイア",city:"茨城・つくば",c1:"#2E9E3F",c2:"#FFFFFF",c3:null,mono:"TSG",num:3,lat:36.085,lon:140.11},
   RTC:{lg:'M',name:"レーヴィス栃木",short:"R栃木",city:"栃木・足利",c1:"#A88BDA",c2:"#FFFFFF",c3:null,mono:"RVT",num:7,lat:36.335,lon:139.452},
   CBD:{lg:'M',name:"千葉ドット",short:"千葉ドット",city:"千葉・千葉",c1:"#1E5BD8",c2:"#FFFFFF",c3:"#E0262E",mono:"CDT",num:1,lat:35.60,lon:140.11},
   FKR:{lg:'M',name:"富士通カワサキレッドスピリッツ",short:"富士通",city:"神奈川・川崎",c1:"#D7192A",c2:"#FFFFFF",c3:null,mono:"FRS",num:10,lat:35.56,lon:139.68},
@@ -800,7 +843,11 @@ function matchCardTexture(s){
   x.fillStyle=soft; x.font='600 25px "Barlow Condensed","Arial Narrow",sans-serif';
   x.fillText(s.games.map(g=>`${fmtMD(g.date)} ${WD[g.date.getDay()]}${g.t?' '+g.t:''}`).join('   '),W/2,160);
   x.fillStyle=ink; x.font='700 25px "Zen Kaku Gothic New",sans-serif';
-  x.fillText(TEAMS[s.h].short,148,238); x.fillText(TEAMS[s.a].short,W-148,238);
+  // full name when it fits under the badge (shrinking a little first), otherwise the abbreviation
+  [[s.h,148],[s.a,W-148]].forEach(([k,cx])=>{ let t=nm(k), f=25; x.font=`700 ${f}px "Zen Kaku Gothic New",sans-serif`;
+    while(x.measureText(t).width>262&&f>19){ f--; x.font=`700 ${f}px "Zen Kaku Gothic New",sans-serif`; }
+    if(x.measureText(t).width>262){ t=ab(k); f=25; x.font=`700 ${f}px "Zen Kaku Gothic New",sans-serif`; }
+    x.fillText(t,cx,238); });
   x.fillStyle=soft; x.font='600 17px "Barlow Condensed",sans-serif'; x.fillText('HOME',148,266); x.fillText('AWAY',W-148,266);
   x.fillStyle=s.tbd?acc:ink; x.font='700 22px "Zen Kaku Gothic New",sans-serif';
   let vn=s.tbd?'会場調整中':s.v; if(vn.length>12) vn=vn.slice(0,11)+'…';
@@ -1197,8 +1244,23 @@ function addRoute(key){
 
 /* ---------- UI ---------- */
 const list=$('list');
-const teamSide=(k,role)=>`<button type="button" class="side" data-team="${k}" aria-label="${TEAMS[k].name}で絞り込み"><img src="${badgeURL[k]}" alt=""><span class="nm-f">${TEAMS[k].name}</span><span class="nm-s">${TEAMS[k].short}</span><em>${role}</em></button>`;
+const teamSide=(k,role)=>`<button type="button" class="side" data-team="${k}" aria-label="${TEAMS[k].name}で絞り込み"><img src="${badgeURL[k]}" alt="">${fitHTML(nm(k),ab(k),"fit2",2)}<em>${role}</em></button>`;
 const enc=encodeURIComponent;
+// names: always try the full club name first, and fall back to the official abbreviation only when it doesn't fit
+const nm=k=>TEAMS[k].name, ab=k=>TEAMS[k].short;
+const escA=t=>String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const fitHTML=(full,short,cls='fit1',lines=1)=>`<span class="${cls}" data-f="${escA(full)}" data-s="${escA(short)}" data-l="${lines}">${full}</span>`;
+function setSubt(t){ const e=$('subt'); delete e.dataset.f; delete e.dataset.s; e.classList.remove('fit1'); e.textContent=t; }
+function setFit(el,full,short){ el.dataset.f=full; el.dataset.s=short; el.dataset.l='1'; el.classList.add('fit1'); el.textContent=full; fitNames(el.parentNode||el); }
+function fitNames(root){
+  (root||document).querySelectorAll('[data-f]').forEach(el=>{
+    el.textContent=el.dataset.f; const L=+(el.dataset.l||1);
+    if(!el.offsetParent&&getComputedStyle(el).position!=='fixed') return;   // hidden: keep the full name, re-fit when shown
+    if(L===1){ if(el.scrollWidth>el.clientWidth+1) el.textContent=el.dataset.s; }
+    else { const cs=getComputedStyle(el), lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.3; if(el.scrollHeight>lh*L+2) el.textContent=el.dataset.s; }
+  });
+}
+addEventListener('resize',()=>requestAnimationFrame(()=>fitNames(document)));
 let curSer=[], detailIdx=0, selKey=null, follow=false;
 function nextGameWeek(from,team){ for(let i=from+1;i<WEEKS.length;i++){ if(WEEKS[i].games.some(g=>!team||g.h===team||g.a===team)) return i; } return -1; }
 function renderList(){
@@ -1206,7 +1268,7 @@ function renderList(){
   const W=WEEKS[weekIdx]; let ser=seriesOf(W.games);
   if(focusTeam) ser=ser.filter(s=>s.h===focusTeam||s.a===focusTeam);
   curSer=ser; setImgBtn(mode==='week'&&ser.length>0);
-  $('pTitle').textContent=focusTeam?`${TEAMS[focusTeam].short}の試合`:'この週の試合';
+  if(focusTeam) setFit($('pTitle'),`${nm(focusTeam)}の試合`,`${ab(focusTeam)}の試合`); else setFit($('pTitle'),'この週の試合','この週の試合');
   $('pSub').textContent=W.empty?`${W.lo.getMonth()+1}月${W.lo.getDate()}日〜${W.hi.getMonth()+1}月${W.hi.getDate()}日`:`${W.lo.getMonth()+1}月${W.lo.getDate()}日（${WD[W.lo.getDay()]}）〜${W.hi.getMonth()+1}月${W.hi.getDate()}日（${WD[W.hi.getDay()]}）　${W.rlab}`;
   let html=focusTeam?teamCard(focusTeam):'';
   if(!ser.length){
@@ -1221,11 +1283,11 @@ function renderList(){
   }
   if(ser.length){ detailIdx=Math.max(0,Math.min(detailIdx||0,ser.length-1)); renderDetail(ser,html); return; }
   if(!focusTeam&&pending.length&&W.games.some(g=>g.lg===pending[0].lg&&g.r===pending[0].r)){
-    const p=pending[0]; html+=`<div class="empty">第${p.r}節 ${TEAMS[p.h].short} vs ${TEAMS[p.a].short} は延期となり、代替日程は未発表です。</div>`;
+    const p=pending[0]; html+=`<div class="empty">第${p.r}節 ${nm(p.h)} vs ${nm(p.a)} は延期となり、代替日程は未発表です。</div>`;
   }
   list.innerHTML=html; list.scrollTop=0;
   const j=$('jumpNext'); if(j) j.onclick=()=>{ const ni=nextGameWeek(weekIdx,focusTeam); if(ni>=0) setWeek(ni); };
-  requestAnimationFrame(fitList);
+  requestAnimationFrame(()=>{ fitNames(list); fitList(); });
   bindTeamCard();
 }
 const PINI='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 3.3 4.5 8.5 4.5 8.5s4.5-5.2 4.5-8.5A4.5 4.5 0 0 0 8 1.5zm0 6.2A1.7 1.7 0 1 1 8 4.3a1.7 1.7 0 0 1 0 3.4z"/></svg>';
@@ -1278,7 +1340,7 @@ function renderDetail(ser,head){
   sw.addEventListener('scroll',()=>{ clearTimeout(tmr); tmr=setTimeout(settle,120); },{passive:true});
   const go=d=>{ const i=Math.max(0,Math.min(ser.length-1,detailIdx+d)); sw.scrollTo({left:i*sw.clientWidth,behavior:reduce?'auto':'smooth'}); };
   if(many){ $('dPrev').onclick=()=>go(-1); $('dNext').onclick=()=>go(1); sw.tabIndex=0; sw.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'){go(-1);e.preventDefault();e.stopPropagation();} if(e.key==='ArrowRight'){go(1);e.preventDefault();e.stopPropagation();} }); }
-  bindTeamCard(); markDetail(ser); requestAnimationFrame(fitList);
+  bindTeamCard(); markDetail(ser); requestAnimationFrame(()=>{ fitNames(list); fitList(); });
 }
 // on phones, a team-filtered panel always fits without scrolling: shrink its contents if needed
 function fitList(){
@@ -1326,7 +1388,7 @@ function renderVenue(){
   const hk=Object.keys(hosts).sort((a,b)=>hosts[b]-hosts[a]);
   const today=new Date(); today.setHours(0,0,0,0);
   const q=enc(`${name} ${g0.city}`);
-  $('pTitle').textContent='会場情報'; $('pSub').textContent=g0.city;
+  setFit($('pTitle'),'会場情報','会場情報'); $('pSub').textContent=g0.city;
   let html=`<div class="venue"><div class="dhead"><button class="pill" id="vBack">戻る</button></div>
    <h3 style="margin-top:4px">${name}</h3><div class="city">${g0.city}</div>
    <div class="vstats"><div><b>${gs.length}</b><small>今季の開催試合</small></div><div><span class="hosts">${hk.map(k=>`<img src="${badgeURL[k]}" alt="${TEAMS[k].name}" title="${TEAMS[k].name}">`).join('')}</span><small>ホームチーム</small></div></div>
@@ -1338,11 +1400,12 @@ function renderVenue(){
    </div>
    <h4>この会場の試合</h4>`;
   gs.forEach(g=>{ const wi=WEEKS.findIndex(w=>w.games.includes(g));
-    html+=`<button class="grow${g.date<today?' past':''}" data-w="${wi}"><span class="d">${g.date.getMonth()+1}/${g.date.getDate()}</span><span class="m"><img src="${badgeURL[g.h]}" alt="">${TEAMS[g.h].short} vs <img src="${badgeURL[g.a]}" alt="">${TEAMS[g.a].short}</span><span class="t">${WD[g.date.getDay()]}曜　${g.t||'時間未定'}　第${g.r}節 GAME${g.g}</span></button>`; });
+    html+=`<button class="grow${g.date<today?' past':''}" data-w="${wi}"><span class="d">${g.date.getMonth()+1}/${g.date.getDate()}</span><span class="m"><img src="${badgeURL[g.h]}" alt="">${fitHTML(nm(g.h),ab(g.h),"fit1 nmin")}<i class="vsx">vs</i><img src="${badgeURL[g.a]}" alt="">${fitHTML(nm(g.a),ab(g.a),"fit1 nmin")}</span><span class="t">${WD[g.date.getDay()]}曜　${g.t||'時間未定'}　第${g.r}節 GAME${g.g}</span></button>`; });
   html+=`<p class="note">写真・住所・アクセスはリンク先で確認できます。</p></div>`;
   list.innerHTML=html; list.scrollTop=0;
   $('vBack').onclick=closeVenue;
   list.querySelectorAll('.grow').forEach(b=>b.onclick=()=>{ const wi=+b.dataset.w; venueView=null; if(mode!=='week') setMode('week'); if(wi!==weekIdx) setWeek(wi); else renderList(); });
+  requestAnimationFrame(()=>fitNames(list));
 }
 let glView=null;
 function openGameList(kind){ glView=kind; renderGameList(); openPanel(); }
@@ -1351,33 +1414,33 @@ function renderGameList(){
   const k=focusTeam, home=glView==='home'; if(!k){ glView=null; renderList(); return; }
   const today=new Date(); today.setHours(0,0,0,0);
   const ss=teamSeries(k).filter(s=>home?s.h===k:s.a===k);
-  $('pTitle').textContent=`${TEAMS[k].short}の${home?'ホーム':'アウェー'}戦`;
+  setFit($('pTitle'),`${nm(k)}の${home?'ホーム':'アウェー'}戦`,`${ab(k)}の${home?'ホーム':'アウェー'}戦`);
   $('pSub').textContent=`${ss.length}カード ${ss.reduce((a,s)=>a+s.games.length,0)}試合　タップでその週へ移動`;
   let html=teamCard(k)+`<div class="venue"><div class="dhead"><button class="pill" id="glBack">戻る</button></div>`;
   ss.forEach(s=>{ const opp=home?s.a:s.h, g0=s.games[0], wi=WEEKS.findIndex(w=>w.games.includes(g0));
     const ds=s.games.map(g=>`${g.date.getMonth()+1}/${g.date.getDate()}`).join('・');
-    html+=`<button class="grow${s.end<today?' past':''}" data-w="${wi}" data-v="${(s.v||'').replace(/"/g,'&quot;')}"><span class="d">${ds}</span><span class="m"><img src="${badgeURL[opp]}" alt="">vs ${TEAMS[opp].short}</span><span class="t">${s.tbd?'会場調整中':s.v}　第${g0.r}節</span></button>`; });
+    html+=`<button class="grow${s.end<today?' past':''}" data-w="${wi}" data-v="${(s.v||'').replace(/"/g,'&quot;')}"><span class="d">${ds}</span><span class="m"><img src="${badgeURL[opp]}" alt="">${fitHTML('vs '+nm(opp),'vs '+ab(opp),"fit1 nmin")}</span><span class="t">${s.tbd?'会場調整中':s.v}　第${g0.r}節</span></button>`; });
   html+=`</div>`;
   list.innerHTML=html; list.scrollTop=0;
   list.querySelectorAll('.stat').forEach(b=>b.setAttribute('aria-current',String(b.dataset.gl===glView)));
   $('glBack').onclick=()=>{ glView=null; renderList(); };
   list.querySelectorAll('.grow').forEach(b=>b.onclick=()=>{ const wi=+b.dataset.w; glView=null; if(mode!=='week') setMode('week'); if(wi!==weekIdx) setWeek(wi); else renderList(); });
-  bindTeamCard();
+  bindTeamCard(); requestAnimationFrame(()=>fitNames(list));
 }
 function closeVenue(){ venueView=null; if(mode==='all'&&lastVs) renderVenueList(lastVs); else renderList(); }
 function renderVenueList(vs){
   venueView=null; lastVs=vs; setImgBtn(false);
-  $('pTitle').textContent=focusTeam?`${TEAMS[focusTeam].short}の試合会場`:'シーズン全会場';
+  if(focusTeam) setFit($('pTitle'),`${nm(focusTeam)}の試合会場`,`${ab(focusTeam)}の試合会場`); else setFit($('pTitle'),'シーズン全会場','シーズン全会場');
   $('pSub').textContent=`${vs.length}会場　柱の高さは開催試合数、色は主なホームチーム`;
   let html=focusTeam?teamCard(focusTeam):'';
   vs.forEach((v,i)=>{ html+=`<button class="vrow" data-i="${i}"><span>${v.v}<small>${v.city}</small></span><b>${v.n}</b></button>`; });
   list.innerHTML=html; list.scrollTop=0;
   list.querySelectorAll('.vrow').forEach(b=>b.addEventListener('click',()=>{ const v=vs[+b.dataset.i]; if(v.tbd) flyTo(P(v.lat,v.lon),18); else openVenue(v.v); }));
-  bindTeamCard();
+  bindTeamCard(); requestAnimationFrame(()=>fitNames(list));
 }
 function teamCard(k){
   const t=TEAMS[k], s=teamStats(k);
-  const nx=s.nxt?`<br>次の試合 ${jMD(s.nxt.date)} vs ${TEAMS[s.nxt.h===k?s.nxt.a:s.nxt.h].short}（${s.nxt.h===k?'ホーム':'アウェー'}）`:'';
+  const nx=s.nxt?`<br>次の試合 ${jMD(s.nxt.date)} vs ${nm(s.nxt.h===k?s.nxt.a:s.nxt.h)}（${s.nxt.h===k?'ホーム':'アウェー'}）`:'';
   const icsBtn=canIcs()?`<div class="icsrow"><button class="pill" id="icsBtn">${CALI} 全${s.home+s.away}試合をカレンダー保存（.ics）</button></div>`:'';
   return `<div class="tsum"><div class="hd"><img src="${badgeURL[k]}" alt=""><div><h3>${t.name}</h3><div class="sub">${t.mono}　${t.city}${nx}</div></div><button class="favbtn" id="favBtn" aria-pressed="${fav===k}" aria-label="推しチームに登録"><span class="st">★</span>${fav===k?'推し':'推し登録'}</button></div>
    <div class="stats"><button class="stat" data-gl="home" aria-label="ホーム戦の一覧"><b>${s.home}</b><small>ホーム戦 ›</small></button><button class="stat" data-gl="away" aria-label="アウェー戦の一覧"><b>${s.away}</b><small>アウェー戦 ›</small></button><div><b>${s.km.toLocaleString()}</b><small>遠征距離 km</small></div></div>
@@ -1395,12 +1458,13 @@ function bindTeamCard(){
 }
 function renderRail(){
   const rail=$('rail');
-  const btn=k=>`<button data-k="${k}" aria-pressed="${focusTeam===k}" title="${TEAMS[k].name}${fav===k?'（推し）':''}">${fav===k?'<i class="favstar" aria-hidden="true">★</i>':''}<img src="${badgeURL[k]}" alt=""><span class="tx"><span class="tn" style="display:block">${TEAMS[k].short}</span><span class="tc">${TEAMS[k].mono}　${TEAMS[k].city}</span></span></button>`;
+  const btn=k=>`<button data-k="${k}" aria-pressed="${focusTeam===k}" title="${TEAMS[k].name}${fav===k?'（推し）':''}">${fav===k?'<i class="favstar" aria-hidden="true">★</i>':''}<img src="${badgeURL[k]}" alt=""><span class="tx">${fitHTML(nm(k),ab(k),"tn fit1")}<span class="tc">${TEAMS[k].mono}　${TEAMS[k].city}</span></span></button>`;
   rail.classList.toggle('many',league==='B');
   rail.innerHTML=`<div class="rt">チームで絞り込み</div>`+(league==='B'
     ?`<div class="rlg">MEN</div>`+ORDER.filter(k=>TEAMS[k].lg==='M').map(btn).join('')+`<div class="rlg">WOMEN</div>`+ORDER.filter(k=>TEAMS[k].lg==='W').map(btn).join('')
     :ORDER.map(btn).join(''));
   rail.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>selectTeam(focusTeam===b.dataset.k?null:b.dataset.k)));
+  requestAnimationFrame(()=>fitNames($('rail')));
 }
 function selectTeam(k){
   focusTeam=k; if(!k){ routeOn=false; detailIdx=0; }
@@ -1413,7 +1477,7 @@ function selectTeam(k){
 function leagueHeader(){
   const n=games.length, mob=innerWidth<=900, t={M:'【非公式】26-27 SVG MEN',W:'【非公式】26-27 SVG WOMEN',B:mob?'【非公式】26-27 SVG M / W':'【非公式】26-27 SVG MEN / WOMEN'}[league];
   $('lgTitle').textContent=t;
-  $('subt').textContent=league==='B'?(mob?'M 128 + W 96 matches':'MEN 128 + WOMEN 96 matches'):`${LG_NAME[league]} ${n} matches`;
+  setSubt(league==='B'?(mob?'M 128 + W 96 matches':'MEN 128 + WOMEN 96 matches'):`${LG_NAME[league]} ${n} matches`);
   document.title='【非公式】26-27 SVG 試合&アリーナマップ';
   $('lgSeg').querySelectorAll('[data-lg]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lg===league)));
   const today=new Date(); today.setHours(0,0,0,0);
@@ -1422,10 +1486,10 @@ function leagueHeader(){
   let cd= days>0?`開幕まで<b>${days}</b>日　${open.getMonth()+1}月${open.getDate()}日（${WD[open.getDay()]}）開幕`:(today<=end?'レギュラーシーズン開催中':'レギュラーシーズン終了');
   if(fav&&ORDER.includes(fav)){
     const ng=dated.filter(g=>g.date>=today&&(g.h===fav||g.a===fav)).sort((a,b)=>a.date-b.date)[0], t2=TEAMS[fav];
-    if(ng){ const d=Math.round((ng.date-today)/864e5), opp=TEAMS[ng.h===fav?ng.a:ng.h].short, ha=ng.h===fav?'H':'A';
-      cd=`<span class="favline"><span class="st">★</span>${t2.short}　${d===0?'<b>今日</b>試合':`次の試合まで<b>${d}</b>日`}　${jMD(ng.date)} vs ${opp}（${ha}）</span>`;
-      if(mob) $('subt').textContent=`★${t2.short} ${d===0?'今日試合':`次戦まで${d}日`}`; }
-    else cd=`<span class="favline"><span class="st">★</span>${t2.short}　今季の試合は終了</span>`;
+    if(ng){ const d=Math.round((ng.date-today)/864e5), opp=nm(ng.h===fav?ng.a:ng.h), oppS=ab(ng.h===fav?ng.a:ng.h), ha=ng.h===fav?'H':'A';
+      cd=`<span class="favline"><span class="st">★</span>${t2.name}　${d===0?'<b>今日</b>試合':`次の試合まで<b>${d}</b>日`}　${jMD(ng.date)} vs ${opp}（${ha}）</span>`;
+      if(mob) setFit($('subt'),`★${t2.name} ${d===0?'今日試合':`次戦まで${d}日`}`,`★${t2.short} ${d===0?'今日試合':`次戦まで${d}日`}`); }
+    else cd=`<span class="favline"><span class="st">★</span>${t2.name}　今季の試合は終了</span>`;
   }
   $('countdown').innerHTML=cd;
 }
@@ -1454,6 +1518,7 @@ function rebuild(){
 /* timeline */
 const range=$('week'); range.max=WEEKS.length-1;
 function updateTimelineUI(){
+  requestAnimationFrame(layoutTicks);
   const W=WEEKS[weekIdx];
   $('wkNum').innerHTML=mode==='all'?'ALL':`${String(weekIdx+1).padStart(2,'0')}<small>/${WEEKS.length}</small>`;
   $('wkRange').textContent=mode==='all'?'シーズン全体':`${fmtMD(W.lo)} ${WD[W.lo.getDay()]} – ${fmtMD(W.hi)} ${WD[W.hi.getDay()]}`;
@@ -1485,8 +1550,8 @@ function renderCal(){
       if(focusTeam) gs=gs.filter(g=>g.h===focusTeam||g.a===focusTeam);
       const cls=['cd']; if(day.getMonth()!==mth) cls.push('out'); if(wi<0) cls.push('off'); if(gs.length) cls.push('g'); if(k===5) cls.push('sat'); if(k===6) cls.push('sun');
       let mark='';
-      if(focusTeam&&gs.length){ const g=gs[0], home=g.h===focusTeam; mark=`<span class="ha" style="background:${TEAMS[home?g.a:g.h].c1}" title="vs ${TEAMS[home?g.a:g.h].short}">${home?'H':'A'}</span>`; }
-      else if(gs.length){ mark=`<span class="dots">${gs.slice(0,4).map(g=>`<i style="background:${TEAMS[g.h].c1}" title="${TEAMS[g.h].short} vs ${TEAMS[g.a].short}"></i>`).join('')}</span>`; }
+      if(focusTeam&&gs.length){ const g=gs[0], home=g.h===focusTeam; mark=`<span class="ha" style="background:${TEAMS[home?g.a:g.h].c1}" title="vs ${nm(home?g.a:g.h)}">${home?'H':'A'}</span>`; }
+      else if(gs.length){ mark=`<span class="dots">${gs.slice(0,4).map(g=>`<i style="background:${TEAMS[g.h].c1}" title="${nm(g.h)} vs ${nm(g.a)}"></i>`).join('')}</span>`; }
       else mark='<span class="dots"></span>';
       cells+=`<span class="${cls.join(' ')}"><span class="n">${day.getDate()}</span>${mark}</span>`;
     }
@@ -1495,7 +1560,7 @@ function renderCal(){
     d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+7);
   }
   $('calGrid').innerHTML=html;
-  $('calFt').innerHTML=`<span>${focusTeam?`${TEAMS[focusTeam].short}の試合日（H＝ホーム／A＝アウェー、色は対戦相手）`:'点は試合（色はホームチーム）'}</span><button class="pill" id="calNow">今週</button>`;
+  $('calFt').innerHTML=`<span>${focusTeam?`${nm(focusTeam)}の試合日（H＝ホーム／A＝アウェー、色は対戦相手）`:'点は試合（色はホームチーム）'}</span><button class="pill" id="calNow">今週</button>`;
   $('calGrid').querySelectorAll('.calrow:not(:disabled)').forEach(b=>b.onclick=()=>{ const wi=+b.dataset.w; closeCal(); if(mode!=='week') setMode('week'); setWeek(wi); });
   $('calNow').onclick=()=>{ const t=new Date(); t.setHours(0,0,0,0); let wi=weekOfDate(t); if(wi<0) wi=t<WEEKS[0].mon?0:WEEKS.length-1; closeCal(); if(mode!=='week') setMode('week'); setWeek(wi); };
 }
@@ -1528,9 +1593,22 @@ document.addEventListener('pointerdown',e=>{ if(!$('cal').hidden&&!e.target.clos
 function buildTicks(){
   let lastM=-1, html='', dh='';
   WEEKS.forEach((w,i)=>{ const p=i/(WEEKS.length-1)*100; dh+=`<i class="${w.empty?'e':''}" style="left:${p}%"></i>`;
-    const m=w.lo.getMonth(); if(m!==lastM&&!w.empty||(m!==lastM&&i===0)){ html+=`<span style="left:${p}%">${m+1}月</span>`; lastM=m; } });
+    const m=w.lo.getMonth(); if(m!==lastM&&!w.empty||(m!==lastM&&i===0)){ html+=`<span style="left:${p}%"><b>${m+1}</b><em>月</em></span>`; lastM=m; } });
   $('ticks').innerHTML=html; $('dots').innerHTML=dh;
+  requestAnimationFrame(layoutTicks);
 }
+// month labels can crowd on a narrow track: drop any label that would touch its neighbour (first and last always stay)
+function layoutTicks(){
+  const sp=[...$('ticks').children]; sp.forEach(e=>e.style.visibility='');
+  let prev=null;
+  sp.forEach((e,i)=>{ const r=e.getBoundingClientRect();
+    if(prev&&r.left<prev.r.right+4){
+      if(i===sp.length-1){ prev.e.style.visibility='hidden'; prev={e,r}; }
+      else e.style.visibility='hidden';
+      return; }
+    prev={e,r}; });
+}
+addEventListener('resize',()=>requestAnimationFrame(layoutTicks));
 function setWeek(i){ const ni=Math.max(0,Math.min(WEEKS.length-1,i)); if(ni===weekIdx&&mode==='week'){ updateTimelineUI(); return; } weekIdx=ni; if(focusTeam) follow=true; detailIdx=0;
   if(mode!=='week'){ updateTimelineUI(); return; }
   const zoomed=camera.position.distanceTo(controls.target)<45;
@@ -1577,7 +1655,7 @@ document.addEventListener('pointerdown',e=>{
 document.addEventListener('wheel',()=>{ navKind='other'; userAct(); },{capture:true,passive:true});
 $('speed').onclick=()=>{ speedI=(speedI+1)%SPEEDS.length; $('speed').textContent=SPEEDS[speedI][0]+'×'; if(playing) playT0=performance.now(); };
 addEventListener('keydown',e=>{
-  if(e.key==='Escape'){ $('about').style.display='none'; $('guide').style.display='none'; closeLinks(); closeImg(); if(!$('cal').hidden){ closeCal(); $('calBtn').focus(); } return; }
+  if(e.key==='Escape'){ if($('matrix').style.display==='block'){ closeMatrix(); return; } $('about').style.display='none'; $('guide').style.display='none'; closeLinks(); closeImg(); if(!$('cal').hidden){ closeCal(); $('calBtn').focus(); } return; }
   if(!$('cal').hidden) return;
   if(e.target.tagName==='BUTTON'&&e.key===' ') return;
   if(e.key==='ArrowRight'&&e.target!==range){ $('next').click(); e.preventDefault(); }
@@ -1597,10 +1675,10 @@ const VIEWSET={
      regions:[['east','東日本',{lat:36.8,lon:140.1,d:50,pol:0.76,az:0}],['chubu','中部',{lat:35.3,lon:137.2,d:36,pol:0.8,az:0.05}],['west','西日本',{lat:34.0,lon:133.2,d:62,pol:0.74,az:0.1}]]}};
 const curViews=()=>VIEWSET[league];
 function renderRegions(){
-  const seg=$('regSeg');
+  const seg=$('regSeg'); if(!seg) return;
   seg.innerHTML=`<button data-view="all" aria-pressed="false">全国</button>`+curViews().regions.map(([k,l])=>`<button data-view="${k}" aria-pressed="false">${l}</button>`).join('');
 }
-$('regSeg').addEventListener('click',e=>{ const b=e.target.closest('[data-view]'); if(b) flyView(b.dataset.view); });
+$('regSeg')&&$('regSeg').addEventListener('click',e=>{ const b=e.target.closest('[data-view]'); if(b) flyView(b.dataset.view); });
 function backToMap(){
   $('panel').classList.remove('open'); $('sheetBtn').setAttribute('aria-pressed','false');
   const p=selKey&&pinMap.get(selKey); if(!p||p.removing) return;
@@ -1661,7 +1739,7 @@ renderer.domElement.addEventListener('pointermove',e=>{
   if(e.pointerType!=='mouse') return;
   const h=pick(e); renderer.domElement.style.cursor=h?'pointer':'';
   if(h){ const s=h.pin&&h.pin.series, v=h.venue;
-    tip.textContent=h.team?`${TEAMS[h.team].name}　クリックで絞り込み`:s?`${s.tbd?'会場調整中':s.v}　${TEAMS[s.h].short} vs ${TEAMS[s.a].short}`:`${v.v}　${v.n}試合`;
+    tip.textContent=h.team?`${TEAMS[h.team].name}　クリックで絞り込み`:s?`${s.tbd?'会場調整中':s.v}　${nm(s.h)} vs ${nm(s.a)}`:`${v.v}　${v.n}試合`;
     tip.style.left=Math.min(e.clientX+14,innerWidth-300)+'px'; tip.style.top=(e.clientY+14)+'px'; tip.style.opacity=1; }
   else tip.style.opacity=0;
 });
@@ -2196,6 +2274,53 @@ function renderLinks(){
 }
 function openLinks(){ renderLinks(); $('links').style.display='block'; $('linksClose').focus(); }
 function closeLinks(){ $('links').style.display='none'; }
+/* ---------- 対戦表 (home x away matrix) ---------- */
+let mxLg='M';
+function openMatrix(){ mxLg=league==='W'?'W':(league==='B'&&mxLg==='W'?'W':'M'); renderMatrix(); $('matrix').style.display='block'; $('mxClose').focus(); }
+function closeMatrix(){ $('matrix').style.display='none'; }
+function renderMatrix(){
+  $('mxTabs').innerHTML=league==='B'?['M','W'].map(l=>`<button role="tab" data-lg="${l}" aria-selected="${l===mxLg}">${LG_NAME[l]}</button>`).join(''):'';
+  $('mxTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ mxLg=b.dataset.lg; renderMatrix(); });
+  const teams=ALL_ORDER.filter(k=>TEAMS[k].lg===mxLg);
+  const today=new Date(); today.setHours(0,0,0,0);
+  const curMon=WEEKS[weekIdx]?WEEKS[weekIdx].mon.getTime():-1;
+  // one entry per series (home, away, venue, round)
+  const cell=new Map();
+  ALL_GAMES.filter(g=>g.lg===mxLg).forEach(g=>{
+    const key=g.h+'|'+g.a, sk=g.h+g.a+g.v+'@'+g.r; if(!cell.has(key)) cell.set(key,new Map());
+    const m=cell.get(key); if(!m.has(sk)) m.set(sk,{h:g.h,a:g.a,v:g.v,r:g.r,games:[],note:''}); const e=m.get(sk); e.games.push(g); if(g.note) e.note=g.note; });
+  const hd=k=>`<span class="tb" title="${TEAMS[k].name}"><img src="${badgeURL[k]}" alt="">${TEAMS[k].mono}</span>`;
+  let h='<table class="mx"><thead><tr><th class="rh"></th>'+teams.map(a=>`<th class="${a===fav?'fav':''}">${hd(a)}</th>`).join('')+'</tr></thead><tbody>';
+  teams.forEach(hk=>{
+    h+=`<tr><th class="rh${hk===fav?' fav':''}">${hd(hk)}</th>`;
+    teams.forEach(ak=>{
+      if(hk===ak){ h+=`<td class="self"><img src="${badgeURL[hk]}" alt=""></td>`; return; }
+      const list=[...((cell.get(hk+'|'+ak)||new Map()).values())].sort((x,y)=>{ const dx=x.games.find(g=>g.date), dy=y.games.find(g=>g.date); return (dx?+dx.date:9e15)-(dy?+dy.date:9e15); });
+      h+=`<td class="${hk===fav||ak===fav?'fav':''}">`+list.map(e=>{
+        const g0=e.games.filter(g=>g.date).sort((x,y)=>x.date-y.date)[0];
+        if(!g0) return `<button class="d tbd" data-h="${hk}" data-a="${ak}" title="第${e.r}節 延期・日程未定" disabled>未定</button>`;
+        const last=e.games.filter(g=>g.date).sort((x,y)=>y.date-x.date)[0];
+        const cls=['d']; if(monday(g0.date).getTime()===curMon&&mode==='week') cls.push('now'); else if(last.date<today) cls.push('past'); if(e.note) cls.push('warn');
+        const tip=`${nm(hk)} vs ${nm(ak)}　第${e.r}節　${e.games.filter(g=>g.date).map(g=>jMD(g.date)+(g.t?' '+g.t:'')).join('・')}　${e.v}${e.note?'　※'+e.note:''}`;
+        return `<button class="${cls.join(' ')}" data-h="${hk}" data-a="${ak}" data-d="${g0.d}" title="${tip.replace(/"/g,'&quot;')}">${g0.date.getMonth()+1}/${g0.date.getDate()}</button>`;
+      }).join('')+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  $('mxBody').innerHTML=h;
+  $('mxBody').querySelectorAll('.d[data-d]').forEach(b=>b.onclick=()=>gotoSeries(b.dataset.h,b.dataset.a,b.dataset.d));
+}
+function gotoSeries(hk,ak,d){
+  closeMatrix();
+  if(focusTeam&&focusTeam!==hk&&focusTeam!==ak) selectTeam(null);
+  if(mode!=='week') setMode('week');
+  const mon=monday(pd(d)).getTime(), wi=WEEKS.findIndex(w=>w.mon.getTime()===mon);
+  if(wi<0) return;
+  if(wi!==weekIdx) setWeek(wi); else renderList();
+  const i=curSer.findIndex(s=>s.h===hk&&s.a===ak); if(i>=0) openDetail(i);
+}
+$('matrixBtn').onclick=openMatrix; $('mxClose').onclick=closeMatrix;
 $('linksBtn').onclick=openLinks; $('linksBtnM').onclick=openLinks; $('linksClose').onclick=closeLinks;
 
 /* ---------- save "this week's map" as an image ---------- */
@@ -2223,9 +2348,10 @@ async function buildWeekImage(){
   const sp=specialOf(weekIdx); let lx=60;
   if(sp){ const tx=(sp.open.length&&sp.fin.length)?'OPENING / FINAL':sp.open.length?'OPENING WEEK':'FINAL WEEK'; x.font=`800 26px ${NUM}`; const tw=x.measureText(tx).width+32; rrect(x,lx,358,tw,40,20); const bg=x.createLinearGradient(lx,0,lx+tw,0); bg.addColorStop(0,'#f5d36a'); bg.addColorStop(1,'#e8891c'); x.fillStyle=bg; x.fill(); x.fillStyle='#1b1206'; x.fillText(tx,lx+16,386); lx+=tw+16; }
   x.fillStyle=ACC; x.font=`700 34px ${JP}`;
-  x.fillText(fit(`${focusTeam?TEAMS[focusTeam].short+'の試合　':''}${Wk.rlab}　${ser.length}カード`,CW-60-lx),lx,390);
+  x.fillText(fit(`${focusTeam?nm(focusTeam)+'の試合　':''}${Wk.rlab}　${ser.length}カード`,CW-60-lx),lx,390);
   // map
-  const mx=60,my=430,mw=960,mh=620;
+  const nS=ser.length, GAPL=nS<=4?22:12, CHT=nS<=3?190:nS===4?170:nS===5?150:nS===6?132:124, LIST_B=1790;
+  const mx=60,my=430,mw=960,mh=Math.max(340,Math.min(620,LIST_B-30-my-(nS*CHT+(nS-1)*GAPL)));
   const pts=ser.map(s=>[(s.lon-LON0)*KX,-(s.lat-LAT0)*K]);
   let x0=Math.min(...pts.map(p=>p[0]))-15,x1=Math.max(...pts.map(p=>p[0]))+15,y0=Math.min(...pts.map(p=>p[1]))-18,y1=Math.max(...pts.map(p=>p[1]))+18;
   let w=x1-x0,h=y1-y0,cx=(x0+x1)/2,cy=(y0+y1)/2; w=Math.max(w,72); h=Math.max(h,72); const asp=mw/mh; if(w/h<asp) w=h*asp; else h=w/asp;
@@ -2250,28 +2376,37 @@ async function buildWeekImage(){
     x.fillStyle='#1b1206'; x.font=`800 34px ${NUM}`; x.textAlign='center'; x.textBaseline='middle'; x.fillText(String(p.i+1),p.x,p.y+2); });
   x.restore(); x.textAlign='left'; x.textBaseline='alphabetic';
   x.strokeStyle='rgba(190,215,240,.28)'; x.lineWidth=2; rrect(x,mx,my,mw,mh,28); x.stroke();
-  // match list
-  const n=ser.length, cols=n>5?2:1, rows=Math.ceil(n/cols), gap=n<=4?22:14, ly=1086, lh=700;
-  const cwid=cols===1?960:(960-gap)/2, chgt=Math.min(cols===1?(n<=3?190:168):150,(lh-(rows-1)*gap)/rows);
+  // match list: always one column; the map above shrinks to make room, and text shrinks before it is ever cut
+  const n=ser.length, gap=GAPL, ly=my+mh+30, chgt=Math.min(CHT,(LIST_B-ly-(n-1)*gap)/n), cwid=960;
+  const T=chgt>=160?{f1:36,f2:27,f3:29,o1:-18,o2:24,o3:62,bw:64,nr:27}:chgt>=140?{f1:33,f2:25,f3:27,o1:-20,o2:16,o3:52,bw:58,nr:26}:{f1:30,f2:23,f3:25,o1:-19,o2:13,o3:45,bw:52,nr:24};
+  const fitS=(t,w,px,wt,fam)=>{ let f=px; x.font=`${wt} ${f}px ${fam}`; while(x.measureText(t).width>w&&f>px*0.74){ f-=1; x.font=`${wt} ${f}px ${fam}`; } return fit(t,w); };
   ser.forEach((s,i)=>{
-    const col=cols===1?0:i%2, row=cols===1?i:Math.floor(i/2), cx0=60+col*(cwid+gap), cy0=ly+row*(chgt+gap), mid=cy0+chgt/2, big=cols===1;
+    const cx0=60, cy0=ly+i*(chgt+gap), mid=cy0+chgt/2;
     rrect(x,cx0,cy0,cwid,chgt,22); x.fillStyle='rgba(255,255,255,.07)'; x.fill(); x.strokeStyle='rgba(190,215,240,.18)'; x.lineWidth=2; x.stroke();
-    const nr=big?27:21; x.fillStyle=s.tbd?'#9fb0c4':ACC; x.beginPath(); x.arc(cx0+(big?50:38),mid,nr,0,Math.PI*2); x.fill();
-    x.fillStyle='#1b1206'; x.font=`800 ${big?34:27}px ${NUM}`; x.textAlign='center'; x.textBaseline='middle'; x.fillText(String(i+1),cx0+(big?50:38),mid+2);
-    const bw=big?64:50; drawBadge(x,s.h,cx0+(big?132:92),mid,bw); drawBadge(x,s.a,cx0+(big?262:158),mid,bw);
-    x.fillStyle=ACC; x.font=`800 ${big?30:22}px ${NUM}`; x.fillText('VS',cx0+(big?197:125),mid+2);
+    x.fillStyle=s.tbd?'#9fb0c4':ACC; x.beginPath(); x.arc(cx0+44,mid,T.nr,0,Math.PI*2); x.fill();
+    x.fillStyle='#1b1206'; x.font=`800 ${T.nr+7}px ${NUM}`; x.textAlign='center'; x.textBaseline='middle'; x.fillText(String(i+1),cx0+44,mid+2);
+    drawBadge(x,s.h,cx0+112,mid,T.bw); drawBadge(x,s.a,cx0+216,mid,T.bw);
+    x.fillStyle=ACC; x.font=`800 ${T.f1-8}px ${NUM}`; x.fillText('VS',cx0+164,mid+2);
     x.textAlign='left'; x.textBaseline='alphabetic';
-    const tx=cx0+(big?318:196), tw=cwid-(tx-cx0)-(big?20:12);
-    x.fillStyle='#ffffff'; x.font=`700 ${big?36:27}px ${JP}`; x.fillText(fit(`${TEAMS[s.h].short} vs ${TEAMS[s.a].short}`,tw-(league==='B'?(big?100:76):0)),tx,mid-(big?18:14));
-    x.fillStyle=s.tbd?ACC:'#c3d3e6'; x.font=`500 ${big?27:21}px ${JP}`; x.fillText(fit(s.tbd?`会場調整中（${s.city}）`:`${s.v}・${s.city}`,tw),tx,mid+(big?24:14));
-    x.fillStyle=ACC; x.font=`600 ${big?29:23}px ${NUM}`; x.fillText(fit(s.games.map(q=>`${q.date.getMonth()+1}/${q.date.getDate()}(${WD[q.date.getDay()]}) ${q.t||'時間未定'}`).join('　／　'),tw),tx,mid+(big?62:46));
-    if(league==='B'){ const lab=LG_NAME[s.lg]; x.font=`800 ${big?22:17}px ${NUM}`; const lw=x.measureText(lab).width+(big?24:18), lh2=big?32:26; rrect(x,cx0+cwid-lw-(big?18:12),cy0+(big?14:10),lw,lh2,lh2/2); x.fillStyle=s.lg==='W'?'#e85d9a':'#3d7fe0'; x.fill(); x.fillStyle='#fff'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(lab,cx0+cwid-lw/2-(big?18:12),cy0+(big?14:10)+lh2/2+1); x.textAlign='left'; x.textBaseline='alphabetic'; }
+    const tx=cx0+272, tw=cwid-(tx-cx0)-24;
+    x.fillStyle='#ffffff';
+    { const nw=tw-(league==='B'?100:0), cands=[`${nm(s.h)} vs ${nm(s.a)}`,`${nm(s.h)} vs ${ab(s.a)}`,`${ab(s.h)} vs ${nm(s.a)}`,`${ab(s.h)} vs ${ab(s.a)}`];
+      // first combination that fits at >= 82% of the normal size; abbreviate only what has to be
+      let pick=cands[cands.length-1]; for(const c of cands){ x.font=`700 ${Math.round(T.f1*0.82)}px ${JP}`; if(x.measureText(c).width<=nw){ pick=c; break; } }
+      x.fillText(fitS(pick,nw,T.f1,700,JP),tx,mid+T.o1); }
+    x.fillStyle=s.tbd?ACC:'#c3d3e6';
+    const vFull=s.tbd?`会場調整中（${s.city}）`:`${s.v}・${s.city}`, vOnly=s.tbd?vFull:s.v;
+    x.font=`500 ${T.f2}px ${JP}`; const venueTxt=x.measureText(vFull).width<=tw?vFull:vOnly;
+    x.fillText(fitS(venueTxt,tw,T.f2,500,JP),tx,mid+T.o2);
+    x.fillStyle=ACC; x.fillText(fitS(s.games.map(q=>`${q.date.getMonth()+1}/${q.date.getDate()}(${WD[q.date.getDay()]}) ${q.t||'時間未定'}`).join('　／　'),tw,T.f3,600,NUM),tx,mid+T.o3);
+    if(league==='B'){ const lab=LG_NAME[s.lg]; x.font=`800 20px ${NUM}`; const lw=x.measureText(lab).width+22, lh2=28, lx2=cx0+cwid-lw-18, ly2=cy0+12; rrect(x,lx2,ly2,lw,lh2,lh2/2); x.fillStyle=s.lg==='W'?'#e85d9a':'#3d7fe0'; x.fill(); x.fillStyle='#fff'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(lab,lx2+lw/2,ly2+lh2/2+1); x.textAlign='left'; x.textBaseline='alphabetic'; }
   });
   // footer
   x.fillStyle='rgba(245,165,36,.5)'; x.fillRect(60,1810,960,3);
   const d=pd(DATA_CHECKED); x.textAlign='center'; x.fillStyle='#8aa0ba'; x.font=`500 25px ${JP}`;
-  x.fillText(`非公式のファンサイトです。日程データ：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}時点`,CW/2,1856);
-  x.fillText('最新の日程・会場は公式サイト（svleague.jp）でご確認ください',CW/2,1892);
+  x.fillText(`非公式のファンサイトです。日程データ：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}時点`,CW/2,1848);
+  x.fillText('最新の日程・会場は公式サイト（svleague.jp）でご確認ください',CW/2,1878);
+  x.fillStyle='#6f87a3'; x.font=`500 21px ${NUM}`; x.fillText('https://ageworks.github.io/site/svg2627map.html',CW/2,1907);
   const dataUrl=cv.toDataURL('image/png');
   const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
   const mm=a=>String(a.getMonth()+1).padStart(2,'0')+String(a.getDate()).padStart(2,'0');
