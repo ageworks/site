@@ -1079,7 +1079,7 @@ function i18nStatic(root){
   }
 }
 applyTeamLang();
-let league='M';
+let league='B';   // first visit opens on both leagues; after that the last choice is remembered
 let fav=null; try{ fav=localStorage.getItem('svgmap.fav'); }catch(e){}
 if(fav&&!TEAMS[fav]) fav=null;
 try{ const v=localStorage.getItem('svgmap.league'); if(v==='M'||v==='W'||v==='B') league=v; }catch(e){}
